@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} — Список счетов{% endblock %}
+
+{% block content %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td>Id</td>
+            <td>Название</td>
+            <td>Сумма</td>
+            <td>Открыт</td>
+            <td>Закрыт</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in account_list %}
+        <tr>
+            <td>{{ account.id }}</td>
+            <td>{{ account.title }}</td>
+            <td>{{ account.value }} {{ account.currency }}</td>
+            <td>{{ account.opened }}</td>
+            <td>{{ account.closed }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
