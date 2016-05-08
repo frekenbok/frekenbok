@@ -1,4 +1,3 @@
-from datetime import date
 from django.db import models
 from django.utils.translation import ugettext as _
 from djmoney.models.fields import MoneyField
@@ -73,6 +72,7 @@ class Account(models.Model):
     class Meta:
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
+
 
 class Invoice(models.Model):
     date = models.DateField(
