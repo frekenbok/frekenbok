@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} — Список счетов{% endblock %}
+{% block title %}{{ block.super }} — {% trans 'List of accounts' %}{% endblock %}
 
 {% block content %}
 <table class="table table-striped">
     <thead>
         <tr>
-            <td>Id</td>
-            <td>Название</td>
-            <td>Сумма</td>
-            <td>Открыт</td>
-            <td>Закрыт</td>
+            <td>{%  trans 'Id' %}</td>
+            <td>{% trans 'Title' %}</td>
+            <td>{% trans 'Summary' %}</td>
+            <td>{% trans 'Opened' %}</td>
+            <td>{%  trans 'Closed' %}</td>
         </tr>
     </thead>
     <tbody>

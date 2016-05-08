@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import Account, AccountGroup, Transaction, Invoice
+from .models import Account, Transaction, Document, Invoice
 
 admin.site.register(Account)
-admin.site.register(AccountGroup)
 admin.site.register(Transaction)
+admin.site.register(Document)
 admin.site.register(Invoice)
