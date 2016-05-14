@@ -10,6 +10,13 @@ class Account(models.Model):
         ('account', _('Account')),
     )
 
+    parent = models.ForeignKey(
+        verbose_name=_('Parent account'),
+        to='Account',
+        related_name='children',
+        blank=True, null=True
+    )
+
     title = models.CharField(
         verbose_name=_('Title'),
         max_length=255,

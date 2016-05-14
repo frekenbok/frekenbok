@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} — {% trans 'List of accounts' %}{% endblock %}
+{% block title %}{{ block.super }} — {% trans 'Details of account' %} {{ account.title }}{% endblock %}
 
 {% block content %}
 <table class="table table-striped">
@@ -17,8 +17,8 @@
     <tbody>
         {% for account in account_list %}
         <tr>
-            <td>{{ account.id }}</td>
-            <td>{{ account.title }}</td>
+            <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.id }}</a></td>
+            <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.title }}</a></td>
             <td>{{ account.value }} {{ account.currency }}</td>
             <td>{{ account.opened }}</td>
             <td>{{ account.closed }}</td>
