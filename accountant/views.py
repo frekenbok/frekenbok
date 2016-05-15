@@ -4,12 +4,13 @@ from django.views.generic import ListView, DetailView
 from .models import Account, Transaction
 
 
-def main(request):
-    context = dict()
-    for account_type in ('income', 'account', 'expense'):
-        query_set = Account.objects.filter(type=account_type)
-        context[account_type] = query_set if query_set else []
-    return render(request, 'accountant/base.html', context)
+class MainView(ListView):
+    model = Account
+    context_object_name = 'account_list'
+    template_name = 'accountant/base.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(type=Account.ACCOUNT)
 
 
 class IncomeListView(ListView):
@@ -18,7 +19,7 @@ class IncomeListView(ListView):
     template_name = 'accountant/account_list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(type='income')
+        return self.model.objects.filter(type=Account.INCOME)
 
 
 class AccountDetailView(DetailView):

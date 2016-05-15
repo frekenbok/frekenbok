@@ -72,8 +72,7 @@ class Account(models.Model):
     )
 
     def __str__(self):
-        return '{type} {title} ({value})'.format(
-            type=self.type,
+        return '{title} ({value})'.format(
             title=self.title,
             value=self.value
         )
