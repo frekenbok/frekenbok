@@ -12,6 +12,8 @@ from django.core import management
 try:
     os.unlink('db.sqlite3')
     print('Dev database removed')
+except FileNotFoundError:
+    print('Dev database not found')
 except Exception as e:
     print('Can\'t delete dev database: {}'.format(e))
     exit(1)
