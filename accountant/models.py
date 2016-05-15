@@ -4,10 +4,13 @@ from djmoney.models.fields import MoneyField
 
 
 class Account(models.Model):
+    INCOME = 1
+    EXPENSE = 2
+    ACCOUNT = 3
     TYPES = (
-        ('income', _('Income')),
-        ('expense', _('Expense')),
-        ('account', _('Account')),
+        (INCOME, _('Income')),
+        (EXPENSE, _('Expense')),
+        (ACCOUNT, _('Account')),
     )
 
     parent = models.ForeignKey(
@@ -25,10 +28,9 @@ class Account(models.Model):
         verbose_name=_('Value'),
         max_digits=50,
         decimal_places=5)
-    type = models.CharField(
+    type = models.IntegerField(
         verbose_name=_('Type'),
-        choices=TYPES,
-        max_length=8)
+        choices=TYPES)
 
     interest_rate = models.DecimalField(
         verbose_name=_('Interest rate (%)'),
