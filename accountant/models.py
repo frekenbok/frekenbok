@@ -5,6 +5,10 @@ from djmoney.models.fields import MoneyField, CurrencyField
 from moneyed import Money, CURRENCIES
 
 
+MAX_DIGITS = 50
+DECIMAL_PLACES = 5
+
+
 class Account(models.Model):
     INCOME = 1
     EXPENSE = 2
@@ -29,42 +33,6 @@ class Account(models.Model):
         related_name='children',
         blank=True, null=True
     )
-    amount = MoneyField(
-        verbose_name=_('amount'),
-        max_digits=50,
-        decimal_places=5)
-    currency = CurrencyField(
-        verbose_name=_('currency'),
-        price_field=amount,
-        default=settings.BASE_CURRENCY
-    )
-
-    interest_rate = models.DecimalField(
-        verbose_name=_('interest rate (%)'),
-        max_digits=50,
-        decimal_places=5,
-        null=True,
-        blank=True)
-    interest_rate_day = models.DateField(
-        verbose_name=_('date of next interest rate accrual'),
-        blank=True,
-        null=True)
-    interest_rate_is_monthly = models.BooleanField(
-        verbose_name=_('monthly'),
-        help_text=_('Mark if interest rate is accrued monthly.'),
-        default=True
-    )
-
-    @property
-    def expected_interest_rate(self):
-        # TODO Get some more info about interest rates and their calculations
-        if self.interest_rate:
-            if self.interest_rate_is_monthly:
-                return self.interest_rate / 100 * self.value / 12
-            else:
-                return self.interest_rate / 100 / 365 * (self.closed - self.opened).days * self.value
-        else:
-            return None
 
     opened = models.DateField(
         verbose_name=_('date of open'),
@@ -84,15 +52,36 @@ class Account(models.Model):
             value=self.value
         )
 
-    def get_by_currency(self, currency):
-        if currency not in CURRENCIES:
-            raise ValueError('{} is not valid currency'.format(currency))
-        else:
-            return se
+    def value(self):
+        return self.objects.sheaves.all()
 
     class Meta:
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
+
+
+class Sheaf(models.Model):
+    account = models.ForeignKey(
+        verbose_name=_('account'),
+        to=Account,
+        related_name='sheaves'
+    )
+    amount = models.DecimalField(
+        verbose_name=_('sheaf'),
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES
+    )
+    currency = CurrencyField(
+        verbose_name=_('currency'),
+        price_field='amount',
+        default=settings.BASE_CURRENCY
+    )
+
+    def __str__(self):
+        return '{amount} {currency}'.format(
+            amount=self.amount,
+            currency=self.currency
+        )
 
 
 class Invoice(models.Model):
@@ -121,14 +110,14 @@ class Transaction(models.Model):
 
     source_value = MoneyField(
         verbose_name=_('value in source currency'),
-        max_digits=50,
-        decimal_places=5,
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES,
     )
 
     destination_value = MoneyField(
         verbose_name=_('value in destination currency'),
-        max_digits=50,
-        decimal_places=5,
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES,
     )
 
     invoice = models.ForeignKey(
