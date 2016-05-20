@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-from djmoney.models.fields import MoneyField
+from django.conf import settings
+from djmoney.models.fields import MoneyField, CurrencyField
+from moneyed import Money, CURRENCIES
 
 
 class Account(models.Model):
@@ -8,43 +10,48 @@ class Account(models.Model):
     EXPENSE = 2
     ACCOUNT = 3
     TYPES = (
-        (INCOME, _('Income')),
-        (EXPENSE, _('Expense')),
-        (ACCOUNT, _('Account')),
+        (INCOME, _('income')),
+        (EXPENSE, _('expense')),
+        (ACCOUNT, _('account')),
     )
 
+    title = models.CharField(
+        verbose_name=_('title'),
+        max_length=255,
+        blank=True)
+
+    type = models.IntegerField(
+        verbose_name=_('type'),
+        choices=TYPES)
     parent = models.ForeignKey(
-        verbose_name=_('Parent account'),
+        verbose_name=_('parent account'),
         to='Account',
         related_name='children',
         blank=True, null=True
     )
-
-    title = models.CharField(
-        verbose_name=_('Title'),
-        max_length=255,
-        blank=True)
-    value = MoneyField(
-        verbose_name=_('Value'),
+    amount = MoneyField(
+        verbose_name=_('amount'),
         max_digits=50,
         decimal_places=5)
-    type = models.IntegerField(
-        verbose_name=_('Type'),
-        choices=TYPES)
+    currency = CurrencyField(
+        verbose_name=_('currency'),
+        price_field=amount,
+        default=settings.BASE_CURRENCY
+    )
 
     interest_rate = models.DecimalField(
-        verbose_name=_('Interest rate (%)'),
+        verbose_name=_('interest rate (%)'),
         max_digits=50,
         decimal_places=5,
         null=True,
         blank=True)
     interest_rate_day = models.DateField(
-        verbose_name=_('Date of next interest rate accrual'),
+        verbose_name=_('date of next interest rate accrual'),
         blank=True,
         null=True)
     interest_rate_is_monthly = models.BooleanField(
-        verbose_name=_('Monthly'),
-        help_text=_('Mark if interest rate is accrued monthly'),
+        verbose_name=_('monthly'),
+        help_text=_('Mark if interest rate is accrued monthly.'),
         default=True
     )
 
@@ -60,14 +67,14 @@ class Account(models.Model):
             return None
 
     opened = models.DateField(
-        verbose_name=_('Date of open'),
+        verbose_name=_('date of open'),
         null=True, blank=True)
     closed = models.DateField(
-        verbose_name=_('Date of close'),
+        verbose_name=_('date of close'),
         null=True, blank=True)
 
     credentials = models.TextField(
-        verbose_name=_('Credentials'),
+        verbose_name=_('credentials'),
         blank=True
     )
 
@@ -77,6 +84,12 @@ class Account(models.Model):
             value=self.value
         )
 
+    def get_by_currency(self, currency):
+        if currency not in CURRENCIES:
+            raise ValueError('{} is not valid currency'.format(currency))
+        else:
+            return se
+
     class Meta:
         verbose_name = _('account')
         verbose_name_plural = _('accounts')
@@ -84,7 +97,7 @@ class Account(models.Model):
 
 class Invoice(models.Model):
     date = models.DateField(
-        verbose_name=_('Date'),
+        verbose_name=_('date'),
         auto_now_add=True,
         blank=True
     )
@@ -97,29 +110,29 @@ class Invoice(models.Model):
 
 class Transaction(models.Model):
     source = models.ForeignKey(
-        verbose_name=_('Source'),
+        verbose_name=_('source'),
         to=Account,
         related_name='source')
 
     destination = models.ForeignKey(
-        verbose_name=_('Destination'),
+        verbose_name=_('destination'),
         to=Account,
         related_name='destination')
 
     source_value = MoneyField(
-        verbose_name=_('Value in source currency'),
+        verbose_name=_('value in source currency'),
         max_digits=50,
         decimal_places=5,
     )
 
     destination_value = MoneyField(
-        verbose_name=_('Value in destination currency'),
+        verbose_name=_('value in destination currency'),
         max_digits=50,
         decimal_places=5,
     )
 
     invoice = models.ForeignKey(
-        verbose_name=_('Invoice'),
+        verbose_name=_('invoice'),
         to=Invoice
     )
 
@@ -134,16 +147,16 @@ class Transaction(models.Model):
 
 class Document(models.Model):
     description = models.CharField(
-        verbose_name=_('Description'),
+        verbose_name=_('description'),
         max_length=1024,
         blank=True
     )
 
     invoice = models.ForeignKey(
-        verbose_name=_('Invoice'),
+        verbose_name=_('invoice'),
         to=Invoice
     )
 
     file = models.FileField(
-        verbose_name=_('File with image')
+        verbose_name=_('file with image')
     )
