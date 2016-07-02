@@ -36,10 +36,12 @@ class Account(models.Model):
 
     opened = models.DateField(
         verbose_name=_('date of open'),
-        null=True, blank=True)
+        null=True, blank=True, auto_now_add=True
+    )
     closed = models.DateField(
         verbose_name=_('date of close'),
-        null=True, blank=True)
+        null=True, blank=True
+    )
 
     credentials = models.TextField(
         verbose_name=_('credentials'),
@@ -98,6 +100,11 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
+    date = models.DateField(
+        verbose_name=_('date'),
+        auto_now_add=True
+    )
+
     source = models.ForeignKey(
         verbose_name=_('source'),
         to=Account,
