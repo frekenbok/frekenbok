@@ -162,10 +162,10 @@ msgstr "Список счетов"
 #, fuzzy
 #| msgid "Account"
 msgid "Accounter"
-msgstr ""
+msgstr "Счетовод"
 
 #: .\templates\base.html:15
 #, fuzzy
 #| msgid "List of accounts"
 msgid "List of incomes"
-msgstr ""
+msgstr "Список доходов"
