@@ -100,11 +100,6 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
-    date = models.DateField(
-        verbose_name=_('date'),
-        auto_now_add=True
-    )
-
     source = models.ForeignKey(
         verbose_name=_('source'),
         to=Account,
