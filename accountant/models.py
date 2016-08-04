@@ -48,6 +48,16 @@ class Account(models.Model):
         blank=True
     )
 
+    @property
+    def sorted_sheaves(self):
+        result = list()
+        for sheaf in self.sheaves.order_by('currency'):
+            if sheaf.currency == settings.BASE_CURRENCY:
+                result.insert(0, sheaf)
+            else:
+                result.append(sheaf)
+        return result
+
     def __str__(self):
         return '{title} ({type})'.format(
             title=self.title,
