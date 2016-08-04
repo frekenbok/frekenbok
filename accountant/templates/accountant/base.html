@@ -14,7 +14,9 @@
 {% for account in account_list %}<tr>
     <td>{{ account.id }}</td>
     <td>{{ account.title }}</td>
-    <td>{{ account.value.amount }} {{ account.value.currency }}</td>
+    <td>{% for sheaf in account.sheaves.all %}
+        {{ sheaf.amount }} {{ sheaf.currency }}<br />
+        {% endfor %}</td>
 </tr>{% endfor %}
 </table>
 
