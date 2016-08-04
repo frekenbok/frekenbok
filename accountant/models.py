@@ -49,13 +49,10 @@ class Account(models.Model):
     )
 
     def __str__(self):
-        return '{title} ({value})'.format(
+        return '{title} ({type})'.format(
             title=self.title,
-            value=self.value
+            type=dict(self.TYPES)[self.type]
         )
-
-    def value(self):
-        return self.objects.sheaves.all()
 
     class Meta:
         verbose_name = _('account')
@@ -80,9 +77,10 @@ class Sheaf(models.Model):
     )
 
     def __str__(self):
-        return '{amount} {currency}'.format(
+        return '{amount} {currency} on {account}'.format(
             amount=self.amount,
-            currency=self.currency
+            currency=self.currency,
+            account=self.account
         )
 
 
