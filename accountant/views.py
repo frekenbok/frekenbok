@@ -27,13 +27,12 @@ class MainView(ListView):
         # Generating report about total value of all accounts and
         # placing value in base currency to first place in that report
         report = list()
-        base_currency_amount = total.get(settings.BASE_CURRENCY)
-        if base_currency_amount:
-            report.append({'currency': settings.BASE_CURRENCY,
-                           'amount': base_currency_amount})
-            del total[settings.BASE_CURRENCY]
         for currency, amount in sorted(total.items(), key=lambda x: x[0]):
-            report.append({'currency': currency, 'amount': amount})
+            report_line = {'currency': currency, 'amount': amount}
+            if currency == settings.BASE_CURRENCY:
+                report.insert(0, report_line)
+            else:
+                report.append(report_line)
 
         context['total'] = report
         return context
