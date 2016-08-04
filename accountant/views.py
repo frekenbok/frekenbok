@@ -28,9 +28,6 @@ class MainView(ListView):
         # placing value in base currency to first place in that report
         report = list()
         base_currency_amount = total.get(settings.BASE_CURRENCY)
-        print('There is base currency {bc} in total report ({amount})'
-                      .format(bc=settings.BASE_CURRENCY,
-                              amount=base_currency_amount))
         if base_currency_amount:
             report.append({'currency': settings.BASE_CURRENCY,
                            'amount': base_currency_amount})
