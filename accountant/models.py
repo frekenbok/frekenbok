@@ -96,9 +96,7 @@ class Sheaf(models.Model):
 
 class Invoice(models.Model):
     date = models.DateField(
-        verbose_name=_('date'),
-        auto_now_add=True,
-        blank=True
+        verbose_name=_('date')
     )
 
     def __str__(self):
@@ -137,7 +135,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return '{date}: {source} → {destination}, {value}'.format(
-            date=self.date,
+            date=self.invoice.date,
             source=self.source.title,
             destination=self.destination.title,
             value=self.source_value,
