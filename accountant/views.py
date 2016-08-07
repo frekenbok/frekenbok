@@ -52,6 +52,11 @@ class AccountDetailView(DetailView):
     context_object_name = 'account'
     template_name = 'accountant/account_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(AccountDetailView, self).get_context_data(**kwargs)
+
+        return context
+
 
 class TransactionListView(ListView):
     model = Transaction

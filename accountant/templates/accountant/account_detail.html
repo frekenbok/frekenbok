@@ -4,18 +4,24 @@
 {% block title %}{{ block.super }} — {% trans 'Details of account' %} {{ account.title }}{% endblock %}
 
 {% block content %}
+<h1>{{ account.title }}</h1>
+<table>
+<tr>{% for sheaf in account.sorted_sheaves %}
+    <td>{{ sheaf.amount }} {{ sheaf.currency }}</td>
+    {% endfor %}
+</tr>
+</table>
 <table class="table table-striped">
+<caption>{% trans 'Last actions' %}</caption>
     <thead>
         <tr>
-            <td>{%  trans 'Id' %}</td>
-            <td>{% trans 'Title' %}</td>
-            <td>{% trans 'Summary' %}</td>
-            <td>{% trans 'Opened' %}</td>
-            <td>{%  trans 'Closed' %}</td>
+            <td>{% trans 'Time' %}</td>
+            <td>{% trans 'Value' %}</td>
+            <td>{% trans 'Comment' %}</td>
         </tr>
     </thead>
     <tbody>
-        {% for account in account_list %}
+        {% for invoice in account_list %}
         <tr>
             <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.id }}</a></td>
             <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.title }}</a></td>
