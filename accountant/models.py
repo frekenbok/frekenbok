@@ -5,10 +5,6 @@ from djmoney.models.fields import MoneyField, CurrencyField
 from moneyed import Money, CURRENCIES
 
 
-MAX_DIGITS = 50
-DECIMAL_PLACES = 5
-
-
 class Account(models.Model):
     INCOME = 1
     EXPENSE = 2
@@ -77,8 +73,8 @@ class Sheaf(models.Model):
     )
     amount = models.DecimalField(
         verbose_name=_('sheaf'),
-        max_digits=MAX_DIGITS,
-        decimal_places=DECIMAL_PLACES
+        max_digits=settings.MAX_DIGITS,
+        decimal_places=settings.DECIMAL_PLACES
     )
     currency = CurrencyField(
         verbose_name=_('currency'),
@@ -118,14 +114,14 @@ class Transaction(models.Model):
 
     source_value = MoneyField(
         verbose_name=_('value in source currency'),
-        max_digits=MAX_DIGITS,
-        decimal_places=DECIMAL_PLACES,
+        max_digits=settings.MAX_DIGITS,
+        decimal_places=settings.DECIMAL_PLACES,
     )
 
     destination_value = MoneyField(
         verbose_name=_('value in destination currency'),
-        max_digits=MAX_DIGITS,
-        decimal_places=DECIMAL_PLACES,
+        max_digits=settings.MAX_DIGITS,
+        decimal_places=settings.DECIMAL_PLACES,
     )
 
     invoice = models.ForeignKey(

@@ -93,6 +93,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Money field requires these numbers. Do not change them if you are not sure
+# what you do
+
+MAX_DIGITS = 50
+DECIMAL_PLACES = 5
+
 # Individual settings of project like language, timezone etc.
 
 from .custom import *
