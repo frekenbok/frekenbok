@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from random import random
-from datetime import date
+from datetime import datetime, date
 
 from django.db import migrations
 from moneyed import Money, RUB, USD, EUR, GBP
@@ -38,19 +38,21 @@ def add_test_data(apps, schema_editor):
     transaction_model = apps.get_model('accountant', 'Transaction')
     invoice_model = apps.get_model('accountant', 'Invoice')
 
-    first_salary = invoice_model.objects.create(date=date(2015, 4, 1))
+    first_salary = invoice_model.objects.create(timestamp=datetime(2015, 4, 1))
     transaction_model.objects.create(
         source=salary,
         source_value=Money(70000, RUB),
         destination=wallet,
         destination_value=Money(70000, RUB),
-        invoice=first_salary
+        invoice=first_salary,
+        date=date(2015, 4, 1)
     )
 
-    first_invoice = invoice_model.objects.create(date=date(2015, 4, 3))
+    first_invoice = invoice_model.objects.create(timestamp=datetime(2015, 4, 3))
     for expense in expenses:
         value = int(random() * 100) + int(random() * 100) / 100
         transaction_model.objects.create(
+            date=date(2015, 4, 3),
             source=wallet,
             source_value=Money(value, RUB),
             destination=expense,
@@ -58,26 +60,30 @@ def add_test_data(apps, schema_editor):
             invoice=first_invoice
         )
 
-    second_invoice = invoice_model.objects.create(date=date(2015, 4, 4))
+    second_invoice = invoice_model.objects.create(timestamp=datetime(2015, 4, 4))
     for expense in expenses[:-1]:
         value = int(random() * 100) + int(random() * 100) / 100
         transaction_model.objects.create(
+            date=date(2015, 4, 4),
             source=wallet,
             source_value=Money(value, RUB),
             destination=expense,
             destination_value=Money(value, RUB),
-            invoice=second_invoice
+            invoice=second_invoice,
+            comment='салями'
         )
 
-    third_invoice = invoice_model.objects.create(date=date(2015, 4, 5))
+    third_invoice = invoice_model.objects.create(timestamp=datetime(2015, 4, 5))
     for expense in expenses[1:]:
         value = int(random() * 100) + int(random() * 100) / 100
         transaction_model.objects.create(
+            date=date(2015, 4, 5),
             source=wallet,
             source_value=Money(value, RUB),
             destination=expense,
             destination_value=Money(value, RUB),
-            invoice=third_invoice
+            invoice=third_invoice,
+            comment='АИ-95'
         )
 
 

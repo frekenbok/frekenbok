@@ -91,8 +91,12 @@ class Sheaf(models.Model):
 
 
 class Invoice(models.Model):
-    date = models.DateField(
-        verbose_name=_('date')
+    timestamp = models.DateField(
+        verbose_name=_('date and time')
+    )
+
+    comment = models.TextField(
+        verbose_name=_('comment')
     )
 
     def __str__(self):
@@ -102,6 +106,10 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
+    date = models.DateField(
+        verbose_name=_('date')
+    )
+
     source = models.ForeignKey(
         verbose_name=_('source'),
         to=Account,
@@ -129,12 +137,17 @@ class Transaction(models.Model):
         to=Invoice
     )
 
+    comment = models.TextField(
+        verbose_name=_('comment')
+    )
+
     def __str__(self):
-        return '{date}: {source} → {destination}, {value}'.format(
+        return '{date}: {source} → {destination}, {value}{comment}'.format(
             date=self.invoice.date,
             source=self.source.title,
             destination=self.destination.title,
             value=self.source_value,
+            comment=' ({})'.format(self.comment) if self.comment else ''
         )
 
 
