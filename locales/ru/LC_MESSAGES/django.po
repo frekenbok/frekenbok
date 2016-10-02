@@ -206,7 +206,7 @@ msgstr "Итого"
 
 #: templates/base.html:5
 msgid "Freken Bok"
-msgstr "Фрэкен Бок"
+msgstr "Фрекен Бок"
 
 #: templates/base.html:15
 #, fuzzy
