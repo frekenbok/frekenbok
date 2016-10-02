@@ -43,6 +43,7 @@ class DashboardView(ListView, AccountantViewMixin):
                 report.append(report_line)
 
         context['total'] = report
+        context['menu_dashboard'] = True
         return context
 
 

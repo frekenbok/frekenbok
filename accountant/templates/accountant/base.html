@@ -5,7 +5,7 @@
 
 {% block menu %}
     <div class="list-group">
-        <a href="{% url 'accountant:main' %}" class="list-group-item">{% trans 'Dashboard' %}</a>
+        <a href="{% url 'accountant:main' %}" class="list-group-item{% if menu_dashboard %} active{% endif %}">{% trans 'Dashboard' %}</a>
         <a href="#" type="button" class="list-group-item">{% trans 'Reports' %}</a>
         <a href="#" type="button" class="list-group-item">{% trans 'Settings' %}</a>
     </div>
