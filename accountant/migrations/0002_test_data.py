@@ -61,7 +61,7 @@ def add_test_data(apps, schema_editor):
         )
 
     second_invoice = invoice_model.objects.create(timestamp=datetime(2015, 4, 4))
-    for expense in expenses[:-1]:
+    for expense in expenses[-1:]:
         value = int(random() * 100) + int(random() * 100) / 100
         transaction_model.objects.create(
             date=date(2015, 4, 4),
@@ -74,8 +74,8 @@ def add_test_data(apps, schema_editor):
         )
 
     third_invoice = invoice_model.objects.create(timestamp=datetime(2015, 4, 5))
-    for expense in expenses[1:]:
-        value = int(random() * 100) + int(random() * 100) / 100
+    for expense in expenses[:1]:
+        value = int(random() * 1000) + int(random() * 100) / 100
         transaction_model.objects.create(
             date=date(2015, 4, 5),
             source=wallet,
