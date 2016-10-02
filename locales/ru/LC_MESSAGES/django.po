@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-02 17:30+0300\n"
+"POT-Creation-Date: 2016-10-02 19:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,7 +156,7 @@ msgid "Comment"
 msgstr "Комментарий"
 
 #: accountant/templates/accountant/account_list.html:4
-#: accountant/templates/accountant/base.html:9
+#: accountant/templates/accountant/base.html:8
 msgid "List of accounts"
 msgstr "Список счетов"
 
@@ -165,12 +165,12 @@ msgid "Id"
 msgstr "№"
 
 #: accountant/templates/accountant/account_list.html:11
-#: accountant/templates/accountant/base.html:13
+#: accountant/templates/accountant/base.html:22
 msgid "Title"
 msgstr "Название"
 
 #: accountant/templates/accountant/account_list.html:12
-#: accountant/templates/accountant/base.html:14
+#: accountant/templates/accountant/base.html:23
 msgid "Summary"
 msgstr "Сумма"
 
@@ -188,9 +188,25 @@ msgstr "Закрыт"
 msgid "Accounter"
 msgstr "Счетовод"
 
-#: accountant/templates/accountant/base.html:24
+#: accountant/templates/accountant/base.html:12
+msgid "Dashboard"
+msgstr "Главная"
+
+#: accountant/templates/accountant/base.html:13
+msgid "Reports"
+msgstr "Отчёты"
+
+#: accountant/templates/accountant/base.html:14
+msgid "Settings"
+msgstr "Настройки"
+
+#: accountant/templates/accountant/base.html:33
 msgid "Total"
 msgstr "Итого"
+
+#: templates/base.html:5
+msgid "Freken Bok"
+msgstr "Фрэкен Бок"
 
 #: templates/base.html:15
 #, fuzzy
