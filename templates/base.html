@@ -12,14 +12,16 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <ul class="nav navbar-nav">
-            <li{% block accountant_active %}{% endblock %}><a href="{% url 'accountant:main' %}">{% trans 'Accountant' %}</a></li>
+            <li{% block accountant_active %}{% endblock accountant_active %}><a href="{% url 'accountant:main' %}">{% trans 'Accountant' %}</a></li>
         </ul>
     </div>
 </nav>
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-2 col-md-3"></div>
+        <div class="col-lg-2 col-md-3">
+            {% block menu %}{% endblock menu %}
+        </div>
         <div class="col-lg-8 col-md-6 col-sm-12">
             {% block content %}{% endblock content %}
         </div>
