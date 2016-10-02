@@ -15,16 +15,16 @@ class AccountantViewMixin(ContextMixin):
         return result
 
 
-class MainView(ListView, AccountantViewMixin):
+class DashboardView(ListView, AccountantViewMixin):
     model = Account
     context_object_name = 'account_list'
-    template_name = 'accountant/base.html'
+    template_name = 'accountant/dashboard.html'
 
     def get_queryset(self):
         return self.model.objects.filter(type=Account.ACCOUNT)
 
     def get_context_data(self, **kwargs):
-        context = super(MainView, self).get_context_data(**kwargs)
+        context = super(DashboardView, self).get_context_data(**kwargs)
 
         total = dict()
         for account in context['account_list']:

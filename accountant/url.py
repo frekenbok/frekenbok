@@ -1,10 +1,10 @@
 from django.conf.urls import url
 from django.contrib import admin
 
-from .views import MainView, IncomeListView, AccountDetailView
+from .views import DashboardView, IncomeListView, AccountDetailView
 
 urlpatterns = [
-    url(r'^$', MainView.as_view(), name='main'),
+    url(r'^$', DashboardView.as_view(), name='main'),
     url(r'^incomes/', IncomeListView.as_view(), name='income_list'),
     url(r'^accounts/', IncomeListView.as_view(), name='account_list'),
     url(r'^expenses/', IncomeListView.as_view(), name='expense_list'),

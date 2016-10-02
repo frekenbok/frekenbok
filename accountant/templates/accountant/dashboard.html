@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block header %}{% trans 'Accountant' %}{% endblock header %}
+
+{% block content %}
+<table class="table">
+<tr>
+    <th>№</th>
+    <th>{% trans 'Title' %}</th>
+    <th>{% trans 'Summary' %}</th>
+</tr>
+{% for account in account_list %}<tr>
+    <td>{{ account.id }}</td>
+    <td><a href="{% url 'accountant:account_details' pk=account.id %}">{{ account.title }}</a></td>
+    <td>{% for sheaf in account.sorted_sheaves %}
+        {{ sheaf.amount }} {{ sheaf.currency }}<br />
+        {% endfor %}</td>
+</tr>{% endfor %}
+<tr class="total">
+    <td colspan="2">{% trans 'Total' %}</td>
+    <td>{% for item in total %}
+        {{ item.amount }} {{ item.currency }}<br />
+    {% endfor %}</td>
+</tr>
+</table>
+
+{% endblock content %}
