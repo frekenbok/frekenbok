@@ -2,12 +2,20 @@ import logging
 from decimal import Decimal
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
+from django.views.generic.base import ContextMixin
 from django.conf import settings
 
 from .models import Account, Transaction
 
 
-class MainView(ListView):
+class AccountantViewMixin(ContextMixin):
+    def get_context_data(self, **kwargs):
+        result = super(AccountantViewMixin, self).get_context_data(**kwargs)
+        result['accountant_app'] = True
+        return result
+
+
+class MainView(ListView, AccountantViewMixin):
     model = Account
     context_object_name = 'account_list'
     template_name = 'accountant/base.html'
@@ -38,7 +46,7 @@ class MainView(ListView):
         return context
 
 
-class IncomeListView(ListView):
+class IncomeListView(ListView, AccountantViewMixin):
     model = Account
     context_object_name = 'account_list'
     template_name = 'accountant/account_list.html'
@@ -47,7 +55,7 @@ class IncomeListView(ListView):
         return self.model.objects.filter(type=Account.INCOME)
 
 
-class AccountDetailView(DetailView):
+class AccountDetailView(DetailView, AccountantViewMixin):
     model = Account
     context_object_name = 'account'
     template_name = 'accountant/account_detail.html'

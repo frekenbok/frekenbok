@@ -12,7 +12,7 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <ul class="nav navbar-nav">
-            <li{% block accountant_active %}{% endblock accountant_active %}><a href="{% url 'accountant:main' %}">{% trans 'Accountant' %}</a></li>
+            <li{% if accountant_app %} class="active"{% endif %}><a href="{% url 'accountant:main' %}">{% trans 'Accountant' %}</a></li>
         </ul>
     </div>
 </nav>
