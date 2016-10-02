@@ -1,6 +1,6 @@
 import logging
 from decimal import Decimal
-from django.shortcuts import render
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.conf import settings
@@ -63,7 +63,12 @@ class AccountDetailView(DetailView, AccountantViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(AccountDetailView, self).get_context_data(**kwargs)
-
+        context['account_list'] = \
+            self.model.objects.filter(type=Account.ACCOUNT).all()
+        context['transaction_list'] = \
+            Transaction.objects.filter(
+                Q(source=self.object) | Q(destination=self.object)
+            )[:10]
         return context
 
 

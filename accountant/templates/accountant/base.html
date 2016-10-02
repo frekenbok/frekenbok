@@ -4,9 +4,11 @@
 {% block title %}{{ block.super }} — {% trans 'Accountant' %}{% endblock title %}
 
 {% block menu %}
-    <div class="list-group">
-        <a href="{% url 'accountant:dashboard' %}" class="list-group-item{% if menu_dashboard %} active{% endif %}">{% trans 'Dashboard' %}</a>
-        <a href="#" type="button" class="list-group-item">{% trans 'Reports' %}</a>
-        <a href="#" type="button" class="list-group-item">{% trans 'Settings' %}</a>
-    </div>
+    <ul class="nav">
+        <li{% if menu_dashboard %} class="active"{% endif %}><a href="{% url 'accountant:dashboard' %}">{% trans 'Dashboard' %}</a></li>
+        <li{% if menu_accounts %} class="active"{% endif %}><a href="{% url 'accountant:account_list' %}">{% trans 'Accounts' %}</a>
+        {% block menu_account_list %}{% endblock menu_account_list %}</li>
+        <li><a href="#" type="button">{% trans 'Reports' %}</a></li>
+        <li><a href="#" type="button">{% trans 'Settings' %}</a></li>
+    </ul>
 {% endblock menu %}

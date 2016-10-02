@@ -1,15 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'accountant/base.html' %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} — {% trans 'Details of account' %} {{ account.title }}{% endblock %}
 
+{% block header %}{{ account.title }}{% endblock header %}
+
+{% block menu_account_list %}
+    <ul class="nav" role="menu" style="margin-left: 20px">
+        {% for acc in account_list %}
+        <li class="active"><a href="{% url 'accountant:account_detail' pk=acc.id %}">{{ acc.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock menu_account_list %}
+
 {% block content %}
-<h1>{{ account.title }}</h1>
-<table>
-<tr>{% for sheaf in account.sorted_sheaves %}
-    <td>{{ sheaf.amount }} {{ sheaf.currency }}</td>
-    {% endfor %}
-</tr>
+<table class="table">
+{% for sheaf in account.sorted_sheaves %}
+    <tr><td>{{ sheaf.amount }} {{ sheaf.currency }}</td></tr>
+{% endfor %}
 </table>
 <table class="table table-striped">
 <caption>{% trans 'Last actions' %}</caption>
@@ -21,13 +29,11 @@
         </tr>
     </thead>
     <tbody>
-        {% for invoice in account_list %}
+        {% for transaction in transaction_list %}
         <tr>
-            <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.id }}</a></td>
-            <td><a href="{% url 'accountant:account_details' account.id %}">{{ account.title }}</a></td>
-            <td>{{ account.value }} {{ account.currency }}</td>
-            <td>{{ account.opened }}</td>
-            <td>{{ account.closed }}</td>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.source_value }}</td>
+            <td>{{ transaction.comment }}</td>
         </tr>
         {% endfor %}
     </tbody>
