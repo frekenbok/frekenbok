@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-15 04:27+0300\n"
+"POT-Creation-Date: 2016-10-02 17:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,152 +20,203 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: .\accountant\models.py:11
-msgid "Income"
+#: accountant/models.py:13
+#, fuzzy
+#| msgid "Income"
+msgid "income"
 msgstr "Доход"
 
-#: .\accountant\models.py:12
-msgid "Expense"
+#: accountant/models.py:14
+#, fuzzy
+#| msgid "Expense"
+msgid "expense"
 msgstr "Расход"
 
-#: .\accountant\models.py:13
-msgid "Account"
-msgstr "Счёт"
-
-#: .\accountant\models.py:17
-#, fuzzy
-#| msgid "account"
-msgid "Parent account"
-msgstr ""
-
-#: .\accountant\models.py:24
-#: .\accountant\templates\accountant\account_detail.html:11
-#: .\accountant\templates\accountant\account_list.html:11
-#: .\accountant\templates\accountant\base.html:11
-msgid "Title"
-msgstr "Название"
-
-#: .\accountant\models.py:28
-msgid "Value"
-msgstr "Сумма"
-
-#: .\accountant\models.py:32
-msgid "Type"
-msgstr "Тип"
-
-#: .\accountant\models.py:37
-msgid "Interest rate (%)"
-msgstr "Процент по вкладу"
-
-#: .\accountant\models.py:43
-msgid "Date of next interest rate accrual"
-msgstr "Дата следующего начисления процентов"
-
-#: .\accountant\models.py:47
-msgid "Monthly"
-msgstr "Ежемесячно"
-
-#: .\accountant\models.py:48
-msgid "Mark if interest rate is accrued monthly"
-msgstr "Отметьте, если проценты начисляются каждый месяц"
-
-#: .\accountant\models.py:64
-msgid "Date of open"
-msgstr "Дата открытия"
-
-#: .\accountant\models.py:67
-msgid "Date of close"
-msgstr "Дата закрытия"
-
-#: .\accountant\models.py:71
-msgid "Credentials"
-msgstr "Реквизиты"
-
-#: .\accountant\models.py:83
+#: accountant/models.py:15 accountant/models.py:64 accountant/models.py:70
 msgid "account"
 msgstr "счёт"
 
-#: .\accountant\models.py:84
+#: accountant/models.py:19
+#, fuzzy
+#| msgid "Title"
+msgid "title"
+msgstr "Название"
+
+#: accountant/models.py:24
+msgid "type"
+msgstr "тип"
+
+#: accountant/models.py:27
+#, fuzzy
+#| msgid "account"
+msgid "parent account"
+msgstr "счёт"
+
+#: accountant/models.py:34
+#, fuzzy
+#| msgid "Date of open"
+msgid "date of open"
+msgstr "Дата открытия"
+
+#: accountant/models.py:38
+#, fuzzy
+#| msgid "Date of close"
+msgid "date of close"
+msgstr "Дата закрытия"
+
+#: accountant/models.py:43
+#, fuzzy
+#| msgid "Credentials"
+msgid "credentials"
+msgstr "Реквизиты"
+
+#: accountant/models.py:65
 msgid "accounts"
 msgstr "счета"
 
-#: .\accountant\models.py:89
-msgid "Date"
-msgstr "Дата"
+#: accountant/models.py:75
+msgid "sheaf"
+msgstr "куча"
 
-#: .\accountant\models.py:95
+#: accountant/models.py:80
+msgid "currency"
+msgstr "валюта"
+
+#: accountant/models.py:95
+msgid "date"
+msgstr "дата"
+
+#: accountant/models.py:99
 #, python-brace-format
 msgid "Invoice from {date}"
 msgstr "Чек от {date}"
 
-#: .\accountant\models.py:102
-msgid "Source"
-msgstr "Счёт списания"
-
-#: .\accountant\models.py:107
-msgid "Destination"
-msgstr "Счёт зачисления"
-
-#: .\accountant\models.py:112
-msgid "Value in source currency"
-msgstr "Сумма в валюте списания"
-
-#: .\accountant\models.py:118
-msgid "Value in destination currency"
-msgstr "Сумма в валюте зачисления"
-
-#: .\accountant\models.py:124 .\accountant\models.py:145
-msgid "Invoice"
-msgstr "Чек"
-
-#: .\accountant\models.py:139
-msgid "Description"
-msgstr "Описание"
-
-#: .\accountant\models.py:150
-msgid "File with image"
-msgstr "Файл с изображением"
-
-#: .\accountant\templates\accountant\account_detail.html:4
+#: accountant/models.py:106
 #, fuzzy
-#| msgid "List of accounts"
+#| msgid "Source"
+msgid "source"
+msgstr "счёт списания"
+
+#: accountant/models.py:111
+#, fuzzy
+#| msgid "Destination"
+msgid "destination"
+msgstr "счёт зачисления"
+
+#: accountant/models.py:116
+#, fuzzy
+#| msgid "Value in source currency"
+msgid "value in source currency"
+msgstr "сумма в валюте списания"
+
+#: accountant/models.py:122
+#, fuzzy
+#| msgid "Value in destination currency"
+msgid "value in destination currency"
+msgstr "сумма в валюте зачисления"
+
+#: accountant/models.py:128 accountant/models.py:149
+#, fuzzy
+#| msgid "Invoice"
+msgid "invoice"
+msgstr "чек"
+
+#: accountant/models.py:143
+#, fuzzy
+#| msgid "Description"
+msgid "description"
+msgstr "описание"
+
+#: accountant/models.py:154
+#, fuzzy
+#| msgid "File with image"
+msgid "file with image"
+msgstr "файл с изображением"
+
+#: accountant/templates/accountant/account_detail.html:4
 msgid "Details of account"
-msgstr ""
+msgstr "Детали счёта"
 
-#: .\accountant\templates\accountant\account_detail.html:10
-#: .\accountant\templates\accountant\account_list.html:10
-msgid "Id"
-msgstr "№"
+#: accountant/templates/accountant/account_detail.html:15
+#, fuzzy
+#| msgid "Destination"
+msgid "Last actions"
+msgstr "Последние действия"
 
-#: .\accountant\templates\accountant\account_detail.html:12
-#: .\accountant\templates\accountant\account_list.html:12
-#: .\accountant\templates\accountant\base.html:12
-msgid "Summary"
+#: accountant/templates/accountant/account_detail.html:18
+msgid "Time"
+msgstr "Время"
+
+#: accountant/templates/accountant/account_detail.html:19
+msgid "Value"
 msgstr "Сумма"
 
-#: .\accountant\templates\accountant\account_detail.html:13
-#: .\accountant\templates\accountant\account_list.html:13
-msgid "Opened"
-msgstr "Открыт"
+#: accountant/templates/accountant/account_detail.html:20
+msgid "Comment"
+msgstr "Комментарий"
 
-#: .\accountant\templates\accountant\account_detail.html:14
-#: .\accountant\templates\accountant\account_list.html:14
-msgid "Closed"
-msgstr "Закрыт"
-
-#: .\accountant\templates\accountant\account_list.html:4
-#: .\accountant\templates\accountant\base.html:8
+#: accountant/templates/accountant/account_list.html:4
+#: accountant/templates/accountant/base.html:9
 msgid "List of accounts"
 msgstr "Список счетов"
 
-#: .\accountant\templates\accountant\base.html:4
+#: accountant/templates/accountant/account_list.html:10
+msgid "Id"
+msgstr "№"
+
+#: accountant/templates/accountant/account_list.html:11
+#: accountant/templates/accountant/base.html:13
+msgid "Title"
+msgstr "Название"
+
+#: accountant/templates/accountant/account_list.html:12
+#: accountant/templates/accountant/base.html:14
+msgid "Summary"
+msgstr "Сумма"
+
+#: accountant/templates/accountant/account_list.html:13
+msgid "Opened"
+msgstr "Открыт"
+
+#: accountant/templates/accountant/account_list.html:14
+msgid "Closed"
+msgstr "Закрыт"
+
+#: accountant/templates/accountant/base.html:4
 #, fuzzy
 #| msgid "Account"
 msgid "Accounter"
 msgstr "Счетовод"
 
-#: .\templates\base.html:15
+#: accountant/templates/accountant/base.html:24
+msgid "Total"
+msgstr "Итого"
+
+#: templates/base.html:15
 #, fuzzy
-#| msgid "List of accounts"
-msgid "List of incomes"
-msgstr "Список доходов"
+#| msgid "Account"
+msgid "Accountant"
+msgstr "Счёт"
+
+#~ msgid "Type"
+#~ msgstr "Тип"
+
+#~ msgid "Interest rate (%)"
+#~ msgstr "Процент по вкладу"
+
+#~ msgid "Date of next interest rate accrual"
+#~ msgstr "Дата следующего начисления процентов"
+
+#~ msgid "Monthly"
+#~ msgstr "Ежемесячно"
+
+#~ msgid "Mark if interest rate is accrued monthly"
+#~ msgstr "Отметьте, если проценты начисляются каждый месяц"
+
+#~ msgid "Date"
+#~ msgstr "Дата"
+
+#, fuzzy
+#~| msgid "List of accounts"
+#~ msgid "List of incomes"
+#~ msgstr "Список доходов"
