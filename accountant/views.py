@@ -66,9 +66,8 @@ class AccountDetailView(DetailView, AccountantViewMixin):
         context['account_list'] = \
             self.model.objects.filter(type=Account.ACCOUNT).all()
         context['transaction_list'] = \
-            Transaction.objects.filter(
-                Q(source=self.object) | Q(destination=self.object)
-            )[:10]
+            Transaction.objects.filter(account=self.object)\
+                .order_by('-date')[:10]
         return context
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-02 20:10+0300\n"
+"POT-Creation-Date: 2016-10-07 02:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,7 @@ msgid "expense"
 msgstr "Расход"
 
 #: accountant/models.py:15 accountant/models.py:64 accountant/models.py:70
+#: accountant/models.py:114
 msgid "account"
 msgstr "счёт"
 
@@ -78,56 +79,48 @@ msgstr "счета"
 msgid "sheaf"
 msgstr "куча"
 
-#: accountant/models.py:80
+#: accountant/models.py:80 accountant/models.py:126
 msgid "currency"
 msgstr "валюта"
 
 #: accountant/models.py:95
-msgid "date"
-msgstr "дата"
+msgid "date and time"
+msgstr ""
 
-#: accountant/models.py:99
+#: accountant/models.py:99 accountant/models.py:137
+#, fuzzy
+#| msgid "Comment"
+msgid "comment"
+msgstr "Комментарий"
+
+#: accountant/models.py:103
 #, python-brace-format
 msgid "Invoice from {date}"
 msgstr "Чек от {date}"
 
-#: accountant/models.py:106
-#, fuzzy
-#| msgid "Source"
-msgid "source"
-msgstr "счёт списания"
+#: accountant/models.py:110
+msgid "date"
+msgstr "дата"
 
-#: accountant/models.py:111
+#: accountant/models.py:120
 #, fuzzy
-#| msgid "Destination"
-msgid "destination"
-msgstr "счёт зачисления"
+#| msgid "account"
+msgid "amount"
+msgstr "счёт"
 
-#: accountant/models.py:116
-#, fuzzy
-#| msgid "Value in source currency"
-msgid "value in source currency"
-msgstr "сумма в валюте списания"
-
-#: accountant/models.py:122
-#, fuzzy
-#| msgid "Value in destination currency"
-msgid "value in destination currency"
-msgstr "сумма в валюте зачисления"
-
-#: accountant/models.py:128 accountant/models.py:149
-#, fuzzy
-#| msgid "Invoice"
-msgid "invoice"
-msgstr "чек"
-
-#: accountant/models.py:143
+#: accountant/models.py:152
 #, fuzzy
 #| msgid "Description"
 msgid "description"
 msgstr "описание"
 
-#: accountant/models.py:154
+#: accountant/models.py:158
+#, fuzzy
+#| msgid "Invoice"
+msgid "invoice"
+msgstr "чек"
+
+#: accountant/models.py:163
 #, fuzzy
 #| msgid "File with image"
 msgid "file with image"
@@ -137,21 +130,21 @@ msgstr "файл с изображением"
 msgid "Details of account"
 msgstr "Детали счёта"
 
-#: accountant/templates/accountant/account_detail.html:15
+#: accountant/templates/accountant/account_detail.html:23
 #, fuzzy
 #| msgid "Destination"
 msgid "Last actions"
 msgstr "Последние действия"
 
-#: accountant/templates/accountant/account_detail.html:18
+#: accountant/templates/accountant/account_detail.html:26
 msgid "Time"
 msgstr "Время"
 
-#: accountant/templates/accountant/account_detail.html:19
+#: accountant/templates/accountant/account_detail.html:27
 msgid "Value"
 msgstr "Сумма"
 
-#: accountant/templates/accountant/account_detail.html:20
+#: accountant/templates/accountant/account_detail.html:28
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -182,7 +175,7 @@ msgid "Closed"
 msgstr "Закрыт"
 
 #: accountant/templates/accountant/base.html:4
-#: accountant/templates/accountant/dashboard.html:4 templates/base.html:15
+#: accountant/templates/accountant/dashboard.html:4 templates/base.html:16
 #, fuzzy
 #| msgid "Account"
 msgid "Accountant"
@@ -193,10 +186,16 @@ msgid "Dashboard"
 msgstr "Главная"
 
 #: accountant/templates/accountant/base.html:9
+#, fuzzy
+#| msgid "accounts"
+msgid "Accounts"
+msgstr "счета"
+
+#: accountant/templates/accountant/base.html:11
 msgid "Reports"
 msgstr "Отчёты"
 
-#: accountant/templates/accountant/base.html:10
+#: accountant/templates/accountant/base.html:12
 msgid "Settings"
 msgstr "Настройки"
 
@@ -207,3 +206,23 @@ msgstr "Итого"
 #: templates/base.html:5
 msgid "Freken Bok"
 msgstr "Фрекен Бок"
+
+#, fuzzy
+#~| msgid "Source"
+#~ msgid "source"
+#~ msgstr "счёт списания"
+
+#, fuzzy
+#~| msgid "Destination"
+#~ msgid "destination"
+#~ msgstr "счёт зачисления"
+
+#, fuzzy
+#~| msgid "Value in source currency"
+#~ msgid "value in source currency"
+#~ msgstr "сумма в валюте списания"
+
+#, fuzzy
+#~| msgid "Value in destination currency"
+#~ msgid "value in destination currency"
+#~ msgstr "сумма в валюте зачисления"

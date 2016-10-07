@@ -110,31 +110,27 @@ class Transaction(models.Model):
         verbose_name=_('date')
     )
 
-    source = models.ForeignKey(
-        verbose_name=_('source'),
+    account = models.ForeignKey(
+        verbose_name=_('account'),
         to=Account,
-        related_name='source')
+        related_name='transactions'
+    )
 
-    destination = models.ForeignKey(
-        verbose_name=_('destination'),
-        to=Account,
-        related_name='destination')
-
-    source_value = MoneyField(
-        verbose_name=_('value in source currency'),
+    amount = models.DecimalField(
+        verbose_name=_('amount'),
         max_digits=settings.MAX_DIGITS,
         decimal_places=settings.DECIMAL_PLACES,
     )
 
-    destination_value = MoneyField(
-        verbose_name=_('value in destination currency'),
-        max_digits=settings.MAX_DIGITS,
-        decimal_places=settings.DECIMAL_PLACES,
+    currency = CurrencyField(
+        verbose_name=_('currency'),
+        default=settings.BASE_CURRENCY,
+        price_field=amount
     )
 
     invoice = models.ForeignKey(
-        verbose_name=_('invoice'),
-        to=Invoice
+        to=Invoice,
+        related_name='transactions'
     )
 
     comment = models.TextField(

@@ -32,7 +32,7 @@
         {% for transaction in transaction_list %}
         <tr>
             <td>{{ transaction.date }}</td>
-            <td>{{ transaction.source_value }}</td>
+            <td>{{ transaction.amount }} {{ transaction.currency }}</td>
             <td>{{ transaction.comment }}</td>
         </tr>
         {% endfor %}
