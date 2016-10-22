@@ -30,8 +30,14 @@ def add_test_data(apps, schema_editor):
                                    account=reserve)
 
     # Test income
-    salary = account_model.objects.create(title='Зарплата в Exante',
+    exante = account_model.objects.create(title='Exante',
                                           type=Account.INCOME)
+    salary = account_model.objects.create(title='Зарплата',
+                                          type=Account.INCOME,
+                                          parent=exante)
+    bonus = account_model.objects.create(title='Премия',
+                                         type=Account.INCOME,
+                                         parent=exante)
 
     # Test expenses
     expenses = [
