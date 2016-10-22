@@ -58,8 +58,8 @@ class AccountListView(ListView, AccountantViewMixin):
 
 class IncomeListView(ListView, AccountantViewMixin):
     model = Account
-    context_object_name = 'account_list'
-    template_name = 'accountant/account_list.html'
+    context_object_name = 'income_list'
+    template_name = 'accountant/income_list.html'
 
     def get_queryset(self):
         return self.model.objects.filter(type=Account.INCOME)
@@ -72,8 +72,9 @@ class AccountDetailView(DetailView, AccountantViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super(AccountDetailView, self).get_context_data(**kwargs)
-        context['account_list'] = \
-            self.model.objects.filter(type=Account.ACCOUNT).all()
+        if context['account'].type == Account.ACCOUNT:
+            context['account_list'] = \
+                self.model.objects.filter(type=Account.ACCOUNT).all()
         context['transaction_list'] = \
             Transaction.objects.filter(account=self.object)\
                 .order_by('-date')[:10]

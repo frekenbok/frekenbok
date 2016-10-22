@@ -8,6 +8,7 @@
         <li{% if menu_dashboard %} class="active"{% endif %}><a href="{% url 'accountant:dashboard' %}">{% trans 'Dashboard' %}</a></li>
         <li{% if menu_accounts %} class="active"{% endif %}><a href="{% url 'accountant:account_list' %}">{% trans 'Accounts' %}</a>
         {% block menu_account_list %}{% endblock menu_account_list %}</li>
+        <li{% if menu_incomes %} class="active"{% endif %}><a href="{% url 'accountant:income_list' %}">{% trans 'Incomes' %}</a></li>
         <li><a href="#" type="button">{% trans 'Reports' %}</a></li>
         <li><a href="#" type="button">{% trans 'Settings' %}</a></li>
     </ul>

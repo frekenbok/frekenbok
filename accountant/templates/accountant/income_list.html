@@ -25,15 +25,15 @@
         </tr>
     </thead>
     <tbody>
-        {% for account in account_list %}
+        {% for income in income_list %}
         <tr>
-            <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.id }}</a></td>
-            <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a></td>
-            <td>{% for sheave in account.sorted_sheaves %}
+            <td><a href="{% url 'accountant:account_detail' income.id %}">{{ income.id }}</a></td>
+            <td><a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a></td>
+            <td>{% for sheave in income.sorted_sheaves %}
                 {{ sheave.amount }} {{ sheave.currency }}<br />
                 {% endfor %}</td>
-            <td>{{ account.opened }}</td>
-            <td>{% if account.closed %}{{ account.closed }}{% endif %}</td>
+            <td>{{ income.opened }}</td>
+            <td>{% if income.closed %}{{ income.closed }}{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>
