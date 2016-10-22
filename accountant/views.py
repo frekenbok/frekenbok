@@ -47,6 +47,15 @@ class DashboardView(ListView, AccountantViewMixin):
         return context
 
 
+class AccountListView(ListView, AccountantViewMixin):
+    model = Account
+    context_object_name = 'account_list'
+    template_name = 'accountant/account_list.html'
+
+    def get_queryset(self):
+        return self.model.objects.filter(type=Account.ACCOUNT)
+
+
 class IncomeListView(ListView, AccountantViewMixin):
     model = Account
     context_object_name = 'account_list'

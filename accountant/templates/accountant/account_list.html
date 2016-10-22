@@ -1,7 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'accountant/base.html' %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} — {% trans 'List of accounts' %}{% endblock %}
+
+{% block header %}{% trans 'Account list' %}{% endblock header %}
+
+{% block menu_account_list %}
+    <ul class="nav" role="menu" style="margin-left: 20px">
+        {% for acc in account_list %}
+        <li class="active"><a href="{% url 'accountant:account_detail' pk=acc.id %}">{{ acc.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock menu_account_list %}
 
 {% block content %}
 <table class="table table-striped">
