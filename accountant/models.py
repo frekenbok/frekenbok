@@ -41,6 +41,12 @@ class Account(NS_Node):
 
     @property
     def sorted_sheaves(self):
+        """
+        Property contains list of sheaves for the account, sorted buy currency
+        in alphabetical order. Sheaf in base currency will be placed of first
+        place if exists.
+        :return:
+        """
         result = list()
         for sheaf in self.sheaves.order_by('currency'):
             if sheaf.currency == settings.BASE_CURRENCY:
