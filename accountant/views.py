@@ -1,6 +1,4 @@
-import logging
 from decimal import Decimal
-from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.conf import settings
