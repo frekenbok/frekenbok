@@ -15,35 +15,36 @@ def add_test_data(apps, schema_editor):
     sheaf_model = apps.get_model('accountant', 'Sheaf')
 
     # Test accounts
-    wallet = account_model.objects.create(title='Кошелёк',
-                                          type=Account.ACCOUNT)
+    wallet = account_model(title='Кошелёк', type=Account.ACCOUNT)
+    Account.add_root(instance=wallet)
     for currency in (RUB, USD, EUR):
         sheaf_model.objects.create(amount=int(random() * 100),
                                    currency=currency,
                                    account=wallet)
 
-    reserve = account_model.objects.create(title='Заначка',
-                                           type=Account.ACCOUNT)
+    reserve = account_model(title='Заначка', type=Account.ACCOUNT)
+    Account.add_root(instance=reserve)
+
     for currency in (RUB, USD, GBP):
         sheaf_model.objects.create(amount=int(random() * 100),
                                    currency=currency,
                                    account=reserve)
 
     # Test income
-    exante = account_model.objects.create(title='Exante',
-                                          type=Account.INCOME)
-    salary = account_model.objects.create(title='Зарплата',
-                                          type=Account.INCOME,
-                                          parent=exante)
-    bonus = account_model.objects.create(title='Премия',
-                                         type=Account.INCOME,
-                                         parent=exante)
+    exante = account_model(title='Exante', type=Account.INCOME)
+    Account.add_root(instance=exante)
+    exante = Account.objects.get(pk=exante.pk)
+    salary = exante.add_child(title='Зарплата', type=Account.INCOME)
+    salary = account_model.objects.get(pk=salary.pk)
+    bonus = exante.add_child(title='Премия', type=Account.INCOME)
 
     # Test expenses
     expenses = [
-        account_model.objects.create(title=expense, type=Account.EXPENSE)
+        account_model(title=expense, type=Account.EXPENSE)
         for expense in ('Бензин', 'Хлеб', 'Колбаса')
-        ]
+    ]
+    for expense in expenses:
+        Account.add_root(instance=expense)
 
     transaction_model = apps.get_model('accountant', 'Transaction')
     invoice_model = apps.get_model('accountant', 'Invoice')

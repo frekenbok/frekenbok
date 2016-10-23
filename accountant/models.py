@@ -2,10 +2,11 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from djmoney.models.fields import MoneyField, CurrencyField
+from treebeard.ns_tree import NS_Node
 from moneyed import Money, CURRENCIES
 
 
-class Account(models.Model):
+class Account(NS_Node):
     INCOME = 1
     EXPENSE = 2
     ACCOUNT = 3
@@ -23,12 +24,6 @@ class Account(models.Model):
     type = models.IntegerField(
         verbose_name=_('type'),
         choices=TYPES)
-    parent = models.ForeignKey(
-        verbose_name=_('parent account'),
-        to='Account',
-        related_name='children',
-        blank=True, null=True
-    )
 
     opened = models.DateField(
         verbose_name=_('date of open'),
