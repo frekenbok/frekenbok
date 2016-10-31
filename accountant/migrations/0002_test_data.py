@@ -5,12 +5,17 @@ from datetime import datetime, date
 from decimal import Decimal
 
 from django.db import migrations
+from django.conf import settings
 from moneyed import Money, RUB, USD, EUR, GBP
 
 from accountant.models import Account
 
 
 def add_test_data(apps, schema_editor):
+    if getattr(settings, 'DEV_ENV', None) is None:
+        # That migration should not be applied to demo or test env
+        return
+
     account_model = apps.get_model('accountant', 'Account')
     sheaf_model = apps.get_model('accountant', 'Sheaf')
 
