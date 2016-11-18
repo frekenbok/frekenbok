@@ -4,7 +4,7 @@ from django.views.generic.base import ContextMixin
 from .test_data import prepare_test_data
 
 from accountant.models import Account
-from accountant.views import AccountantViewMixin, DashboardView
+from accountant.views import AccountantViewMixin, DashboardView, AccountListView, IncomeListView
 
 
 class AccountantViewMixinTestCase(TestCase):
@@ -44,3 +44,37 @@ class DashboardViewTestCase(TestCase):
     def test_context_for_menu_dashboard(self):
         context = self.view.get_context_data()
         self.assertTrue(context.get('menu_dashboard'))
+
+
+class AccountListViewTestCase(TestCase):
+    def setUp(self):
+        prepare_test_data(self)
+        self.view = AccountListView()
+
+    def tearDown(self):
+        del self.view
+
+    def test_is_subcalss_of_accountant_view_mixin(self):
+        self.assertIsInstance(self.view, AccountantViewMixin)
+
+    def test_type_of_accounts_in_queryset(self):
+        queryset = self.view.get_queryset()
+        for account in queryset:
+            self.assertEqual(account.type, Account.ACCOUNT)
+
+
+class IncomeListViewTestCase(TestCase):
+    def setUp(self):
+        prepare_test_data(self)
+        self.view = IncomeListView()
+
+    def tearDown(self):
+        del self.view
+
+    def test_is_subcalss_of_accountant_view_mixin(self):
+        self.assertIsInstance(self.view, AccountantViewMixin)
+
+    def test_type_of_accounts_in_queryset(self):
+        queryset = self.view.get_queryset()
+        for account in queryset:
+            self.assertEqual(account.type, Account.INCOME)
