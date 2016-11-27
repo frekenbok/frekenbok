@@ -1,18 +1,24 @@
-from random import random
-
 from django.test import TestCase
-from moneyed import RUB, USD, EUR, GBP
+from django.conf import settings
+
+from autofixture import AutoFixture
 
 from accountant.models import Account, Sheaf
-from .test_data import prepare_test_data
 
 
 class AccountTestCase(TestCase):
-    def setUp(self):
-        prepare_test_data(self)
+    @classmethod
+    def setUpTestData(cls):
+        cls.accounts = AutoFixture(Account).create(30)
+        for account in cls.accounts:
+            AutoFixture(Sheaf, field_values={'account': account}).create(3)
 
     def test_sorted_sheaves(self):
+        currencies = [i.currency for i in self.accounts[0].sheaves.all()]
+
+        self.assertEqual(currencies[0], settings.BASE_CURRENCY)
+
         self.assertEqual(
-            [i.currency for i in self.wallet.sorted_sheaves],
-            ['RUB', 'EUR', 'USD']
+            currencies[1:],
+            sorted(currencies[1:])
         )
