@@ -90,6 +90,9 @@ class Sheaf(models.Model):
             account=self.account
         )
 
+    class Meta:
+        unique_together = ('account', 'currency')
+
 
 class Invoice(models.Model):
     timestamp = models.DateField(
