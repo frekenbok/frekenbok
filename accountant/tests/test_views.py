@@ -24,30 +24,38 @@ class AccountantViewMixinTestCase(TestCase):
 
 
 class DashboardViewTestCase(TestCase):
+    def __init__(self, *args, **kwargs):
+        super(DashboardViewTestCase, self).__init__(*args, **kwargs)
+
     def setUp(self):
-        prepare_test_data(self)
         self.client = Client()
+        self.context = self.client.get(reverse('accountant:dashboard')).context
         self.view = DashboardView()
 
     def tearDown(self):
         del self.view
         del self.client
-
-    def test_get_queryset(self):
-        for item in self.view.get_queryset():
-            self.assertEqual(item.type, Account.ACCOUNT)
+        del self.context
 
     def test_is_subcalss_of_accountant_view_mixin(self):
         self.assertIsInstance(self.view, AccountantViewMixin)
 
     def test_type_of_accounts_in_queryset(self):
-        queryset = self.view.get_queryset()
-        for account in queryset:
+        for account in self.view.get_queryset():
             self.assertEqual(account.type, Account.ACCOUNT)
 
     def test_context_for_menu_dashboard(self):
-        context = self.client.get(reverse('accountant:dashboard')).context
-        self.assertTrue(context['menu_dashboard'])
+        self.assertTrue(self.context['menu_dashboard'])
+
+    def test_account_list(self):
+        for account in self.context['account_list']:
+            self.assertIsInstance(account, Account)
+
+        accounts = Account.objects.all()
+        self.assertEqual(
+            len(accounts),
+            len(self.context['account_list'])
+        )
 
 
 class AccountListViewTestCase(TestCase):
