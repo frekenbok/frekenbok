@@ -1,4 +1,5 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
 
 from .test_data import prepare_test_data
@@ -21,13 +22,16 @@ class AccountantViewMixinTestCase(TestCase):
         context = self.mixin.get_context_data()
         self.assertTrue(context.get('accountant_app'))
 
+
 class DashboardViewTestCase(TestCase):
     def setUp(self):
         prepare_test_data(self)
+        self.client = Client()
         self.view = DashboardView()
 
     def tearDown(self):
         del self.view
+        del self.client
 
     def test_get_queryset(self):
         for item in self.view.get_queryset():
@@ -42,8 +46,8 @@ class DashboardViewTestCase(TestCase):
             self.assertEqual(account.type, Account.ACCOUNT)
 
     def test_context_for_menu_dashboard(self):
-        context = self.view.get_context_data()
-        self.assertTrue(context.get('menu_dashboard'))
+        context = self.client.get(reverse('accountant:dashboard')).context
+        self.assertTrue(context['menu_dashboard'])
 
 
 class AccountListViewTestCase(TestCase):
