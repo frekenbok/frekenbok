@@ -1,8 +1,9 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
+from django.conf import settings
 
-from .test_data import prepare_test_data
+from autofixture import AutoFixture
 
 from accountant.models import Account
 from accountant.views import AccountantViewMixin, DashboardView, AccountListView, IncomeListView
@@ -24,8 +25,9 @@ class AccountantViewMixinTestCase(TestCase):
 
 
 class DashboardViewTestCase(TestCase):
-    def __init__(self, *args, **kwargs):
-        super(DashboardViewTestCase, self).__init__(*args, **kwargs)
+    @classmethod
+    def setUpTestData(cls):
+        cls.test_accounts = AutoFixture(Account).create(30)
 
     def setUp(self):
         self.client = Client()
@@ -44,10 +46,10 @@ class DashboardViewTestCase(TestCase):
         for account in self.view.get_queryset():
             self.assertEqual(account.type, Account.ACCOUNT)
 
-    def test_context_for_menu_dashboard(self):
+    def test_context_menu_dashboard(self):
         self.assertTrue(self.context['menu_dashboard'])
 
-    def test_account_list(self):
+    def test_context_account_list(self):
         for account in self.context['account_list']:
             self.assertIsInstance(account, Account)
 
@@ -57,10 +59,14 @@ class DashboardViewTestCase(TestCase):
             len(self.context['account_list'])
         )
 
+    def test_context_total(self):
+        total = self.context['total']
+        self.assertEqual(total[0].currency, settings.BASE_CURRENCY)
+
 
 class AccountListViewTestCase(TestCase):
     def setUp(self):
-        prepare_test_data(self)
+        #prepare_test_data(self)
         self.view = AccountListView()
 
     def tearDown(self):
@@ -77,7 +83,7 @@ class AccountListViewTestCase(TestCase):
 
 class IncomeListViewTestCase(TestCase):
     def setUp(self):
-        prepare_test_data(self)
+        #prepare_test_data(self)
         self.view = IncomeListView()
 
     def tearDown(self):
