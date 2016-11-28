@@ -90,6 +90,9 @@ class Sheaf(models.Model):
             account=self.account
         )
 
+    class Meta:
+        unique_together = ('account', 'currency')
+
 
 class Invoice(models.Model):
     timestamp = models.DateField(
@@ -157,7 +160,8 @@ class Document(models.Model):
 
     invoice = models.ForeignKey(
         verbose_name=_('invoice'),
-        to=Invoice
+        to=Invoice,
+        related_name='documents'
     )
 
     file = models.FileField(
