@@ -160,7 +160,8 @@ class Document(models.Model):
 
     invoice = models.ForeignKey(
         verbose_name=_('invoice'),
-        to=Invoice
+        to=Invoice,
+        related_name='documents'
     )
 
     file = models.FileField(
