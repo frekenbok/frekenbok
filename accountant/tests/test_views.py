@@ -3,27 +3,10 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
 from django.conf import settings
 
-from autofixture import AutoFixture
-from autofixture.generators import ChoicesGenerator
-from moneyed import RUB, EUR, USD, SAR
-
-from accountant.models import Account, Sheaf, Transaction, Invoice
+from accountant.models import Account
 from accountant.views import AccountantViewMixin, DashboardView, AccountDetailView, AccountListView, IncomeListView
 
-
-def prepare_test_accounts(cls):
-    cls.test_accounts = AutoFixture(Account).create(30)
-
-
-def prepare_test_sheaves(cls):
-    for account in cls.test_accounts:
-        AutoFixture(
-            Sheaf,
-            field_values={
-                'account': account,
-                'currency': ChoicesGenerator(values=(RUB, EUR, USD, SAR))
-            }
-        ).create(4)
+from .test_data import add_test_data
 
 
 class AccountantViewMixinTestCase(TestCase):
@@ -44,8 +27,7 @@ class AccountantViewMixinTestCase(TestCase):
 class DashboardViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        prepare_test_accounts(cls)
-        prepare_test_sheaves(cls)
+        add_test_data(cls)
 
     def setUp(self):
         self.client = Client()
@@ -89,8 +71,7 @@ class DashboardViewTestCase(TestCase):
 class AccountDetailViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        prepare_test_accounts(cls)
-        prepare_test_sheaves(cls)
+        add_test_data(cls)
 
     def setUp(self):
         self.client = Client()
@@ -107,12 +88,10 @@ class AccountDetailViewTestCase(TestCase):
         self.assertIsInstance(self.view, AccountantViewMixin)
 
 
-
-
 class AccountListViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        prepare_test_accounts(cls)
+        add_test_data(cls)
 
     def setUp(self):
         self.view = AccountListView()
@@ -132,7 +111,7 @@ class AccountListViewTestCase(TestCase):
 class IncomeListViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        prepare_test_accounts(cls)
+        add_test_data(cls)
 
     def setUp(self):
         self.view = IncomeListView()
