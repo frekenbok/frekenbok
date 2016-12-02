@@ -105,7 +105,7 @@ def add_test_data(cls):
         invoice=cls.first_bonus
     )
 
-    # Test expences
+    # Test expenses
     cls.first_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 3))
     sum_of_first_invoice = Decimal(0)
     for expense in cls.expenses:
