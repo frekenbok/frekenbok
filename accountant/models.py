@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction, connection
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from djmoney.models.fields import MoneyField, CurrencyField
@@ -54,6 +54,19 @@ class Account(NS_Node):
             else:
                 result.append(sheaf)
         return result
+
+    @transaction.atomic
+    def recalculate_summary(self):
+        self.sheaves.all().delete()
+        sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
+            'WHERE `account_id` = %s GROUP BY `currency`;'
+        with connection.cursor() as cursor:
+            cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
+            result = cursor.fetchall()
+        for amount, currency in result:
+            Sheaf.objects.create(account=self,
+                                 amount=amount,
+                                 currency=currency).save()
 
     def __str__(self):
         return '{title} ({type})'.format(
