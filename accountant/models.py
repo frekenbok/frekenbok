@@ -154,6 +154,16 @@ class Transaction(models.Model):
         verbose_name=_('comment')
     )
 
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        if not self.id:
+            sheaf = self.account.sheaves.filter(currency=self.currency).first()
+            if not sheaf:
+                sheaf = Sheaf.objects.create(account=self.account,
+                                             currency=self.currency)
+            sheaf.amount += self.amount
+
+
     def __str__(self):
         return '{date}: {source} → {destination}, {value}{comment}'.format(
             date=self.invoice.date,
