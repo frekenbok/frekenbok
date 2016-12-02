@@ -160,8 +160,13 @@ class Transaction(models.Model):
             sheaf = self.account.sheaves.filter(currency=self.currency).first()
             if not sheaf:
                 sheaf = Sheaf.objects.create(account=self.account,
-                                             currency=self.currency)
+                                             currency=self.currency,
+                                             amount=self.amount)
             sheaf.amount += self.amount
+            sheaf.save()
+        else:
+            super(Transaction, self).save(*args, **kwargs)
+            self.account.recalculate_summary()
 
 
     def __str__(self):
