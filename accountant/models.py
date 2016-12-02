@@ -159,15 +159,16 @@ class Transaction(models.Model):
         if not self.id:
             sheaf = self.account.sheaves.filter(currency=self.currency).first()
             if not sheaf:
-                sheaf = Sheaf.objects.create(account=self.account,
-                                             currency=self.currency,
-                                             amount=self.amount)
-            sheaf.amount += self.amount
-            sheaf.save()
+                Sheaf.objects.create(account=self.account,
+                                     currency=self.currency,
+                                     amount=self.amount).save()
+            else:
+                sheaf.amount += self.amount
+                sheaf.save()
+            super(Transaction, self).save(*args, **kwargs)
         else:
             super(Transaction, self).save(*args, **kwargs)
             self.account.recalculate_summary()
-
 
     def __str__(self):
         return '{date}: {source} → {destination}, {value}{comment}'.format(
