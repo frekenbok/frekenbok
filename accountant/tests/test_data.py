@@ -10,7 +10,7 @@ def add_test_data(cls):
     # Test accounts
     cls.wallet = Account(title='Кошелёк', type=Account.ACCOUNT)
     Account.add_root(instance=cls.wallet)
-    for currency in (RUB, USD, EUR):
+    for currency in (RUB, EUR):
         Sheaf.objects.create(amount=int(random() * 100),
                              currency=currency,
                              account=cls.wallet)
