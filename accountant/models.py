@@ -55,18 +55,24 @@ class Account(NS_Node):
                 result.append(sheaf)
         return result
 
-    @transaction.atomic
-    def recalculate_summary(self):
-        self.sheaves.all().delete()
-        sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
-            'WHERE `account_id` = %s GROUP BY `currency`;'
-        with connection.cursor() as cursor:
-            cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
-            result = cursor.fetchall()
-        for amount, currency in result:
-            Sheaf.objects.create(account=self,
-                                 amount=amount,
-                                 currency=currency).save()
+    def recalculate_summary(self, atomic=True):
+        def do():
+            self.sheaves.all().delete()
+            sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
+                'WHERE `account_id` = %s GROUP BY `currency`;'
+            with connection.cursor() as cursor:
+                cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
+                result = cursor.fetchall()
+            for amount, currency in result:
+                Sheaf.objects.create(account=self,
+                                     amount=amount,
+                                     currency=currency).save()
+
+        if atomic:
+            with transaction.atomic():
+                do()
+        else:
+            do()
 
     def __str__(self):
         return '{title} ({type})'.format(
@@ -168,7 +174,7 @@ class Transaction(models.Model):
             super(Transaction, self).save(*args, **kwargs)
         else:
             super(Transaction, self).save(*args, **kwargs)
-            self.account.recalculate_summary()
+            self.account.recalculate_summary(atomic=False)
 
     def __str__(self):
         return '{date}: {source} → {destination}, {value}{comment}'.format(
