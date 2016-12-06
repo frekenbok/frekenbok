@@ -142,7 +142,7 @@ class Invoice(models.Model):
 
     @property
     def is_verified(self):
-        return bool(self.verify())
+        return not bool(self.verify())
 
     def __str__(self):
         return _('Invoice from {timestamp}').format(

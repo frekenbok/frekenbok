@@ -126,3 +126,25 @@ class TransactionTestCase(TestCase):
         self.assertIn(str(currency), upd_sheaves)
         self.assertEqual(upd_sheaves[str(currency)],
                          old_amount - amount)
+
+
+class InvoiceTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        add_test_data(cls)
+
+    def test_verify_method_with_correct_invoice(self):
+        self.assertEqual(self.first_salary.verify(),
+                         dict())
+
+    def test_verify_method_with_incorrect_invoice(self):
+        self.first_salary.transactions.filter(amount__lt=0).first().delete()
+        self.assertEqual(self.first_salary.verify(),
+                         {'RUB': Decimal('70000')})
+
+    def test_is_verified_property_with_correct_invoice(self):
+        self.assertTrue(self.first_salary.is_verified)
+
+    def test_is_verified_property_with_incorrect_invoice(self):
+        self.first_salary.transactions.filter(amount__lt=0).first().delete()
+        self.assertFalse(self.first_salary.is_verified)
