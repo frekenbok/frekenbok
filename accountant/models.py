@@ -1,9 +1,8 @@
 from django.db import models, transaction, connection
 from django.utils.translation import ugettext as _
 from django.conf import settings
-from djmoney.models.fields import MoneyField, CurrencyField
+from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
-from moneyed import Money, CURRENCIES
 
 
 class Account(NS_Node):
@@ -119,7 +118,8 @@ class Invoice(models.Model):
     )
 
     comment = models.TextField(
-        verbose_name=_('comment')
+        verbose_name=_('comment'),
+        blank=True
     )
 
     def __str__(self):
@@ -157,7 +157,8 @@ class Transaction(models.Model):
     )
 
     comment = models.TextField(
-        verbose_name=_('comment')
+        verbose_name=_('comment'),
+        blank=True
     )
 
     @transaction.atomic
