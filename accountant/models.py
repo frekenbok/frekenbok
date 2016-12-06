@@ -58,7 +58,7 @@ class Account(NS_Node):
         def do():
             self.sheaves.all().delete()
             sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
-                'WHERE `account_id` = %s GROUP BY `currency`;'
+                  'WHERE `account_id` = %s GROUP BY `currency`;'
             with connection.cursor() as cursor:
                 cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
                 result = cursor.fetchall()
@@ -121,6 +121,28 @@ class Invoice(models.Model):
         verbose_name=_('comment'),
         blank=True
     )
+
+    def verify(self):
+        """
+        method calculates sum of all transactions of the invoice and returns
+        dictionary with currencies that has outstanding transactions.
+        >>> invoice = Invoice.objects.get(pk=3)
+        >>> invoice.verify()
+        {'EUR': Decimal('-34')}
+        :return: dictionary with currencies as keys and outstanding amounts
+          as values. Empty dictionary can be thought as sign of verified
+          invoice.
+        """
+        sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
+              'WHERE `invoice_id` = %s GROUP BY `currency`;'
+        with connection.cursor() as cursor:
+            cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
+            result = cursor.fetchall()
+        return {currency: amount for amount, currency in result if amount}
+
+    @property
+    def is_verified(self):
+        return not bool(self.verify())
 
     def __str__(self):
         return _('Invoice from {timestamp}').format(
