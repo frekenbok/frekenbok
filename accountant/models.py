@@ -113,7 +113,7 @@ class Sheaf(models.Model):
 
 
 class Invoice(models.Model):
-    timestamp = models.DateField(
+    timestamp = models.DateTimeField(
         verbose_name=_('date and time')
     )
 
@@ -123,8 +123,8 @@ class Invoice(models.Model):
     )
 
     def __str__(self):
-        return _('Invoice from {date}').format(
-            date=self.date
+        return _('Invoice from {timestamp}').format(
+            timestamp=self.timestamp
         )
 
 
@@ -176,15 +176,6 @@ class Transaction(models.Model):
         else:
             super(Transaction, self).save(*args, **kwargs)
             self.account.recalculate_summary(atomic=False)
-
-    def __str__(self):
-        return '{date}: {source} → {destination}, {value}{comment}'.format(
-            date=self.invoice.date,
-            source=self.source.title,
-            destination=self.destination.title,
-            value=self.source_value,
-            comment=' ({})'.format(self.comment) if self.comment else ''
-        )
 
 
 class Document(models.Model):
