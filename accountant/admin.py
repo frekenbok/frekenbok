@@ -23,7 +23,7 @@ class TransactionInline(admin.TabularInline):
 
 
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'comment')
+    list_display = ('timestamp', 'comment', 'is_verified')
     inlines = (TransactionInline,)
 
 admin.site.register(Invoice, InvoiceAdmin)
