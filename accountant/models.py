@@ -1,5 +1,5 @@
 from django.db import models, transaction, connection
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
