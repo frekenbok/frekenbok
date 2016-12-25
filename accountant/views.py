@@ -8,7 +8,7 @@ from .models import Account, Transaction
 
 
 class AccountantViewMixin(LoginRequiredMixin, ContextMixin):
-    login_url = '/admin/login/'
+    raise_exception = True
 
     def get_context_data(self, **kwargs):
         result = super(AccountantViewMixin, self).get_context_data(**kwargs)
