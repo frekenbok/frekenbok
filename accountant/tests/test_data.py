@@ -1,5 +1,5 @@
 from random import random
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 
 from accountant.models import Account, Sheaf, Invoice, Transaction
@@ -40,7 +40,7 @@ def add_test_data(cls):
         Account.add_root(instance=expense)
 
     # Test income
-    cls.first_salary = Invoice.objects.create(timestamp=datetime(2015, 4, 1))
+    cls.first_salary = Invoice.objects.create(timestamp=datetime(2015, 4, 1, tzinfo=timezone.utc))
     Transaction.objects.create(
         date=date(2015, 4, 1),
         account=cls.salary,
@@ -56,7 +56,7 @@ def add_test_data(cls):
         invoice=cls.first_salary
     )
 
-    cls.first_bonus = Invoice.objects.create(timestamp=datetime(2015, 4, 2))
+    cls.first_bonus = Invoice.objects.create(timestamp=datetime(2015, 4, 2, tzinfo=timezone.utc))
     Transaction.objects.create(
         date=date(2015, 4, 2),
         account=cls.bonus,
@@ -73,7 +73,7 @@ def add_test_data(cls):
     )
 
     # Test expenses
-    cls.first_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 3))
+    cls.first_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 3, tzinfo=timezone.utc))
     sum_of_first_invoice = Decimal(0)
     for expense in cls.expenses:
         value = int(random() * 100)
@@ -93,7 +93,7 @@ def add_test_data(cls):
         invoice=cls.first_invoice
     )
 
-    cls.second_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 4))
+    cls.second_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 4, tzinfo=timezone.utc))
     value = int(random() * 100)
     Transaction.objects.create(
         date=date(2015, 4, 4),
@@ -112,7 +112,7 @@ def add_test_data(cls):
         comment='салями'
     )
 
-    cls.third_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 5))
+    cls.third_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 5, tzinfo=timezone.utc))
     value = int(random() * 100)
     Transaction.objects.create(
         date=date(2015, 4, 5),
