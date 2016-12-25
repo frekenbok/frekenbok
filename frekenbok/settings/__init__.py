@@ -102,4 +102,7 @@ DECIMAL_PLACES = 5
 
 # Individual settings of project like language, timezone etc.
 
-from .custom import *
+try:
+    from .custom import *
+except ImportError:
+    BASE_CURRENCY = 'RUB'
