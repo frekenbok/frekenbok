@@ -1,12 +1,15 @@
 from decimal import Decimal
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 
 from .models import Account, Transaction
 
 
-class AccountantViewMixin(ContextMixin):
+class AccountantViewMixin(LoginRequiredMixin, ContextMixin):
+    login_url = '/admin/login/'
+
     def get_context_data(self, **kwargs):
         result = super(AccountantViewMixin, self).get_context_data(**kwargs)
         result['accountant_app'] = True
