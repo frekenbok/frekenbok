@@ -2,11 +2,21 @@ from random import random
 from datetime import date, datetime, timezone
 from decimal import Decimal
 
+from django.contrib.auth.models import User
+
 from accountant.models import Account, Sheaf, Invoice, Transaction
 from moneyed import RUB, USD, EUR, GBP
 
 
 def add_test_data(cls):
+    # Test user
+    cls.test_user_password = 'QQa8ZezCQr4doOSIB+p1bPJNP+ZxZVmrwgDMNOqZ'
+    cls.test_user = User.objects.create_user(
+        username='john_dow',
+        email='j.dow@example.com',
+        password=cls.test_user_password
+    )
+
     # Test accounts
     cls.wallet = Account(title='Кошелёк', type=Account.ACCOUNT)
     Account.add_root(instance=cls.wallet)
