@@ -8,9 +8,7 @@ DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'frekenbok',
-        'USER': 'frekenbok',
-        'PASSWORD': 'frekenbok'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, '../tests.sqlite3')
     }
 }
