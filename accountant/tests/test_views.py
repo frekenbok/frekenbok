@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 
 from accountant.models import Account
@@ -19,6 +20,9 @@ class AccountantViewMixinTestCase(TestCase):
     def test_is_instance_of_context_mixin(self):
         self.assertIsInstance(self.mixin, ContextMixin)
 
+    def test_is_instance_of_login_required_mixin(self):
+        self.assertIsInstance(self.mixin, LoginRequiredMixin)
+
     def test_context_contains_accountant_app(self):
         context = self.mixin.get_context_data()
         self.assertTrue(context.get('accountant_app'))
@@ -31,7 +35,10 @@ class DashboardViewTestCase(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.context = self.client.get(reverse('accountant:dashboard')).context
+        self.client.login(username=self.test_user.username,
+                          password=self.test_user_password)
+        response = self.client.get(reverse('accountant:dashboard'))
+        self.context = response.context
         self.view = DashboardView()
 
     def tearDown(self):
@@ -67,6 +74,11 @@ class DashboardViewTestCase(TestCase):
             sorted(i['currency'] for i in total[1:])
         )
 
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:dashboard'))
+        self.assertEqual(response.status_code, 403)
+
 
 class AccountDetailViewTestCase(TestCase):
     @classmethod
@@ -86,6 +98,12 @@ class AccountDetailViewTestCase(TestCase):
 
     def test_is_instance_of_accountant_view_mixin(self):
         self.assertIsInstance(self.view, AccountantViewMixin)
+
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:account_detail',
+                                      kwargs={'pk': 3}))
+        self.assertEqual(response.status_code, 403)
 
 
 class AccountListViewTestCase(TestCase):
@@ -107,6 +125,11 @@ class AccountListViewTestCase(TestCase):
         for account in queryset:
             self.assertEqual(account.type, Account.ACCOUNT)
 
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:account_list'))
+        self.assertEqual(response.status_code, 403)
+
 
 class IncomeListViewTestCase(TestCase):
     @classmethod
@@ -126,3 +149,8 @@ class IncomeListViewTestCase(TestCase):
         queryset = self.view.get_queryset()
         for account in queryset:
             self.assertEqual(account.type, Account.INCOME)
+
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:income_list'))
+        self.assertEqual(response.status_code, 403)
