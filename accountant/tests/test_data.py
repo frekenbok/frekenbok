@@ -1,5 +1,5 @@
 from random import random
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 from django.contrib.auth.models import User
@@ -33,6 +33,45 @@ def add_test_data(cls):
         Sheaf.objects.create(amount=int(random() * 100),
                              currency=currency,
                              account=cls.reserve)
+
+    # Opening balance
+    opening_balance = Account(title='Входящий остаток',
+                              type=Account.INCOME,
+                              opened=date(2015, 3, 1),
+                              closed=date(2015, 3, 1))
+    cls.opening_balance = Account.add_root(instance=opening_balance)
+    ob_invoice = Invoice.objects.create(
+        timestamp=datetime.now(tz=timezone.utc),
+        comment='Входящий остаток'
+    )
+    Transaction.objects.create(
+        date=date(2015, 3, 1),
+        account=cls.opening_balance,
+        amount=Decimal('-134.5'),
+        currency=RUB,
+        invoice=ob_invoice
+    )
+    Transaction.objects.create(
+        date=date(2015, 3, 1),
+        account=cls.wallet,
+        amount=Decimal('134.5'),
+        currency=RUB,
+        invoice=ob_invoice
+    )
+    Transaction.objects.create(
+        date=date(2015, 3, 1),
+        account=cls.opening_balance,
+        amount=Decimal('-1900'),
+        currency=RUB,
+        invoice=ob_invoice
+    )
+    Transaction.objects.create(
+        date=date(2015, 3, 1),
+        account=cls.reserve,
+        amount=Decimal('19000'),
+        currency=RUB,
+        invoice=ob_invoice
+    )
 
     # Test income
     job = Account(title='Работа', type=Account.INCOME)

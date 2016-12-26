@@ -1,5 +1,8 @@
+from datetime import date
+
 from decimal import Decimal
 from django.db.models import F
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -28,8 +31,9 @@ class DashboardView(ListView, AccountantViewMixin):
         child accounts. Child free items in nested set can be found by
         :return:
         '''
-        return self.model.objects.filter(type=Account.ACCOUNT,
-                                         lft__exact=F('rgt') - 1)
+        return self.model.objects\
+            .filter(type=Account.ACCOUNT, lft__exact=F('rgt') - 1)\
+            .filter(Q(closed__gte=date.today()) | Q(closed=None))
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
@@ -61,7 +65,8 @@ class AccountListView(ListView, AccountantViewMixin):
     template_name = 'accountant/account_list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(type=Account.ACCOUNT)
+        return self.model.objects.filter(type=Account.ACCOUNT) \
+            .filter(Q(closed__gte=date.today()) | Q(closed=None))
 
 
 class IncomeListView(ListView, AccountantViewMixin):
@@ -70,7 +75,8 @@ class IncomeListView(ListView, AccountantViewMixin):
     template_name = 'accountant/income_list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(type=Account.INCOME)
+        return self.model.objects.filter(type=Account.INCOME) \
+            .filter(Q(closed__gte=date.today()) | Q(closed=None))
 
 
 class AccountDetailView(DetailView, AccountantViewMixin):
@@ -82,7 +88,8 @@ class AccountDetailView(DetailView, AccountantViewMixin):
         context = super(AccountDetailView, self).get_context_data(**kwargs)
         if context['account'].type == Account.ACCOUNT:
             context['account_list'] = \
-                self.model.objects.filter(type=Account.ACCOUNT).all()
+                self.model.objects.filter(type=Account.ACCOUNT)\
+                    .filter(Q(closed__gte=date.today()) | Q(closed=None)).all()
         context['transaction_list'] = \
             Transaction.objects.filter(account=self.object)\
                 .order_by('-date')[:10]

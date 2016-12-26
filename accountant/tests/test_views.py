@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
@@ -61,9 +63,12 @@ class DashboardViewTestCase(TestCase):
             self.assertIsInstance(account, Account)
 
         accounts = Account.objects.filter(type=Account.ACCOUNT)
-        children_less = [i for i in accounts if i.get_children_count() == 0]
+        expected_accounts = [i for i in accounts
+                             if i.get_children_count() == 0 and
+                             (not i.closed or i.closed >= date.today())]
 
-        self.assertEqual(len(children_less), len(self.context['account_list']))
+        self.assertEqual(len(expected_accounts),
+                         len(self.context['account_list']))
 
     def test_context_account_list_after_account_remove(self):
         self.reserve.delete()
@@ -121,6 +126,7 @@ class AccountListViewTestCase(TestCase):
 
     def setUp(self):
         self.view = AccountListView()
+        self.query_set = self.view.get_queryset()
 
     def tearDown(self):
         del self.view
@@ -129,9 +135,14 @@ class AccountListViewTestCase(TestCase):
         self.assertIsInstance(self.view, AccountantViewMixin)
 
     def test_type_of_accounts_in_queryset(self):
-        queryset = self.view.get_queryset()
-        for account in queryset:
+        for account in self.query_set:
             self.assertEqual(account.type, Account.ACCOUNT)
+
+    def test_closed_date_in_queryset(self):
+        for account in self.query_set:
+            self.assertTrue(
+                not account.closed or account.closed >= date.today()
+            )
 
     def test_login_less_request(self):
         client = Client()
@@ -146,6 +157,7 @@ class IncomeListViewTestCase(TestCase):
 
     def setUp(self):
         self.view = IncomeListView()
+        self.query_set = self.view.get_queryset()
 
     def tearDown(self):
         del self.view
@@ -154,9 +166,14 @@ class IncomeListViewTestCase(TestCase):
         self.assertIsInstance(self.view, AccountantViewMixin)
 
     def test_type_of_accounts_in_queryset(self):
-        queryset = self.view.get_queryset()
-        for account in queryset:
+        for account in self.query_set:
             self.assertEqual(account.type, Account.INCOME)
+
+    def test_closed_date_in_queryset(self):
+        for account in self.query_set:
+            self.assertTrue(
+                not account.closed or account.closed >= date.today()
+            )
 
     def test_login_less_request(self):
         client = Client()
