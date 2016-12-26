@@ -60,11 +60,19 @@ class DashboardViewTestCase(TestCase):
         for account in self.context['account_list']:
             self.assertIsInstance(account, Account)
 
-        accounts = Account.objects.all()
-        self.assertEqual(
-            len([i for i in accounts if i.type == Account.ACCOUNT]),
-            len(self.context['account_list'])
-        )
+        accounts = Account.objects.filter(type=Account.ACCOUNT)
+        children_less = [i for i in accounts if i.get_children_count() == 0]
+
+        self.assertEqual(len(children_less), len(self.context['account_list']))
+
+    def test_context_account_list_after_account_remove(self):
+        self.reserve.delete()
+        context = self.client.get(reverse('accountant:dashboard')).context
+
+        accounts = Account.objects.filter(type=Account.ACCOUNT)
+        children_less = [i for i in accounts if i.get_children_count() == 0]
+
+        self.assertEqual(len(children_less), len(context['account_list']))
 
     def test_context_total(self):
         total = self.context['total']

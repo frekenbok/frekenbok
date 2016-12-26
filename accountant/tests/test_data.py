@@ -18,15 +18,16 @@ def add_test_data(cls):
     )
 
     # Test accounts
-    cls.wallet = Account(title='Кошелёк', type=Account.ACCOUNT)
-    Account.add_root(instance=cls.wallet)
+    cls.cash = Account(title='Наличные', type=Account.ACCOUNT)
+    Account.add_root(instance=cls.cash)
+
+    cls.wallet = cls.cash.add_child(title='Кошелёк', type=Account.ACCOUNT)
     for currency in (RUB, EUR):
         Sheaf.objects.create(amount=int(random() * 100),
                              currency=currency,
                              account=cls.wallet)
 
-    cls.reserve = Account(title='Заначка', type=Account.ACCOUNT)
-    Account.add_root(instance=cls.reserve)
+    cls.reserve = cls.cash.add_child(title='Заначка', type=Account.ACCOUNT)
 
     for currency in (RUB, USD, GBP):
         Sheaf.objects.create(amount=int(random() * 100),
@@ -34,7 +35,7 @@ def add_test_data(cls):
                              account=cls.reserve)
 
     # Test income
-    job = Account(title='Exante', type=Account.INCOME)
+    job = Account(title='Работа', type=Account.INCOME)
     Account.add_root(instance=job)
     cls.job = Account.objects.get(pk=job.pk)
     salary = cls.job.add_child(title='Зарплата', type=Account.INCOME)

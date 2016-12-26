@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.db.models import F
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,7 +23,13 @@ class DashboardView(ListView, AccountantViewMixin):
     template_name = 'accountant/dashboard.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(type=Account.ACCOUNT)
+        '''
+        Dashboard displays all accounts with Account.ACCOUNT type and without
+        child accounts. Child free items in nested set can be found by
+        :return:
+        '''
+        return self.model.objects.filter(type=Account.ACCOUNT,
+                                         lft__exact=F('rgt') - 1)
 
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
