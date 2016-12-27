@@ -33,7 +33,7 @@
         <tr>
             <td>{{ transaction.date }}</td>
             <td>{{ transaction.amount }} {{ transaction.currency }}</td>
-            <td>{{ transaction.comment }}</td>
+            <td>{% if transaction.comment %}{{ transaction.comment }}{% else %}{{ transaction.invoice.comment }}{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>
