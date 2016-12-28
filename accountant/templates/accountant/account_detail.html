@@ -17,7 +17,7 @@
 {% block content %}
 <table class="table">
 {% for sheaf in account.sorted_sheaves %}
-    <tr><td>{{ sheaf.amount }} {{ sheaf.currency }}</td></tr>
+    <tr><td>{{ sheaf.amount | intcomma }} {{ sheaf.currency }}</td></tr>
 {% endfor %}
 </table>
 <table class="table table-striped">
