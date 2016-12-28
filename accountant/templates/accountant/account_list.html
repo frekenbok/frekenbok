@@ -1,5 +1,6 @@
 {% extends 'accountant/base.html' %}
 {% load i18n %}
+{% load humanize %}
 
 {% block title %}{{ block.super }} — {% trans 'List of accounts' %}{% endblock %}
 
@@ -30,7 +31,7 @@
             <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.id }}</a></td>
             <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a></td>
             <td>{% for sheave in account.sorted_sheaves %}
-                {{ sheave.amount }} {{ sheave.currency }}<br />
+                {{ sheave.amount|intcomma }} {{ sheave.currency }}<br />
                 {% endfor %}</td>
             <td>{{ account.opened }}</td>
             <td>{% if account.closed %}{{ account.closed }}{% endif %}</td>

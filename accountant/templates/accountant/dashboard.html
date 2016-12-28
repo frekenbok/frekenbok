@@ -1,5 +1,6 @@
 {% extends 'accountant/base.html' %}
 {% load i18n %}
+{% load humanize %}
 
 {% block header %}{% trans 'Accountant' %}{% endblock header %}
 
@@ -14,13 +15,13 @@
     <td>{{ account.id }}</td>
     <td><a href="{% url 'accountant:account_detail' pk=account.id %}">{{ account.title }}</a></td>
     <td>{% for sheaf in account.sorted_sheaves %}
-        {{ sheaf.amount }} {{ sheaf.currency }}<br />
+        {{ sheaf.amount|intcomma }} {{ sheaf.currency }}<br />
         {% endfor %}</td>
 </tr>{% endfor %}
 <tr class="total">
     <td colspan="2">{% trans 'Total' %}</td>
     <td>{% for item in total %}
-        {{ item.amount }} {{ item.currency }}<br />
+        {{ item.amount|intcomma }} {{ item.currency }}<br />
     {% endfor %}</td>
 </tr>
 </table>

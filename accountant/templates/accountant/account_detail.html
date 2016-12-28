@@ -1,5 +1,6 @@
 {% extends 'accountant/base.html' %}
 {% load i18n %}
+{% load humanize %}
 
 {% block title %}{{ block.super }} — {% trans 'Details of account' %} {{ account.title }}{% endblock %}
 
@@ -32,7 +33,7 @@
         {% for transaction in transaction_list %}
         <tr>
             <td>{{ transaction.date }}</td>
-            <td>{{ transaction.amount }} {{ transaction.currency }}</td>
+            <td style="text-align: right">{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
             <td>{% if transaction.comment %}{{ transaction.comment }}{% else %}{{ transaction.invoice.comment }}{% endif %}</td>
         </tr>
         {% endfor %}
