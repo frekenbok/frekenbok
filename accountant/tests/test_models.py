@@ -111,7 +111,7 @@ class TransactionTestCase(TestCase):
         self.assertEqual(upd_sheaves[str(currency)],
                          old_amount + amount)
 
-    def test_save_old_transaction(self):
+    def test_save_old_transaction_old_account(self):
         amount = Decimal('0.05')
         currency = USD
 
@@ -126,6 +126,19 @@ class TransactionTestCase(TestCase):
         self.assertIn(str(currency), upd_sheaves)
         self.assertEqual(upd_sheaves[str(currency)],
                          old_amount - amount)
+
+    def test_save_old_transaction_new_account(self):
+        transaction = self.first_bonus.transactions.get(account=self.wallet)
+        old_sheaves = {i.currency: i.amount for i in self.wallet.sheaves.all()}
+
+        transaction.account = self.reserve
+        transaction.save()
+        new_sheaves = {i.currency: i.amount for i in self.wallet.sheaves.all()}
+
+        self.assertEqual(
+            new_sheaves.get(transaction.currency, Decimal('0')),
+            old_sheaves[transaction.currency] - transaction.amount
+        )
 
 
 class InvoiceTestCase(TestCase):

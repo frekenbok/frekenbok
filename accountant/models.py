@@ -196,8 +196,11 @@ class Transaction(models.Model):
                 sheaf.save()
             super(Transaction, self).save(*args, **kwargs)
         else:
+            old_account = Transaction.objects.get(pk=self.pk).account
             super(Transaction, self).save(*args, **kwargs)
             self.account.recalculate_summary(atomic=False)
+            if self.account != old_account:
+                old_account.recalculate_summary(atomic=False)
 
 
 class Document(models.Model):
