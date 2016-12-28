@@ -22,9 +22,14 @@ class TransactionInline(admin.TabularInline):
     extra = 2
 
 
+class DocumentInline(admin.TabularInline):
+    model = Document
+    extra = 1
+
+
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'comment', 'is_verified')
-    inlines = (TransactionInline,)
+    inlines = (TransactionInline, DocumentInline)
 
 admin.site.register(Invoice, InvoiceAdmin)
 
