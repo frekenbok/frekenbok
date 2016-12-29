@@ -26,6 +26,7 @@
         <tr>
             <td>{% trans 'Time' %}</td>
             <td>{% trans 'Value' %}</td>
+            <td>{% trans 'Category' %}</td>
             <td>{% trans 'Comment' %}</td>
         </tr>
     </thead>
@@ -34,6 +35,9 @@
         <tr>
             <td>{{ transaction.date }}</td>
             <td style="text-align: right">{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{% for counter_transaction in transaction.invoice.transactions.all %}
+                {% if counter_transaction.account.type == transaction.account.EXPENSE %}{{ counter_transaction.account.title }}{% endif %}
+                {% endfor %}</td>
             <td>{% if transaction.comment %}{{ transaction.comment }}{% else %}{{ transaction.invoice.comment }}{% endif %}</td>
         </tr>
         {% endfor %}
