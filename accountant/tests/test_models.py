@@ -53,6 +53,18 @@ class AccountTestCase(TestCase):
             sorted(currencies[1:])
         )
 
+    def test_tree_summary(self):
+        expected_tree_summary = dict()
+        for account in self.cash.get_children():
+            for sheaf in account.sheaves.all():
+                expected_tree_summary.setdefault(sheaf.currency, Decimal(0))
+                expected_tree_summary[sheaf.currency] += sheaf.amount
+
+        self.assertEqual(
+            expected_tree_summary,
+            self.cash.tree_summary()
+        )
+
 
 class SheafTestCase(TestCase):
     @classmethod
