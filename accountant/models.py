@@ -1,4 +1,5 @@
 from django.db import models, transaction, connection
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from djmoney.models.fields import CurrencyField
@@ -120,6 +121,13 @@ class Invoice(models.Model):
     comment = models.TextField(
         verbose_name=_('comment'),
         blank=True
+    )
+
+    user = models.ForeignKey(
+        verbose_name=_('user'),
+        to=User,
+        blank=True,
+        null=True
     )
 
     def verify(self):
