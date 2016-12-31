@@ -7,6 +7,19 @@
 {% block content %}
 <table class="table">
 <tr>
+    <th>{% trans 'Title' %}</th>
+    <th>{% trans 'Summary' %}</th>
+</tr>
+{% for account in overview %}
+<tr>
+    <td>{{ account.account }}</td>
+    <td>{% for item in account.report %}{{ item.amount|intcomma }} {{ item.currency }}<br />{% endfor %}</td>
+</tr>
+{% endfor %}
+</table>
+
+<table class="table">
+<tr>
     <th>№</th>
     <th>{% trans 'Title' %}</th>
     <th>{% trans 'Summary' %}</th>

@@ -58,10 +58,11 @@ class Account(NS_Node):
     def recalculate_summary(self, atomic=True):
         def do():
             self.sheaves.all().delete()
-            sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
+            sql = 'SELECT SUM(`amount`) as amount, `currency` ' \
+                  'FROM accountant_transaction ' \
                   'WHERE `account_id` = %s GROUP BY `currency`;'
             with connection.cursor() as cursor:
-                cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
+                cursor.execute(sql, (self.id, ))
                 result = cursor.fetchall()
             for amount, currency in result:
                 Sheaf.objects.create(account=self,
@@ -73,6 +74,27 @@ class Account(NS_Node):
                 do()
         else:
             do()
+
+    def tree_summary(self):
+        '''
+        method returns summary of all child accounts
+        >>> account = Account.objects.get(pk=34)
+        >>> account.tree_summary()
+        {'EUR': Decimal('34'),
+         'RUB': Decimal('45')}
+        :return: dict with summary
+        '''
+        sql = 'SELECT SUM(`amount`) as amount, `currency`' \
+              'FROM accountant_sheaf ' \
+              'WHERE `account_id` IN (' \
+              '   SELECT `id`' \
+              '   FROM accountant_account' \
+              '   WHERE `lft` > %s AND `rgt` < %s AND `tree_id` = %s' \
+              ') GROUP BY `currency` ORDER BY `currency`;'
+        with connection.cursor() as cursor:
+            cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
+            result = cursor.fetchall()
+        return {currency: amount for amount, currency in result}
 
     def __str__(self):
         return '{title} ({type})'.format(

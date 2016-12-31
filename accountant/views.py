@@ -54,6 +54,19 @@ class DashboardView(ListView, AccountantViewMixin):
             else:
                 report.append(report_line)
 
+        overview = list()
+        for account in self.model.objects.filter(type=Account.ACCOUNT, depth=1):
+            report = list()
+            for currency, amount in sorted(account.tree_summary().items(),
+                                           key=lambda x: x[0]):
+                report_line = {'currency': currency, 'amount': amount}
+                if currency == settings.BASE_CURRENCY:
+                    report.insert(0, report_line)
+                else:
+                    report.append(report_line)
+            overview.append({'account': account.title, 'report': report})
+
+        context['overview'] = overview
         context['total'] = report
         context['menu_dashboard'] = True
         return context
