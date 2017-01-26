@@ -30,14 +30,16 @@ except Exception as e:
     exit(1)
 # 2. ...migrates...
 management.call_command('migrate')
-# 3. ...compiles PO files...
-management.call_command('compilemessages')
-# 4. ...creates superuser
+# 3. ...collects static files...
+management.call_command('collectstatic', '--noinput', '--clear', '--link')
+# 4. ...compiles PO files...
+management.call_command('compilemessages', )
+# 5. ...creates superuser
 User.objects.create_superuser(
     username='valera',
     password='vena89portae',
     email='valera@creator.su')
-# 5. Import test data
+# 6. Import test data
 DevData()
 # ...
 # PROFIT!!!1
