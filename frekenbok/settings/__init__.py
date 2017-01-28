@@ -59,6 +59,8 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_DIRS = [os.path.join(BASE_DIR, '..', 'static')]
+
 WSGI_APPLICATION = 'frekenbok.wsgi.application'
 
 # Password validation

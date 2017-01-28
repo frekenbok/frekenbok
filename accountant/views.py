@@ -64,7 +64,11 @@ class DashboardView(ListView, AccountantViewMixin):
                     report.insert(0, report_line)
                 else:
                     report.append(report_line)
-            overview.append({'account': account.title, 'report': report})
+            overview.append({'account': account.title,
+                             'report': report,
+                             'weight': sum(i['amount'] for i in report),
+                             # TODO We should try to guess currency here
+                             'weight_currency': settings.BASE_CURRENCY})
 
         context['overview'] = overview
         context['total'] = report

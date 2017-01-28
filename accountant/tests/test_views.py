@@ -87,6 +87,16 @@ class DashboardViewTestCase(TestCase):
             sorted(i['currency'] for i in total[1:])
         )
 
+    def test_contex_overview(self):
+        expected_overview = Account.objects.filter(type=Account.ACCOUNT,
+                                                   depth=1)
+        overview = self.context['overview']
+
+        self.assertEqual(len(expected_overview), len(overview))
+        for account in overview:
+            self.assertEqual(account['weight'],
+                             sum(i['amount'] for i in account['report']))
+
     def test_login_less_request(self):
         client = Client()
         response = client.get(reverse('accountant:dashboard'))
