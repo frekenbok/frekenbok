@@ -7,6 +7,19 @@
 
 
 {% block content %}
+<div class="row top_tiles" style="margin: 10px 0;">
+{% for account in overview %}
+  <div class="col-md-3 col-sm-3 col-xs-6 tile">
+    <span>{{ account.account }}</span>
+    <h2>{{ account.weight|intcomma }} {{ account.weight_currency }}</h2>
+    <span class="sparkline_one" style="height: 160px;">
+          <canvas width="200" height="60" style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
+      </span>
+  </div>
+{% endfor %}
+</div>
+
+
 <div class="row">
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="x_panel fixed_height_320">
