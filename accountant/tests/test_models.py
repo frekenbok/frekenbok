@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, timedelta
+from copy import deepcopy
 
 from django.test import TestCase
 from django.conf import settings
@@ -45,17 +46,44 @@ class AccountTestCase(TestCase):
 
     def test_recalculate_account_summary_ignores_not_approved_transactions(self):
         self.wallet.recalculate_summary()
-        old_summary = {i.currency: i for i in self.wallet.sorted_sheaves}
+        old_summary = {i.currency: i for i in self.wallet.sheaves.all()}
         future_transaction = Transaction.objects.create(
             date=date.today(), amount=200, currency=ZAR, account=self.wallet,
             approved=False
         )
         self.wallet.recalculate_summary()
 
-        new_summary = self.wallet.sorted_sheaves
+        new_summary = self.wallet.sheaves.all()
         self.assertEqual(len(old_summary), len(new_summary))
         for item in new_summary:
             self.assertEqual(item.amount, old_summary[item.currency].amount)
+
+    def test_summary_at(self):
+        self.wallet.recalculate_summary()
+        current_summary = {i.currency: i for i in self.wallet.sorted_sheaves}
+        near_future_date = date.today() + timedelta(days=10)
+        report_date = date.today() + timedelta(days=15)
+        far_future_date = date.today() + timedelta(days=20)
+
+        near_transaction = Transaction.objects.create(
+            date=near_future_date,
+            amount=Decimal('500'),
+            currency=ZAR,
+            account=self.wallet
+        )
+        far_transaction = Transaction.objects.create(
+            date=far_future_date,
+            amount=Decimal('500'),
+            currency=ZAR,
+            account=self.wallet
+        )
+
+        future_summary = self.wallet.summary_at(report_date)
+        expected_summary = deepcopy(current_summary)
+        expected_summary[str(near_transaction.currency)] = near_transaction.amount
+        self.assertEqual(len(current_summary), len(future_summary))
+        for item in future_summary:
+            self.assertEqual(item.amount, current_summary[item.currency].amount)
 
     def test_sorted_sheaves(self):
         currencies = [i.currency for i in self.wallet.sorted_sheaves]
