@@ -132,6 +132,15 @@ class Sheaf(models.Model):
             account=self.account
         )
 
+    def __eq__(self, other):
+        return type(other) == Sheaf and \
+               self.account == other.account and \
+               self.amount == other.amount and \
+               self.currency == other.currency
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     class Meta:
         unique_together = ('account', 'currency')
 
