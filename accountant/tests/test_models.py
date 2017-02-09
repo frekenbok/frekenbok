@@ -95,6 +95,29 @@ class SheafTestCase(TestCase):
                                  amount=Decimal('932.12'),
                                  currency=JPY)
 
+    def test_eq(self):
+        self.wallet.recalculate_summary()
+        some_sheaf = self.wallet.sorted_sheaves[0]
+        # Recalculate summary should drop old sheaves
+        self.wallet.recalculate_summary()
+        other_sheaf = self.wallet.sorted_sheaves[0]
+
+        self.assertEqual(some_sheaf, other_sheaf)
+
+    def test_ne(self):
+        self.wallet.recalculate_summary()
+        some_sheaf = self.wallet.sorted_sheaves[0]
+
+        Transaction.objects.create(
+            date=date.today(),
+            account=self.wallet,
+            amount=Decimal('234'),
+            currency=some_sheaf.currency
+        )
+        other_sheaf = self.wallet.sorted_sheaves[0]
+
+        self.assertNotEqual(some_sheaf, other_sheaf)
+
 
 class TransactionTestCase(TestCase):
     @classmethod
