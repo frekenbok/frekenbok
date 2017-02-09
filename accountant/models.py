@@ -58,10 +58,10 @@ class Account(NS_Node):
     def recalculate_summary(self, atomic=True):
         def do():
             self.sheaves.all().delete()
-            sql = 'SELECT SUM(`amount`) as amount, `currency` ' \
+            sql = 'SELECT SUM(amount) as amount, currency ' \
                   'FROM accountant_transaction ' \
-                  'WHERE `account_id` = %s AND `approved` ' \
-                  'GROUP BY `currency`;'
+                  'WHERE account_id = %s AND approved ' \
+                  'GROUP BY currency;'
             with connection.cursor() as cursor:
                 cursor.execute(sql, (self.id, ))
                 result = cursor.fetchall()
@@ -83,16 +83,16 @@ class Account(NS_Node):
         :param date: date of summary
         :return: dictionary with summary
         """
-        sql = 'SELECT SUM(`amount`) as amount, `currency`' \
-              'FROM accountant_transaction ' \
-              'WHERE `account_id` IN (' \
-              '   SELECT `id`' \
-              '   FROM accountant_account' \
-              '   WHERE `lft` > %s AND `rgt` < %s AND `tree_id` = %s' \
-              ') AND date <= %s ' \
-              'GROUP BY `currency` ORDER BY `currency`;'
+        sql = '''SELECT SUM(amount) as amount, currency
+                 FROM accountant_transaction
+                 WHERE account_id IN (
+                    SELECT id
+                    FROM accountant_account
+                    WHERE lft > %s AND rgt < %s AND tree_id = %s
+                  ) AND date <= %s
+                 GROUP BY currency ORDER BY currency;'''
         with connection.cursor() as cursor:
-            cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
+            cursor.execute(sql, (self.lft, self.rgt, self.tree_id, date))
             result = cursor.fetchall()
         return {currency: amount for amount, currency in result}
 
@@ -105,13 +105,13 @@ class Account(NS_Node):
          'RUB': Decimal('45')}
         :return: dict with summary
         """
-        sql = 'SELECT SUM(`amount`) as amount, `currency`' \
+        sql = 'SELECT SUM(amount) as amount, currency ' \
               'FROM accountant_sheaf ' \
-              'WHERE `account_id` IN (' \
-              '   SELECT `id`' \
+              'WHERE account_id IN (' \
+              '   SELECT id' \
               '   FROM accountant_account' \
-              '   WHERE `lft` > %s AND `rgt` < %s AND `tree_id` = %s' \
-              ') GROUP BY `currency` ORDER BY `currency`;'
+              '   WHERE lft > %s AND rgt < %s AND tree_id = %s' \
+              ') GROUP BY currency ORDER BY currency;'
         with connection.cursor() as cursor:
             cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
             result = cursor.fetchall()
@@ -193,8 +193,8 @@ class Invoice(models.Model):
           as values. Empty dictionary can be thought as sign of verified
           invoice.
         """
-        sql = 'SELECT SUM(`amount`) as amount, `currency` FROM `{}` ' \
-              'WHERE `invoice_id` = %s GROUP BY `currency`;'
+        sql = 'SELECT SUM(amount) as amount, currency FROM {} ' \
+              'WHERE invoice_id = %s GROUP BY currency;'
         with connection.cursor() as cursor:
             cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
             result = cursor.fetchall()
