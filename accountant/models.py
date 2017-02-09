@@ -60,7 +60,8 @@ class Account(NS_Node):
             self.sheaves.all().delete()
             sql = 'SELECT SUM(`amount`) as amount, `currency` ' \
                   'FROM accountant_transaction ' \
-                  'WHERE `account_id` = %s GROUP BY `currency`;'
+                  'WHERE `account_id` = %s AND `approved` ' \
+                  'GROUP BY `currency`;'
             with connection.cursor() as cursor:
                 cursor.execute(sql, (self.id, ))
                 result = cursor.fetchall()
