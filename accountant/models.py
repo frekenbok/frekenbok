@@ -76,15 +76,35 @@ class Account(NS_Node):
         else:
             do()
 
+    def summary_at(self, date):
+        """
+        method returns dictionary with expected account summary
+         for specified date (including that date)
+        :param date: date of summary
+        :return: dictionary with summary
+        """
+        sql = 'SELECT SUM(`amount`) as amount, `currency`' \
+              'FROM accountant_transaction ' \
+              'WHERE `account_id` IN (' \
+              '   SELECT `id`' \
+              '   FROM accountant_account' \
+              '   WHERE `lft` > %s AND `rgt` < %s AND `tree_id` = %s' \
+              ') AND date <= %s ' \
+              'GROUP BY `currency` ORDER BY `currency`;'
+        with connection.cursor() as cursor:
+            cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
+            result = cursor.fetchall()
+        return {currency: amount for amount, currency in result}
+
     def tree_summary(self):
-        '''
+        """
         method returns summary of all child accounts
         >>> account = Account.objects.get(pk=34)
         >>> account.tree_summary()
         {'EUR': Decimal('34'),
          'RUB': Decimal('45')}
         :return: dict with summary
-        '''
+        """
         sql = 'SELECT SUM(`amount`) as amount, `currency`' \
               'FROM accountant_sheaf ' \
               'WHERE `account_id` IN (' \
