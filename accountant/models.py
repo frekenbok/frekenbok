@@ -184,6 +184,10 @@ class Transaction(models.Model):
     date = models.DateField(
         verbose_name=_('date')
     )
+    approved = models.BooleanField(
+        verbose_name=_('approved'),
+        default=True
+    )
 
     account = models.ForeignKey(
         verbose_name=_('account'),
@@ -205,7 +209,8 @@ class Transaction(models.Model):
 
     invoice = models.ForeignKey(
         to=Invoice,
-        related_name='transactions'
+        related_name='transactions',
+        blank=True, null=True, default=None
     )
 
     comment = models.TextField(
