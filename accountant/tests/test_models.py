@@ -46,21 +46,20 @@ class AccountTestCase(TestCase):
 
     def test_recalculate_account_summary_ignores_not_approved_transactions(self):
         self.wallet.recalculate_summary()
-        old_summary = {i.currency: i for i in self.wallet.sheaves.all()}
+        old_summary = self.wallet.sorted_sheaves
         future_transaction = Transaction.objects.create(
             date=date.today(), amount=200, currency=ZAR, account=self.wallet,
             approved=False
         )
         self.wallet.recalculate_summary()
 
-        new_summary = self.wallet.sheaves.all()
-        self.assertEqual(len(old_summary), len(new_summary))
-        for item in new_summary:
-            self.assertEqual(item.amount, old_summary[item.currency].amount)
+        new_summary = self.wallet.sorted_sheaves
+        self.assertEqual(old_summary, new_summary)
 
     def test_summary_at(self):
         self.wallet.recalculate_summary()
-        current_summary = {i.currency: i for i in self.wallet.sorted_sheaves}
+        current_summary = {i.currency: i.amount
+                           for i in self.wallet.sheaves.all()}
         near_future_date = date.today() + timedelta(days=10)
         report_date = date.today() + timedelta(days=15)
         far_future_date = date.today() + timedelta(days=20)
@@ -81,7 +80,6 @@ class AccountTestCase(TestCase):
         future_summary = self.wallet.summary_at(report_date)
         expected_summary = deepcopy(current_summary)
         expected_summary[str(near_transaction.currency)] = near_transaction.amount
-        self.assertEqual(len(current_summary), len(future_summary))
         for item in future_summary:
             self.assertEqual(item.amount, current_summary[item.currency].amount)
 
