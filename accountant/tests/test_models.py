@@ -5,7 +5,7 @@ from django.conf import settings
 
 from django.db.utils import IntegrityError
 
-from moneyed import Decimal, JPY, USD
+from moneyed import Decimal, JPY, USD, ZAR
 
 from accountant.models import Sheaf, Transaction
 
@@ -42,6 +42,20 @@ class AccountTestCase(TestCase):
         actual_sheaves = {i.currency: i.amount
                           for i in self.wallet.sheaves.all()}
         self.assertNotIn('JPY', actual_sheaves)
+
+    def test_recalculate_account_summary_ignores_not_approved_transactions(self):
+        self.wallet.recalculate_summary()
+        old_summary = {i.currency: i for i in self.wallet.sorted_sheaves}
+        future_transaction = Transaction.objects.create(
+            date=date.today(), amount=200, currency=ZAR, account=self.wallet,
+            approved=False
+        )
+        self.wallet.recalculate_summary()
+
+        new_summary = self.wallet.sorted_sheaves
+        self.assertEqual(len(old_summary), len(new_summary))
+        for item in new_summary:
+            self.assertEqual(item.amount, old_summary[item.currency].amount)
 
     def test_sorted_sheaves(self):
         currencies = [i.currency for i in self.wallet.sorted_sheaves]
