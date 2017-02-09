@@ -180,3 +180,12 @@ def add_test_data(cls):
         invoice=cls.third_invoice,
         comment='АИ-95'
     )
+
+    # Test futures transaction
+    cls.future = Transaction.objects.create(
+        date=date.today() + timedelta(days=10),
+        account=cls.wallet,
+        amount=Decimal('200'),
+        currency=RUB,
+        comment='Future transaction'
+    )
