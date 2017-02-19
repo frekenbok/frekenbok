@@ -29,6 +29,12 @@ def add_test_data(cls):
 
     cls.reserve = cls.cash.add_child(title='Заначка', type=Account.ACCOUNT)
 
+    cls.bank = Account(title='Банк', type=Account.ACCOUNT)
+    Account.add_root(instance=cls.bank)
+    cls.card = cls.bank.add_child(title='Дебетовая карта',
+                                  bank_title='Karta *1234',
+                                  type=Account.ACCOUNT)
+
     # Opening balance
     opening_balance = Account(title='Входящий остаток',
                               type=Account.INCOME,
