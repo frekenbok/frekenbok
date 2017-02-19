@@ -29,11 +29,6 @@ def add_test_data(cls):
 
     cls.reserve = cls.cash.add_child(title='Заначка', type=Account.ACCOUNT)
 
-    for currency in (RUB, USD, GBP):
-        Sheaf.objects.create(amount=int(random() * 100),
-                             currency=currency,
-                             account=cls.reserve)
-
     # Opening balance
     opening_balance = Account(title='Входящий остаток',
                               type=Account.INCOME,
@@ -61,7 +56,7 @@ def add_test_data(cls):
     Transaction.objects.create(
         date=date(2015, 3, 1),
         account=cls.opening_balance,
-        amount=Decimal('-1900'),
+        amount=Decimal('-19000'),
         currency=RUB,
         invoice=ob_invoice
     )
