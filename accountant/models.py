@@ -64,17 +64,14 @@ class Account(NS_Node):
     def recalculate_summary(self, atomic=True):
         def do():
             self.sheaves.all().delete()
-            sql = 'SELECT SUM(amount) as amount, currency ' \
-                  'FROM accountant_transaction ' \
-                  'WHERE account_id = %s AND approved ' \
-                  'GROUP BY currency;'
-            with connection.cursor() as cursor:
-                cursor.execute(sql, (self.id, ))
-                result = cursor.fetchall()
-            for amount, currency in result:
+            result = Transaction.objects.filter(account=self)\
+                .filter(approved=True)\
+                .values('currency')\
+                .annotate(amount=Sum('amount'))
+            for item in result:
                 Sheaf.objects.create(account=self,
-                                     amount=amount,
-                                     currency=currency).save()
+                                     amount=item['amount'],
+                                     currency=item['currency']).save()
 
         if atomic:
             with transaction.atomic():
