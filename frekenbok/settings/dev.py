@@ -25,7 +25,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s [pid %(process)d] [th %(thread)d] %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(funcName)s [pid %(process)d] [th %(thread)d] %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -41,13 +41,11 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'propagate': True,
             'level': 'DEBUG'
         },
         'django.request': {
             'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
+            'level': 'DEBUG',
         },
         'django.db.backends': {
             'handlers': ['console'],
@@ -56,6 +54,10 @@ LOGGING = {
         'accountant.models': {
             'handlers': ['console'],
             'level': 'DEBUG'
-        }
+        },
+        'accountant.tests': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     }
 }
