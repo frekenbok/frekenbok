@@ -110,10 +110,9 @@ class Account(NS_Node):
 
         :return: QuerySet with summary
         """
-        result = Sheaf.objects.filter(account__in=self.get_tree(self))\
+        return Sheaf.objects.filter(account__in=self.get_tree(self))\
             .values('currency')\
             .annotate(amount=Sum('amount')).order_by('currency')
-        return result
 
     def __str__(self):
         return '{title} ({type})'.format(
