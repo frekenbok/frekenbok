@@ -13,7 +13,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 
 from .models import Account, Transaction, Invoice
 
@@ -142,6 +142,9 @@ class TransactionListView(ListView):
 def sms(request):
     message = json.loads(request.body.decode())
     logger.info('Received SMS {}'.format(message))
+
+    if message['secret'] != settings.SMS_SECRET_KEY:
+        return HttpResponse('Unauthorized', status=401)
 
     try:
         parser = sms_parsers[message['from']]
