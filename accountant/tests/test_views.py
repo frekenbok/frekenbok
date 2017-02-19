@@ -217,10 +217,9 @@ class SmsTestCase(TestCase):
                 )
 
     def __get_response(self):
-        return self.client.post(
+        return self.client.get(
             path=reverse('accountant:sms'),
-            data=json.dumps(self.payload),
-            content_type='application/json'
+            data=self.payload,
         )
 
     def setUp(self):
@@ -233,12 +232,9 @@ class SmsTestCase(TestCase):
         self.datetime=datetime.now(tz=self.timezone).replace(second=0, microsecond=0)
         self.payload = {
             'secret': settings.SMS_SECRET_KEY,
-            'from': 'Tinkoff',
-            'message_id': 2871592331456,
-            'message': self.__get_message(),
-            'sent_timestamp': datetime.now().strftime('%d.%m.%Y %H:%M'),
-            'sent_to': '+79111234567',
-            'device_id': 'my_device'
+            'phone': 'Tinkoff',
+            'text': self.__get_message(),
+            'sms_center': 'some_sms_center'
         }
 
     def tearDown(self):
@@ -252,13 +248,13 @@ class SmsTestCase(TestCase):
         del self.payload
 
     def test_with_unknown_sender(self):
-        self.payload['from'] = 'Captain Kirk'
+        self.payload['phone'] = 'Captain Kirk'
 
         self.assertEqual(self.__get_response().status_code, 404)
 
     def test_with_unknown_account(self):
         self.account = 'Secret account'
-        self.payload['message'] = self.__get_message()
+        self.payload['text'] = self.__get_message()
 
         self.assertEqual(self.__get_response().status_code, 404)
 
@@ -269,6 +265,7 @@ class SmsTestCase(TestCase):
 
     def test_with_correct_data(self):
         response = self.__get_response()
+        logger.debug('Response body: {}'.format(response.content))
 
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response, JsonResponse)
@@ -281,7 +278,7 @@ class SmsTestCase(TestCase):
         logger.debug('Created transaction: {}'.format(created_transaction))
 
         self.assertEqual(created_invoice.timestamp, self.datetime)
-        self.assertEqual(created_invoice.comment, self.payload['message'])
+        self.assertEqual(created_invoice.comment, self.payload['text'])
 
         # Minus is required because 'Pokupka' is listed in negative_actions set
         self.assertEqual(created_transaction.amount, -self.amount)
