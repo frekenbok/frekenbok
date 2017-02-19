@@ -120,26 +120,25 @@ class TransactionListView(ListView):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
 def sms(request):
-    message = json.loads(request.body.decode())
+    message = request.GET
     logger.info('Received SMS {}'.format(message))
 
-    if message['secret'] != settings.SMS_SECRET_KEY:
+    if message.get('secret') != settings.SMS_SECRET_KEY:
         logger.error('Unauthorized attempts to send SMS, received secret key {}'
-                     .format(message['secret']))
+                     .format(message.get('secret')))
         return HttpResponse('Unauthorized', status=401)
 
     try:
-        parser = settings.SMS_PARSERS[message['from']]
+        parser = settings.SMS_PARSERS[message['phone']]
     except KeyError:
         logger.error('Sender {} not found in parser config'
-                     .format(message['from']))
+                     .format(message['phone']))
         return JsonResponse({'status': 'error', 'message': 'Unknown sender'},
                             status=404)
 
     regexp = parser['regexp']
-    parsed_message = regexp.search(message['message']).groupdict()
+    parsed_message = regexp.search(message['text']).groupdict()
 
     account = Account.objects.filter(bank_title=parsed_message['account']).first()
     if account is None:
@@ -161,7 +160,7 @@ def sms(request):
     with transaction.atomic():
         invoice = Invoice.objects.create(
             timestamp=timestamp,
-            comment=message['message']
+            comment=message['text']
         )
         new_transaction = Transaction.objects.create(
             invoice=invoice,
