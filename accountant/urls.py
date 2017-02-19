@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from .views import DashboardView, IncomeListView, AccountDetailView, \
-    AccountListView
+    AccountListView, sms
 
 urlpatterns = [
     url(r'^$', DashboardView.as_view(), name='dashboard'),
@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^accounts/', AccountListView.as_view(), name='account_list'),
     url(r'^incomes/', IncomeListView.as_view(), name='income_list'),
     url(r'^expenses/', IncomeListView.as_view(), name='expense_list'),
+    url(r'^sms/', sms, name='sms')
 ]

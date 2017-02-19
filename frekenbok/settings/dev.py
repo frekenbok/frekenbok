@@ -1,3 +1,6 @@
+import re
+import pytz
+
 from frekenbok.settings import *
 
 ALLOWED_HOSTS = []
@@ -51,13 +54,26 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'accountant.models': {
+        'accountant': {
             'handlers': ['console'],
             'level': 'DEBUG'
         },
-        'accountant.tests': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
+    }
+}
+
+SMS_SECRET_KEY = 'Gx2spoTD4VrTlmCq0A/9W56jhVusc77/Fpe8QI+m3/TYyzyMNUWfUpLzZjt5Ol5b0iQlGHaE2DvP'
+SMS_PARSERS = {
+    'Tinkoff': {
+        'regexp': re.compile(
+            r'(?P<action>[\w ]+)\. (?P<account>[\w *_]+)\. '
+            r'Summa (?P<amount>[\d\.]+) (?P<currency>[A-Z]{3})\. '
+            r'(?P<receiver>[\w ,.]+)\. (?P<datetime>[0-9. :]{16})\. '
+            r'Dostupno (?P<rest_amount>[\d.]+) (?P<rest_currency>[A-Z]{3})\.',
+            re.ASCII),
+        'negative_actions': {'Pokupka', 'Snytie nalichnyh', 'Platezh',
+                             'Operatsia v drugih kreditnyh organizatsiyah',
+                             'Vnutrenniy perevod sebe', 'Vneshniy perevod'},
+        'datetime_format': '%d.%m.%Y %H:%M',
+        'datetime_tz': pytz.timezone('Europe/Moscow')
     }
 }

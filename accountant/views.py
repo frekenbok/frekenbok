@@ -1,14 +1,21 @@
-from datetime import date
-
+import json
+import logging
+from datetime import date, datetime
 from decimal import Decimal
-from django.db.models import F
-from django.db.models import Q
+
+from django.db.models import F, Q
+from django.db import transaction
+from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.http import JsonResponse, HttpResponse
 
-from .models import Account, Transaction
+from .models import Account, Transaction, Invoice
+
+
+logger = logging.getLogger(__name__)
 
 
 class AccountantViewMixin(LoginRequiredMixin, ContextMixin):
@@ -109,3 +116,62 @@ class AccountDetailView(DetailView, AccountantViewMixin):
 class TransactionListView(ListView):
     model = Transaction
     context_object_name = 'transaction'
+
+
+@require_http_methods(['POST'])
+def sms(request):
+    message = json.loads(request.body.decode())
+    logger.info('Received SMS {}'.format(message))
+
+    if message['secret'] != settings.SMS_SECRET_KEY:
+        logger.error('Unauthorized attempts to send SMS, received secret key {}'
+                     .format(message['secret']))
+        return HttpResponse('Unauthorized', status=401)
+
+    try:
+        parser = settings.SMS_PARSERS[message['from']]
+    except KeyError:
+        logger.error('Sender {} not found in parser config'
+                     .format(message['from']))
+        return JsonResponse({'status': 'error', 'message': 'Unknown sender'},
+                            status=404)
+
+    regexp = parser['regexp']
+    parsed_message = regexp.search(message['message']).groupdict()
+
+    account = Account.objects.filter(bank_title=parsed_message['account']).first()
+    if account is None:
+        logger.error('Account with bank_title {} not found'
+                     .format(parsed_message['account']))
+        return JsonResponse({'status': 'error', 'message': 'Unknown account'},
+                            status=404)
+
+    amount = Decimal(parsed_message['amount'])
+    if parsed_message['action'] in parser['negative_actions']:
+        amount *= -1
+    timestamp = parser['datetime_tz'].localize(
+        datetime.strptime(
+            parsed_message['datetime'],
+            parser['datetime_format']
+        )
+    )
+
+    with transaction.atomic():
+        invoice = Invoice.objects.create(
+            timestamp=timestamp,
+            comment=message['message']
+        )
+        new_transaction = Transaction.objects.create(
+            invoice=invoice,
+            date=timestamp.date(),
+            account=account,
+            amount=amount,
+            currency=parsed_message['currency'],
+            comment=parsed_message['receiver']
+        )
+
+    logger.info('Added invoice {} and transaction {}'
+                .format(invoice, new_transaction))
+    return JsonResponse({'status': 'ok',
+                         'invoice': invoice.pk,
+                         'transaction': new_transaction.pk})
