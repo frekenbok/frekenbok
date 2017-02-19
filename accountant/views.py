@@ -1,10 +1,7 @@
-import re
 import json
 import logging
 from datetime import date, datetime
 from decimal import Decimal
-
-import pytz
 
 from django.db.models import F, Q
 from django.db import transaction
@@ -19,23 +16,6 @@ from .models import Account, Transaction, Invoice
 
 
 logger = logging.getLogger(__name__)
-
-
-sms_parsers = {
-    'Tinkoff': {
-        'regexp': re.compile(
-            r'(?P<action>[\w ]+)\. (?P<account>[\w *_]+)\. '
-            r'Summa (?P<amount>[\d\.]+) (?P<currency>[A-Z]{3})\. '
-            r'(?P<receiver>[\w ,.]+)\. (?P<datetime>[0-9. :]{16})\. '
-            r'Dostupno (?P<rest_amount>[\d.]+) (?P<rest_currency>[A-Z]{3})\.',
-            re.ASCII),
-        'negative_actions': {'Pokupka', 'Snytie nalichnyh', 'Platezh',
-                             'Operatsia v drugih kreditnyh organizatsiyah',
-                             'Vnutrenniy perevod sebe', 'Vneshniy perevod'},
-        'datetime_format': '%d.%m.%Y %H:%M',
-        'datetime_tz': pytz.timezone('Europe/Moscow')
-    }
-}
 
 
 class AccountantViewMixin(LoginRequiredMixin, ContextMixin):
@@ -149,7 +129,7 @@ def sms(request):
         return HttpResponse('Unauthorized', status=401)
 
     try:
-        parser = sms_parsers[message['from']]
+        parser = settings.SMS_PARSERS[message['from']]
     except KeyError:
         logger.error('Sender {} not found in parser config'
                      .format(message['from']))
