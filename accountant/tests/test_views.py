@@ -1,6 +1,9 @@
 import json
+import logging
 from datetime import date, datetime
+from decimal import Decimal
 
+import pytz
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
@@ -11,6 +14,9 @@ from accountant.models import Account
 from accountant.views import AccountantViewMixin, DashboardView, AccountDetailView, AccountListView, IncomeListView
 
 from .test_data import add_test_data
+
+
+logger = logging.getLogger(__name__)
 
 
 class AccountantViewMixinTestCase(TestCase):
@@ -197,13 +203,28 @@ class SmsTestCase(TestCase):
     def setUpTestData(cls):
         add_test_data(cls)
 
+    def __get_message(self):
+        return ('Pokupka. {account}. Summa {amount} {currency}. '
+                'PYATEROCHKA 8120, MOSCOW. {datetime}. '
+                'Dostupno {amount} {currency}. Tinkoff.ru'.format(
+                    account=self.account,
+                    amount=self.amount,
+                    currency=self.currency,
+                    datetime=self.datetime.strftime('%d.%m.%Y %H:%M'))
+                )
+
     def setUp(self):
         self.client = Client()
+        self.account = self.card.bank_title
+        self.amount = Decimal('145.40')
+        self.currency = 'RUB'
+        self.timezone = pytz.timezone('Europe/Moscow')
+        self.datetime=datetime.now(tz=self.timezone)
         self.payload = {
             'secret': settings.SMS_SECRET_KEY,
             'from': 'Tinkoff',
             'message_id': 2871592331456,
-            'message': 'Some message text',
+            'message': self.__get_message(),
             'sent_timestamp': datetime.now().strftime('%d.%m.%Y %H:%M'),
             'sent_to': '+79111234567',
             'device_id': 'my_device'
@@ -211,10 +232,26 @@ class SmsTestCase(TestCase):
 
     def tearDown(self):
         del self.client
+        del self.account
+        del self.amount
+        del self.currency
+        del self.timezone
+        del self.datetime
         del self.payload
 
     def test_with_unknown_sender(self):
         self.payload['from'] = 'Captain Kirk'
+        response = self.client.post(
+            path=reverse('accountant:sms'),
+            data=json.dumps(self.payload),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_with_unknown_account(self):
+        self.account = 'Secret account'
+        self.payload['message'] = self.__get_message()
         response = self.client.post(
             path=reverse('accountant:sms'),
             data=json.dumps(self.payload),
@@ -232,4 +269,3 @@ class SmsTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 401)
-
