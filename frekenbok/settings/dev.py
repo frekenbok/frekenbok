@@ -51,13 +51,9 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'accountant.models': {
+        'accountant': {
             'handlers': ['console'],
             'level': 'DEBUG'
-        },
-        'accountant.tests': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
         },
     }
 }
