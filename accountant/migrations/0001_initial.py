@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('tree_id', models.PositiveIntegerField(db_index=True)),
                 ('depth', models.PositiveIntegerField(db_index=True)),
                 ('title', models.CharField(blank=True, max_length=255, verbose_name='title')),
-                ('bank_title', models.CharField(blank=True, max_length=255, unique=True, verbose_name='title used by bank to identify account in messages anf reports')),
+                ('bank_title', models.CharField(blank=True, max_length=255, verbose_name='title used by bank to identify account in messages anf reports')),
                 ('type', models.IntegerField(choices=[(1, 'income'), (2, 'expense'), (3, 'account')], verbose_name='type')),
                 ('opened', models.DateField(auto_now_add=True, null=True, verbose_name='date of open')),
                 ('closed', models.DateField(blank=True, null=True, verbose_name='date of close')),
