@@ -13,7 +13,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, HttpResponse
 
 from .models import Account, Transaction, Invoice
 
@@ -157,7 +157,6 @@ def sms(request):
                             status=404)
 
     regexp = parser['regexp']
-    logger.debug('Message will be parsed to {}'.format(regexp.search(message['message'])))
     parsed_message = regexp.search(message['message']).groupdict()
 
     account = Account.objects.filter(bank_title=parsed_message['account']).first()
@@ -184,7 +183,7 @@ def sms(request):
         )
         new_transaction = Transaction.objects.create(
             invoice=invoice,
-            date=timestamp.date,
+            date=timestamp.date(),
             account=account,
             amount=amount,
             currency=parsed_message['currency'],

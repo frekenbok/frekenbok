@@ -9,9 +9,11 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.http import JsonResponse
 
-from accountant.models import Account
-from accountant.views import AccountantViewMixin, DashboardView, AccountDetailView, AccountListView, IncomeListView
+from accountant.models import Account, Transaction, Invoice
+from accountant.views import AccountantViewMixin, DashboardView, \
+    AccountDetailView, AccountListView, IncomeListView
 
 from .test_data import add_test_data
 
@@ -205,21 +207,30 @@ class SmsTestCase(TestCase):
 
     def __get_message(self):
         return ('Pokupka. {account}. Summa {amount} {currency}. '
-                'PYATEROCHKA 8120, MOSCOW. {datetime}. '
+                '{receiver}. {datetime}. '
                 'Dostupno {amount} {currency}. Tinkoff.ru'.format(
                     account=self.account,
                     amount=self.amount,
                     currency=self.currency,
+                    receiver=self.receiver,
                     datetime=self.datetime.strftime('%d.%m.%Y %H:%M'))
                 )
+
+    def __get_response(self):
+        return self.client.post(
+            path=reverse('accountant:sms'),
+            data=json.dumps(self.payload),
+            content_type='application/json'
+        )
 
     def setUp(self):
         self.client = Client()
         self.account = self.card.bank_title
         self.amount = Decimal('145.40')
         self.currency = 'RUB'
+        self.receiver = 'PYATEROCHKA 8120, MOSCOW'
         self.timezone = pytz.timezone('Europe/Moscow')
-        self.datetime=datetime.now(tz=self.timezone)
+        self.datetime=datetime.now(tz=self.timezone).replace(second=0, microsecond=0)
         self.payload = {
             'secret': settings.SMS_SECRET_KEY,
             'from': 'Tinkoff',
@@ -235,37 +246,47 @@ class SmsTestCase(TestCase):
         del self.account
         del self.amount
         del self.currency
+        del self.receiver
         del self.timezone
         del self.datetime
         del self.payload
 
     def test_with_unknown_sender(self):
         self.payload['from'] = 'Captain Kirk'
-        response = self.client.post(
-            path=reverse('accountant:sms'),
-            data=json.dumps(self.payload),
-            content_type='application/json'
-        )
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.__get_response().status_code, 404)
 
     def test_with_unknown_account(self):
         self.account = 'Secret account'
         self.payload['message'] = self.__get_message()
-        response = self.client.post(
-            path=reverse('accountant:sms'),
-            data=json.dumps(self.payload),
-            content_type='application/json'
-        )
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.__get_response().status_code, 404)
 
     def test_with_wrong_secret_key(self):
         self.payload['secret'] = 'some_very_secret_but_wrong_key'
-        response = self.client.post(
-            path=reverse('accountant:sms'),
-            data=json.dumps(self.payload),
-            content_type='application/json'
-        )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(self.__get_response().status_code, 401)
+
+    def test_with_correct_data(self):
+        response = self.__get_response()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, JsonResponse)
+
+        response_json = json.loads(response.content.decode())
+        logger.debug('Response JSON: {}'.format(response_json))
+        created_invoice = Invoice.objects.get(pk=response_json['invoice'])
+        logger.debug('Created invoice: {}'.format(created_invoice))
+        created_transaction = Transaction.objects.get(pk=response_json['transaction'])
+        logger.debug('Created transaction: {}'.format(created_transaction))
+
+        self.assertEqual(created_invoice.timestamp, self.datetime)
+        self.assertEqual(created_invoice.comment, self.payload['message'])
+
+        # Minus is required because 'Pokupka' is listed in negative_actions set
+        self.assertEqual(created_transaction.amount, -self.amount)
+        self.assertEqual(created_transaction.currency, self.currency)
+        self.assertEqual(created_transaction.date, self.datetime.date())
+        self.assertEqual(created_transaction.account, self.card)
+        self.assertEqual(created_transaction.invoice, created_invoice)
+        self.assertEqual(created_transaction.comment, self.receiver)
