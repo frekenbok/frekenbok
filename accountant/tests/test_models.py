@@ -107,11 +107,11 @@ class AccountTestCase(TestCase):
             for sheaf in account.sheaves.all():
                 expected_tree_summary.setdefault(sheaf.currency, Decimal(0))
                 expected_tree_summary[sheaf.currency] += sheaf.amount
+        expected_result = [{'currency': key, 'amount': value}
+                           for key, value in expected_tree_summary.items()]
+        expected_result.sort(key=lambda x: x['currency'])
 
-        self.assertEqual(
-            expected_tree_summary,
-            self.cash.tree_summary()
-        )
+        self.assertEqual(expected_result, list(self.cash.tree_summary()))
 
 
 class SheafTestCase(TestCase):

@@ -46,24 +46,17 @@ class DashboardView(ListView, AccountantViewMixin):
 
         # Generating report about total value of all accounts and
         # placing value in base currency to first place in that report
-        report = list()
+        total_report = list()
         for currency, amount in sorted(total.items(), key=lambda x: x[0]):
             report_line = {'currency': currency, 'amount': amount}
             if currency == settings.BASE_CURRENCY:
-                report.insert(0, report_line)
+                total_report.insert(0, report_line)
             else:
-                report.append(report_line)
+                total_report.append(report_line)
 
         overview = list()
         for account in self.model.objects.filter(type=Account.ACCOUNT, depth=1):
-            report = list()
-            for currency, amount in sorted(account.tree_summary().items(),
-                                           key=lambda x: x[0]):
-                report_line = {'currency': currency, 'amount': amount}
-                if currency == settings.BASE_CURRENCY:
-                    report.insert(0, report_line)
-                else:
-                    report.append(report_line)
+            report = account.tree_summary()
             overview.append({'account': account.title,
                              'report': report,
                              'weight': sum(i['amount'] for i in report),
@@ -71,7 +64,7 @@ class DashboardView(ListView, AccountantViewMixin):
                              'weight_currency': settings.BASE_CURRENCY})
 
         context['overview'] = overview
-        context['total'] = report
+        context['total'] = total_report
         context['menu_dashboard'] = True
         return context
 

@@ -101,25 +101,19 @@ class Account(NS_Node):
 
     def tree_summary(self):
         """
-        method returns summary of all child accounts
+        method returns summary of all child accounts ordered by currency
         >>> account = Account.objects.get(pk=34)
         >>> account.tree_summary()
-        {'EUR': Decimal('34'),
-         'RUB': Decimal('45')}
+        <QuerySet [{'currency': 'GBP', 'amount': Decimal('99.00000')},
+                   {'currency': 'RUB', 'amount': Decimal('89119.50000')},
+                   {'currency': 'USD', 'amount': Decimal('281.00000')}]>
 
-        :return: dict with summary
+        :return: QuerySet with summary
         """
-        sql = 'SELECT SUM(amount) as amount, currency ' \
-              'FROM accountant_sheaf ' \
-              'WHERE account_id IN (' \
-              '   SELECT id' \
-              '   FROM accountant_account' \
-              '   WHERE lft > %s AND rgt < %s AND tree_id = %s' \
-              ') GROUP BY currency;'
-        with connection.cursor() as cursor:
-            cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
-            result = cursor.fetchall()
-        return {currency: amount for amount, currency in result}
+        result = Sheaf.objects.filter(account__in=self.get_tree(self))\
+            .values('currency')\
+            .annotate(amount=Sum('amount')).order_by('currency')
+        return result
 
     def __str__(self):
         return '{title} ({type})'.format(
