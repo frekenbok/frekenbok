@@ -26,6 +26,12 @@ class Account(NS_Node):
         verbose_name=_('title'),
         max_length=255,
         blank=True)
+    bank_title = models.CharField(
+        verbose_name=_('title used by bank to identify account in messages anf reports'),
+        max_length=255,
+        blank=True,
+        unique=True
+    )
 
     type = models.IntegerField(
         verbose_name=_('type'),
