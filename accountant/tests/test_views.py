@@ -1,4 +1,5 @@
-from datetime import date
+import json
+from datetime import date, datetime
 
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
@@ -189,3 +190,46 @@ class IncomeListViewTestCase(TestCase):
         client = Client()
         response = client.get(reverse('accountant:income_list'))
         self.assertEqual(response.status_code, 403)
+
+
+class SmsTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        add_test_data(cls)
+
+    def setUp(self):
+        self.client = Client()
+        self.payload = {
+            'secret': settings.SMS_SECRET_KEY,
+            'from': 'Tinkoff',
+            'message_id': 2871592331456,
+            'message': 'Some message text',
+            'sent_timestamp': datetime.now().strftime('%d.%m.%Y %H:%M'),
+            'sent_to': '+79111234567',
+            'device_id': 'my_device'
+        }
+
+    def tearDown(self):
+        del self.client
+        del self.payload
+
+    def test_with_unknown_sender(self):
+        self.payload['from'] = 'Captain Kirk'
+        response = self.client.post(
+            path=reverse('accountant:sms'),
+            data=json.dumps(self.payload),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_with_wrong_secret_key(self):
+        self.payload['secret'] = 'some_very_secret_but_wrong_key'
+        response = self.client.post(
+            path=reverse('accountant:sms'),
+            data=json.dumps(self.payload),
+            content_type='application/json'
+        )
+
+        self.assertEqual(response.status_code, 401)
+
