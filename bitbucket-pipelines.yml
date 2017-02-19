@@ -5,5 +5,4 @@ pipelines:
         - step:
             script:
                 - pip install -r requirements.txt
-                - pip install django-autofixture # tests dependency
                 - python manage.py test
