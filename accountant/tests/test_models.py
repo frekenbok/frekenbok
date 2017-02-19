@@ -230,13 +230,18 @@ class InvoiceTestCase(TestCase):
         add_test_data(cls)
 
     def test_verify_method_with_correct_invoice(self):
-        self.assertEqual(self.first_salary.verify(),
-                         dict())
+        result = self.first_salary.verify()
+
+        logger.debug('Verification result: {}'.format(result))
+        self.assertEqual(list(result), list())
 
     def test_verify_method_with_incorrect_invoice(self):
-        self.first_salary.transactions.filter(amount__lt=0).first().delete()
-        self.assertEqual(self.first_salary.verify(),
-                         {'RUB': Decimal('70000')})
+        transaction_to_delete = self.first_salary.transactions.first()
+        expected_result = [{'currency': transaction_to_delete.currency,
+                            'amount': -transaction_to_delete.amount}]
+        transaction_to_delete.delete()
+
+        self.assertEqual(list(self.first_salary.verify()), expected_result)
 
     def test_is_verified_property_with_correct_invoice(self):
         self.assertTrue(self.first_salary.is_verified)

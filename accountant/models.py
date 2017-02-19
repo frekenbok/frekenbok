@@ -182,20 +182,19 @@ class Invoice(models.Model):
     def verify(self):
         """
         method calculates sum of all transactions of the invoice and returns
-        dictionary with currencies that has outstanding transactions.
+        QuerySet with currencies that has outstanding transactions.
+
         >>> invoice = Invoice.objects.get(pk=3)
         >>> invoice.verify()
-        {'EUR': Decimal('-34')}
-        :return: dictionary with currencies as keys and outstanding amounts
-          as values. Empty dictionary can be thought as sign of verified
-          invoice.
+        <QuerySet [{'amount': Decimal('70000.00000'), 'currency': 'RUB'}]>
+
+        :return: QuerySet with amounts and currencies. Empty QuerySet can
+         be thought as sign of verified invoice.
         """
-        sql = 'SELECT SUM(amount) as amount, currency FROM {} ' \
-              'WHERE invoice_id = %s GROUP BY currency;'
-        with connection.cursor() as cursor:
-            cursor.execute(sql.format(Transaction._meta.db_table), [self.id])
-            result = cursor.fetchall()
-        return {currency: amount for amount, currency in result if amount}
+        return Transaction.objects.filter(invoice=self)\
+            .values('currency')\
+            .annotate(amount=Sum('amount'))\
+            .exclude(amount=0)
 
     @property
     def is_verified(self):
