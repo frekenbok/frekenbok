@@ -1,14 +1,41 @@
-from datetime import date
-
+import re
+import json
+import logging
+from datetime import date, datetime
 from decimal import Decimal
-from django.db.models import F
-from django.db.models import Q
+
+import pytz
+
+from django.db.models import F, Q
+from django.db import transaction
+from django.views.decorators.http import require_http_methods
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.http import JsonResponse, Http404
 
-from .models import Account, Transaction
+from .models import Account, Transaction, Invoice
+
+
+logger = logging.getLogger(__name__)
+
+
+sms_parsers = {
+    'Tinkoff': {
+        'regexp': re.compile(
+            r'(?P<action>[\w\ ]+)\. (?P<account>[\w\ \*]+)\. '
+            r'Summa (?P<amount>[\d\.]+) (?P<currency>[A-Z]{3})\. '
+            r'(?P<receiver>[\w\ \,\.]+)\. (?P<datetime>[0-9\.\ \:]{16})\. '
+            r'Dostupno (?P<rest_amount>[\d\.]+) (?P<rest_currency>[A-Z]{3})\.',
+            re.ASCII),
+        'negative_actions': {'Pokupka', 'Snytie nalichnyh', 'Platezh',
+                             'Operatsia v drugih kreditnyh organizatsiyah',
+                             'Vnutrenniy perevod sebe', 'Vneshniy perevod'},
+        'datetime_format': '%d.%m.%Y %H:%M',
+        'datetime_tz': pytz.timezone('Europe/Moscow')
+    }
+}
 
 
 class AccountantViewMixin(LoginRequiredMixin, ContextMixin):
@@ -109,3 +136,46 @@ class AccountDetailView(DetailView, AccountantViewMixin):
 class TransactionListView(ListView):
     model = Transaction
     context_object_name = 'transaction'
+
+
+@require_http_methods(['POST'])
+def sms(request):
+    message = json.loads(request.body.decode())
+    logger.info('Received SMS {}'.format(message))
+
+    try:
+        parser = sms_parsers[message['from']]
+    except KeyError:
+        raise Http404
+
+    regexp = parser['regexp']
+    parsed_message = regexp.search(message['message']).groupdict()
+
+    account = Account.objects.get(bank_title=parsed_message['account'])
+    amount = Decimal(parsed_message['amount'])
+    if parsed_message['action'] in parser['negative_actions']:
+        amount *= -1
+    timestamp = parser['datetime_tz'].localize(
+        datetime.strptime(
+            parsed_message['datetime'],
+            parser['datetime_format']
+        )
+    )
+
+    with transaction.atomic():
+        invoice = Invoice.objects.create(
+            timestamp=timestamp,
+            comment=message['message']
+        )
+        new_transaction = Transaction.objects.create(
+            invoice=invoice,
+            date=timestamp.date,
+            account=account,
+            amount=amount,
+            currency=parsed_message['currency'],
+            comment=parsed_message['receiver']
+        )
+
+    return JsonResponse({'status': 'ok',
+                         'invoice': invoice.pk,
+                         'transaction': new_transaction.pk})
