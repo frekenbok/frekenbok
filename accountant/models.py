@@ -1,9 +1,15 @@
+import logging
+
 from django.db import models, transaction, connection
+from django.db.models import Sum, F
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
+
+
+logger = logging.getLogger(__name__)
 
 
 class Account(NS_Node):
@@ -78,23 +84,23 @@ class Account(NS_Node):
 
     def summary_at(self, date):
         """
-        method returns dictionary with expected account summary
-         for specified date (including that date)
+        method returns QuerySet with dictionaries with expected account summary
+         for specified date (including that date) for this account and all
+         child ones. Result is sorted by currency in alphabetical order.
+
+        >>> account = Account.objects.get(pk=1)
+        >>> account.summary_at(date.today())
+        <QuerySet [{'currency': 'RUB', 'amount': Decimal('88891.50000')},
+                   {'currency': 'USD', 'amount': Decimal('200.00000')}]>
+
         :param date: date of summary
         :return: dictionary with summary
         """
-        sql = '''SELECT SUM(amount) as amount, currency
-                 FROM accountant_transaction
-                 WHERE account_id IN (
-                    SELECT id
-                    FROM accountant_account
-                    WHERE lft > %s AND rgt < %s AND tree_id = %s
-                  ) AND date <= %s
-                 GROUP BY currency ORDER BY currency;'''
-        with connection.cursor() as cursor:
-            cursor.execute(sql, (self.lft, self.rgt, self.tree_id, date))
-            result = cursor.fetchall()
-        return {currency: amount for amount, currency in result}
+        return Transaction.objects.filter(account__in=self.get_tree(self))\
+            .filter(date__lte=date)\
+            .values('currency')\
+            .annotate(amount=Sum('amount'))\
+            .order_by('currency')
 
     def tree_summary(self):
         """
@@ -103,6 +109,7 @@ class Account(NS_Node):
         >>> account.tree_summary()
         {'EUR': Decimal('34'),
          'RUB': Decimal('45')}
+
         :return: dict with summary
         """
         sql = 'SELECT SUM(amount) as amount, currency ' \
@@ -111,7 +118,7 @@ class Account(NS_Node):
               '   SELECT id' \
               '   FROM accountant_account' \
               '   WHERE lft > %s AND rgt < %s AND tree_id = %s' \
-              ') GROUP BY currency ORDER BY currency;'
+              ') GROUP BY currency;'
         with connection.cursor() as cursor:
             cursor.execute(sql, (self.lft, self.rgt, self.tree_id))
             result = cursor.fetchall()
@@ -247,6 +254,14 @@ class Transaction(models.Model):
         verbose_name=_('comment'),
         blank=True
     )
+
+    def __str__(self):
+        return ('{amount} {currency} @ {account} on {date} ({app}approved)'
+                .format(amount=self.amount,
+                        currency=self.currency,
+                        account=self.account,
+                        date=self.date,
+                        app='not ' if not self.approved else ''))
 
     @transaction.atomic
     def save(self, *args, **kwargs):

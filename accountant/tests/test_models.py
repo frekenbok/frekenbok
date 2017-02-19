@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from copy import deepcopy
+import logging
 
 from django.test import TestCase
 from django.conf import settings
@@ -11,6 +11,9 @@ from moneyed import Decimal, JPY, USD, ZAR
 from accountant.models import Sheaf, Transaction
 
 from .test_data import add_test_data
+
+
+logger = logging.getLogger(__name__)
 
 
 class AccountTestCase(TestCase):
@@ -58,8 +61,8 @@ class AccountTestCase(TestCase):
 
     def test_summary_at(self):
         self.wallet.recalculate_summary()
-        current_summary = {i.currency: i.amount
-                           for i in self.wallet.sheaves.all()}
+        expected_summary = [{'amount': i.amount, 'currency': i.currency}
+                            for i in self.wallet.sheaves.all()]
         near_future_date = date.today() + timedelta(days=10)
         report_date = date.today() + timedelta(days=15)
         far_future_date = date.today() + timedelta(days=20)
@@ -77,11 +80,16 @@ class AccountTestCase(TestCase):
             account=self.wallet
         )
 
+        expected_summary.append({'amount': Decimal('500'), 'currency': 'ZAR'})
         future_summary = self.wallet.summary_at(report_date)
-        expected_summary = deepcopy(current_summary)
-        expected_summary[str(near_transaction.currency)] = near_transaction.amount
-        for item in future_summary:
-            self.assertEqual(item.amount, current_summary[item.currency].amount)
+
+        logger.debug('Expected summary: {}'.format(expected_summary))
+        logger.debug('Future summary: {}'.format(future_summary))
+
+        self.assertEqual(len(expected_summary), len(future_summary))
+        for future, current in zip(future_summary, expected_summary):
+            self.assertEqual(future['amount'], current['amount'])
+            self.assertEqual(future['currency'], current['currency'])
 
     def test_sorted_sheaves(self):
         currencies = [i.currency for i in self.wallet.sorted_sheaves]
