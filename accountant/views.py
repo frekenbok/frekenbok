@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.db.models import F, Q
 from django.db import transaction
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -118,6 +119,7 @@ class TransactionListView(ListView):
     context_object_name = 'transaction'
 
 
+@csrf_exempt
 @require_http_methods(['POST'])
 def sms(request):
     message = json.loads(request.body.decode())
