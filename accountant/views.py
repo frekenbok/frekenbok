@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 sms_parsers = {
     'Tinkoff': {
         'regexp': re.compile(
-            r'(?P<action>[\w\ ]+)\. (?P<account>[\w\ \*]+)\. '
+            r'(?P<action>[\w ]+)\. (?P<account>[\w *_]+)\. '
             r'Summa (?P<amount>[\d\.]+) (?P<currency>[A-Z]{3})\. '
-            r'(?P<receiver>[\w\ \,\.]+)\. (?P<datetime>[0-9\.\ \:]{16})\. '
-            r'Dostupno (?P<rest_amount>[\d\.]+) (?P<rest_currency>[A-Z]{3})\.',
+            r'(?P<receiver>[\w ,.]+)\. (?P<datetime>[0-9. :]{16})\. '
+            r'Dostupno (?P<rest_amount>[\d.]+) (?P<rest_currency>[A-Z]{3})\.',
             re.ASCII),
         'negative_actions': {'Pokupka', 'Snytie nalichnyh', 'Platezh',
                              'Operatsia v drugih kreditnyh organizatsiyah',
@@ -144,17 +144,29 @@ def sms(request):
     logger.info('Received SMS {}'.format(message))
 
     if message['secret'] != settings.SMS_SECRET_KEY:
+        logger.error('Unauthorized attempts to send SMS, received secret key {}'
+                     .format(message['secret']))
         return HttpResponse('Unauthorized', status=401)
 
     try:
         parser = sms_parsers[message['from']]
     except KeyError:
-        raise Http404
+        logger.error('Sender {} not found in parser config'
+                     .format(message['from']))
+        return JsonResponse({'status': 'error', 'message': 'Unknown sender'},
+                            status=404)
 
     regexp = parser['regexp']
+    logger.debug('Message will be parsed to {}'.format(regexp.search(message['message'])))
     parsed_message = regexp.search(message['message']).groupdict()
 
-    account = Account.objects.get(bank_title=parsed_message['account'])
+    account = Account.objects.filter(bank_title=parsed_message['account']).first()
+    if account is None:
+        logger.error('Account with bank_title {} not found'
+                     .format(parsed_message['account']))
+        return JsonResponse({'status': 'error', 'message': 'Unknown account'},
+                            status=404)
+
     amount = Decimal(parsed_message['amount'])
     if parsed_message['action'] in parser['negative_actions']:
         amount *= -1
@@ -179,6 +191,8 @@ def sms(request):
             comment=parsed_message['receiver']
         )
 
+    logger.info('Added invoice {} and transaction {}'
+                .format(invoice, new_transaction))
     return JsonResponse({'status': 'ok',
                          'invoice': invoice.pk,
                          'transaction': new_transaction.pk})
