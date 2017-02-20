@@ -12,7 +12,7 @@ admin.site.register(Account, AccountAdmin)
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('account', 'amount', 'currency', 'date')
+    list_display = ('account', 'amount', 'currency', 'date', 'approved')
 
 admin.site.register(Transaction, TransactionAdmin)
 
