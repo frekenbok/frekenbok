@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django.db.models import F, Q
@@ -62,14 +62,24 @@ class DashboardView(ListView, AccountantViewMixin):
             else:
                 total_report.append(report_line)
 
+        today = date.today()
+        overview_dates = [today - timedelta(days=i) for i in range(13, 0, -1)]
         overview = list()
-        for account in self.model.objects.filter(type=Account.ACCOUNT, depth=1):
+        for account in self.model.objects.filter(type=Account.ACCOUNT, dashboard=True):
             report = account.tree_summary()
-            overview.append({'account': account.title,
-                             'report': report,
-                             'weight': sum(i['amount'] for i in report),
-                             # TODO We should try to guess currency here
-                             'weight_currency': settings.BASE_CURRENCY})
+            item = {
+                'account': account.title,
+                'report': report,
+                'weight': sum(i['amount'] for i in report),
+                # TODO We should try to guess currency here
+                'weight_currency': settings.BASE_CURRENCY,
+                'historical': []
+            }
+            for summary in [account.summary_at(i) for i in overview_dates]:
+                for i in summary:
+                    if i['currency'] == settings.BASE_CURRENCY:
+                        item['historical'].append(i['amount'])
+            overview.append(item)
 
         context['overview'] = overview
         context['total'] = total_report

@@ -12,9 +12,9 @@
   <div class="col-md-3 col-sm-3 col-xs-6 tile">
     <span>{{ account.account }}</span>
     <h2>{{ account.weight|intcomma }} {{ account.weight_currency }}</h2>
-    <span class="sparkline_one" style="height: 160px;">
-          <canvas width="200" height="60" style="display: inline-block; vertical-align: top; width: 94px; height: 30px;"></canvas>
-      </span>
+    <span class="overview_barchart" style="height: 160px;">
+    {% for item in account.historical %}{{ item }},{% endfor %}
+    </span>
   </div>
 {% endfor %}
 </div>
@@ -262,3 +262,15 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block inline-js %}
+<script>
+  $('.overview_barchart').sparkline('html', {
+     type: 'bar',
+     height: '125',
+     barWidth: 20,
+     barSpacing: 2,
+     barColor: '#26B99A'
+  });
+</script>
+{% endblock %}
