@@ -18,7 +18,7 @@ def add_test_data(cls):
     )
 
     # Test accounts
-    cls.cash = Account(title='Наличные', type=Account.ACCOUNT)
+    cls.cash = Account(title='Наличные', type=Account.ACCOUNT, dashboard=True)
     Account.add_root(instance=cls.cash)
 
     cls.wallet = cls.cash.add_child(title='Кошелёк', type=Account.ACCOUNT)
@@ -29,7 +29,7 @@ def add_test_data(cls):
 
     cls.reserve = cls.cash.add_child(title='Заначка', type=Account.ACCOUNT)
 
-    cls.bank = Account(title='Банк', type=Account.ACCOUNT)
+    cls.bank = Account(title='Банк', type=Account.ACCOUNT, dashboard=True)
     Account.add_root(instance=cls.bank)
     cls.card = cls.bank.add_child(title='Дебетовая карта',
                                   bank_title='Karta *1234',
