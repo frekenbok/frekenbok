@@ -35,6 +35,10 @@ class Account(NS_Node):
     type = models.IntegerField(
         verbose_name=_('type'),
         choices=TYPES)
+    dashboard = models.BooleanField(
+        verbose_name=_('display on dashboard'),
+        default=False
+    )
 
     opened = models.DateField(
         verbose_name=_('date of open'),
