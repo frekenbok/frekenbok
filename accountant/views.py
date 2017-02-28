@@ -63,7 +63,7 @@ class DashboardView(ListView, AccountantViewMixin):
                 total_report.append(report_line)
 
         today = date.today()
-        overview_dates = [today - timedelta(days=i) for i in range(13, 0, -1)]
+        overview_dates = [today - timedelta(days=i) for i in range(13, -1, -1)]
         overview = list()
         for account in self.model.objects.filter(type=Account.ACCOUNT, dashboard=True):
             report = account.tree_summary()

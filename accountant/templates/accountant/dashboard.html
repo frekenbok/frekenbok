@@ -13,7 +13,7 @@
     <span>{{ account.account }}</span>
     <h2>{{ account.weight|intcomma }} {{ account.weight_currency }}</h2>
     <span class="overview_barchart" style="height: 160px;">
-    {% for item in account.historical %}{{ item }},{% endfor %}
+    {{ account.historical|join:", " }}
     </span>
   </div>
 {% endfor %}
