@@ -55,6 +55,15 @@ class Account(NS_Node):
     )
 
     @property
+    def depth_dashes(self):
+        """
+        That's a sort of dirty hack, returns srting with several m-dashes.
+        Number of dashes is equal to depth level of account in tree.
+        :return: string with dashes
+        """
+        return '— ' * (self.depth - 1)
+
+    @property
     def sorted_sheaves(self):
         """
         Property contains list of sheaves for the account, sorted buy currency

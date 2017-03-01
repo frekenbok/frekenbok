@@ -29,7 +29,7 @@
         {% for account in account_list %}
         <tr>
             <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.id }}</a></td>
-            <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a></td>
+            <td><a href="{% url 'accountant:account_detail' account.id %}">{{ account.depth_dashes }}{{ account.title }}</a></td>
             <td>{% for sheave in account.sorted_sheaves %}
                 {{ sheave.amount|intcomma }} {{ sheave.currency }}<br />
                 {% endfor %}</td>
