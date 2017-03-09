@@ -1,17 +1,13 @@
-from datetime import date, timedelta
 import logging
+from datetime import date, timedelta
 
-from django.test import TestCase
 from django.conf import settings
-
 from django.db.utils import IntegrityError
-
+from django.test import TestCase
 from moneyed import Decimal, JPY, USD, ZAR
 
 from accountant.models import Sheaf, Transaction
-
-from .test_data import add_test_data
-
+from frekenbok.tests.test_data import add_test_data
 
 logger = logging.getLogger(__name__)
 

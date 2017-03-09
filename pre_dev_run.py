@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+
 import django
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'frekenbok.settings.dev'
@@ -10,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import management
 
-from accountant.tests.test_data import add_test_data
+from frekenbok.tests.test_data import add_test_data
 
 
 class DevData:

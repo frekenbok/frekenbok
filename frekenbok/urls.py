@@ -19,8 +19,12 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from .views import DashboardView
+
 
 urlpatterns = [
+    url(r'^$', DashboardView.as_view(), name='dashboard'),
     url(r'^admin/', admin.site.urls),
     url(r'^accountant/', include('accountant.urls', namespace='accountant')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
