@@ -219,8 +219,9 @@ class Invoice(models.Model):
         return not bool(self.verify())
 
     def __str__(self):
-        return _('Invoice from {timestamp}').format(
-            timestamp=self.timestamp
+        return _('Invoice from {timestamp} ({comment})').format(
+            timestamp=self.timestamp,
+            comment=self.comment
         )
 
 
