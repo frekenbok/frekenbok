@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load humanize %}
 
-{% block header %}{% trans 'Accountant' %}{% endblock header %}
+{% block title %}{{ block.super }} — {% trans 'Dashboard' %}{{ super }}{% endblock title %}
 
 
 
