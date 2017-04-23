@@ -1,0 +1,46 @@
+{% extends 'accountant/base.html' %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} — {% trans 'List of invices' %}{% endblock %}
+
+{% block header %}{% trans 'Invoice list' %}{% endblock header %}
+
+{% block content %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td>{% trans 'Date' %}</td>
+            <td>{% trans 'Comment' %}</td>
+            <td>{% trans 'Incomes' %}</td>
+            <td>{% trans 'Accounts' %}</td>
+            <td>{% trans 'Expences' %}</td>
+            <td>{% trans 'P&L' %}</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoice_list %}
+        <tr>
+            <td>{{ invoice.timestamp }}</td>
+            <td>{{ invoice.comment }}</td>
+            <td>{% for account in invoice.accounts %}
+                {% if account.type == account.INCOME %}
+                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
+                {% endif %}
+                {% endfor %}</td>
+            <td>{% for account in invoice.accounts %}
+                {% if account.type == account.ACCOUNT %}
+                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
+                {% endif %}
+                {% endfor %}</td>
+            <td>{% for account in invoice.accounts %}
+                {% if account.type == Account.EXPENSE %}
+                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
+                {% endif %}
+                {% endfor %}</td>
+            <td>{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
