@@ -1,7 +1,7 @@
 import logging
 
-from django.db import models, transaction, connection
-from django.db.models import Sum, F
+from django.db import models, transaction
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -217,6 +217,15 @@ class Invoice(models.Model):
     @property
     def is_verified(self):
         return not bool(self.verify())
+
+    @property
+    def pnl(self):
+        return Transaction.objects\
+            .filter(invoice=self)\
+            .filter(account__type=Account.ACCOUNT)\
+            .values('currency')\
+            .annotate(amount=Sum('amount'))\
+            .order_by('currency')
 
     def __str__(self):
         return _('Invoice from {timestamp} ({comment})').format(

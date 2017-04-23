@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from moneyed import Decimal, JPY, USD, ZAR
 
-from accountant.models import Sheaf, Transaction
+from accountant.models import Sheaf, Transaction, Account
 from frekenbok.tests.test_data import add_test_data
 
 logger = logging.getLogger(__name__)
@@ -245,3 +245,19 @@ class InvoiceTestCase(TestCase):
     def test_is_verified_property_with_incorrect_invoice(self):
         self.first_salary.transactions.filter(amount__lt=0).first().delete()
         self.assertFalse(self.first_salary.is_verified)
+
+    def test_pnl_property(self):
+        expected_result = dict()
+        for transaction in self.first_salary.transactions.all():
+            if transaction.account.type == Account.ACCOUNT:
+                expected_result.setdefault(transaction.currency, Decimal(0))
+                expected_result[transaction.currency] += transaction.amount
+        expected_result = [
+            {
+                'currency': i[0],
+                'amount': i[1]
+            }
+            for i in sorted(list(expected_result.items()), key=lambda x: x[0])
+        ]
+
+        self.assertEqual(list(self.first_salary.pnl), expected_result)
