@@ -15,6 +15,10 @@
 {% endblock menu_account_list %}
 
 {% block content %}
+<form action="{% url 'accountant:recalculate' %}" method="get" style="float: right">
+<input class="btn btn-default" type="submit" value="{% trans 'Recalculate' %}">
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>

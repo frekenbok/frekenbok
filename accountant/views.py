@@ -1,17 +1,17 @@
-import json
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from decimal import Decimal
 
-from django.db.models import F, Q
+from django.db.models import Q
 from django.db import transaction
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 
 from .models import Account, Transaction, Invoice
 
@@ -79,7 +79,7 @@ class TransactionListView(ListView):
 
 
 @csrf_exempt
-def sms(request):
+def sms(request: HttpRequest):
     message = request.GET
     logger.info('Received SMS {}'.format(message))
 
@@ -135,3 +135,12 @@ def sms(request):
     return JsonResponse({'status': 'ok',
                          'invoice': invoice.pk,
                          'transaction': new_transaction.pk})
+
+
+@transaction.atomic
+def recalculate_request(request: HttpRequest):
+    for account in Account.objects.all():
+        account.recalculate_summary(atomic=False)
+    return redirect(
+        request.META.get('HTTP_REFERER', reverse('accountant:account_list'))
+    )
