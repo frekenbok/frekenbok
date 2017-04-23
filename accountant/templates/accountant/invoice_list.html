@@ -23,20 +23,14 @@
         <tr>
             <td>{{ invoice.timestamp }}</td>
             <td>{{ invoice.comment }}</td>
-            <td>{% for account in invoice.accounts %}
-                {% if account.type == account.INCOME %}
-                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
-                {% endif %}
+            <td>{% for income in invoice.incomes %}
+                    <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
                 {% endfor %}</td>
             <td>{% for account in invoice.accounts %}
-                {% if account.type == account.ACCOUNT %}
                     <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
-                {% endif %}
                 {% endfor %}</td>
-            <td>{% for account in invoice.accounts %}
-                {% if account.type == Account.EXPENSE %}
-                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
-                {% endif %}
+            <td>{% for expense in invoice.expenses %}
+                    <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
                 {% endfor %}</td>
             <td>{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}</td>
         </tr>

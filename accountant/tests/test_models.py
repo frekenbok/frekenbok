@@ -261,3 +261,12 @@ class InvoiceTestCase(TestCase):
         ]
 
         self.assertEqual(list(self.first_salary.pnl), expected_result)
+
+    def test_incomes_property(self):
+        self.assertEqual(list(self.first_salary.incomes), [self.salary])
+
+    def test_expenses_property(self):
+        self.assertEqual(set(self.first_invoice.expenses), set(self.expenses))
+
+    def test_accounts_property(self):
+        self.assertEqual(list(self.first_salary.accounts), [self.wallet])
