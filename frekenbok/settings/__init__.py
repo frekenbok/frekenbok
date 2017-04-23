@@ -103,6 +103,11 @@ MEDIA_URL = '/media/'
 MAX_DIGITS = 50
 DECIMAL_PLACES = 5
 
+# Log in && log out settings
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+
 # Individual settings of project like language, timezone etc.
 
 try:

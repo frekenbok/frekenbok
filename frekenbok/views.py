@@ -10,8 +10,6 @@ from accountant.models import Account
 
 
 class DashboardView(LoginRequiredMixin, ListView):
-    raise_exception = True
-
     model = Account
     context_object_name = 'account_list'
     template_name = 'dashboard.html'
