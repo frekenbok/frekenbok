@@ -76,4 +76,11 @@ class DashboardViewTestCase(TestCase):
     def test_login_less_request(self):
         client = Client()
         response = client.get(reverse('dashboard'))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(
+                reverse('login'),
+                reverse('dashboard')
+            )
+        )
