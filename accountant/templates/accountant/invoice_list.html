@@ -11,6 +11,7 @@
     <thead>
         <tr>
             <td>{% trans 'Date' %}</td>
+            <td>{% trans 'User' %}</td>
             <td>{% trans 'Comment' %}</td>
             <td>{% trans 'Incomes' %}</td>
             <td>{% trans 'Accounts' %}</td>
@@ -22,6 +23,7 @@
         {% for invoice in invoice_list %}
         <tr>
             <td>{{ invoice.timestamp }}</td>
+            <td>{{ invoice.user }}</td>
             <td>{{ invoice.comment }}</td>
             <td>{% for income in invoice.incomes %}
                     <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
