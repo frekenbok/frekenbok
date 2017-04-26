@@ -22,7 +22,7 @@
     <tbody>
         {% for invoice in invoice_list %}
         <tr>
-            <td>{{ invoice.timestamp }}</td>
+            <td>{{ invoice.timestamp | date:'Y-m-d&\\n\\b\\s\\p;H:i:s' | safe }}</td>
             <td>{{ invoice.user }}</td>
             <td>{{ invoice.comment }}</td>
             <td>{% for income in invoice.incomes %}
