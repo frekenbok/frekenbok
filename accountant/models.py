@@ -236,6 +236,7 @@ class Invoice(models.Model):
             .filter(account__type=Account.ACCOUNT)\
             .values('currency')\
             .annotate(amount=Sum('amount'))\
+            .exclude(amount=0)\
             .order_by('currency')
 
     def __get_distinct_accounts_by_type(self, type: int):
