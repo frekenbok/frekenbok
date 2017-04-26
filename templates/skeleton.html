@@ -37,6 +37,7 @@
                   <li><a href="{% url 'accountant:account_list' %}">{% trans 'Accounts' %}</a></li>
                   <li><a href="{% url 'accountant:income_list' %}">{% trans 'Incomes' %}</a></li>
                   <li><a href="{% url 'accountant:expense_list' %}">{% trans 'Expenses' %}</a></li>
+                  <li><a href="{% url 'accountant:invoice_list' %}">{% trans 'Invoices' %}</a></li>
                 </ul>
               </li>
               <li><a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
@@ -250,6 +251,7 @@
     <!-- page content -->
     <div class="right_col" role="main">
       <div class="">
+      <h1>{% block header %}{% endblock header %}</h1>
       {% block content %}{% endblock content %}
       </div>
     </div>

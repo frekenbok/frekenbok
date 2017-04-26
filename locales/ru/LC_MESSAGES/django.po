@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-07 02:03+0300\n"
+"POT-Creation-Date: 2017-04-23 13:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,192 +20,310 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: accountant/models.py:13
+#: accountant/models.py:20
 #, fuzzy
 #| msgid "Income"
 msgid "income"
 msgstr "Доход"
 
-#: accountant/models.py:14
+#: accountant/models.py:21
 #, fuzzy
 #| msgid "Expense"
 msgid "expense"
 msgstr "Расход"
 
-#: accountant/models.py:15 accountant/models.py:64 accountant/models.py:70
-#: accountant/models.py:114
+#: accountant/models.py:22 accountant/models.py:142 accountant/models.py:148
+#: accountant/models.py:285
 msgid "account"
 msgstr "счёт"
 
-#: accountant/models.py:19
+#: accountant/models.py:26
 #, fuzzy
 #| msgid "Title"
 msgid "title"
 msgstr "Название"
 
-#: accountant/models.py:24
+#: accountant/models.py:30
+msgid "title used by bank to identify account in messages anf reports"
+msgstr "название, используемое банком в сообщениях и отчётах"
+
+#: accountant/models.py:36
 msgid "type"
 msgstr "тип"
 
-#: accountant/models.py:27
-#, fuzzy
-#| msgid "account"
-msgid "parent account"
-msgstr "счёт"
+#: accountant/models.py:39
+msgid "display on dashboard"
+msgstr "показать на главной"
 
-#: accountant/models.py:34
+#: accountant/models.py:44
 #, fuzzy
 #| msgid "Date of open"
 msgid "date of open"
 msgstr "Дата открытия"
 
-#: accountant/models.py:38
+#: accountant/models.py:48
 #, fuzzy
 #| msgid "Date of close"
 msgid "date of close"
 msgstr "Дата закрытия"
 
-#: accountant/models.py:43
+#: accountant/models.py:53
 #, fuzzy
 #| msgid "Credentials"
 msgid "credentials"
 msgstr "Реквизиты"
 
-#: accountant/models.py:65
+#: accountant/models.py:143
 msgid "accounts"
 msgstr "счета"
 
-#: accountant/models.py:75
+#: accountant/models.py:153
 msgid "sheaf"
 msgstr "куча"
 
-#: accountant/models.py:80 accountant/models.py:126
+#: accountant/models.py:158 accountant/models.py:297
 msgid "currency"
 msgstr "валюта"
 
-#: accountant/models.py:95
+#: accountant/models.py:185
 msgid "date and time"
-msgstr ""
+msgstr "дата и время"
 
-#: accountant/models.py:99 accountant/models.py:137
+#: accountant/models.py:189 accountant/models.py:309
 #, fuzzy
 #| msgid "Comment"
 msgid "comment"
-msgstr "Комментарий"
+msgstr "комментарий"
 
-#: accountant/models.py:103
-#, python-brace-format
-msgid "Invoice from {date}"
+#: accountant/models.py:194
+msgid "user"
+msgstr "пользователь"
+
+#: accountant/models.py:269
+#, fuzzy, python-brace-format
+#| msgid "Invoice from {date}"
+msgid "Invoice from {timestamp} ({comment})"
 msgstr "Чек от {date}"
 
-#: accountant/models.py:110
+#: accountant/models.py:277
 msgid "date"
 msgstr "дата"
 
-#: accountant/models.py:120
+#: accountant/models.py:280
+msgid "approved"
+msgstr "подтверждён"
+
+#: accountant/models.py:291
 #, fuzzy
 #| msgid "account"
 msgid "amount"
 msgstr "счёт"
 
-#: accountant/models.py:152
+#: accountant/models.py:343
 #, fuzzy
 #| msgid "Description"
 msgid "description"
 msgstr "описание"
 
-#: accountant/models.py:158
+#: accountant/models.py:349
 #, fuzzy
 #| msgid "Invoice"
 msgid "invoice"
 msgstr "чек"
 
-#: accountant/models.py:163
+#: accountant/models.py:355
 #, fuzzy
 #| msgid "File with image"
 msgid "file with image"
 msgstr "файл с изображением"
 
-#: accountant/templates/accountant/account_detail.html:4
+#: accountant/templates/accountant/account_detail.html:5
 msgid "Details of account"
 msgstr "Детали счёта"
 
-#: accountant/templates/accountant/account_detail.html:23
+#: accountant/templates/accountant/account_detail.html:16
 #, fuzzy
 #| msgid "Destination"
 msgid "Last actions"
 msgstr "Последние действия"
 
-#: accountant/templates/accountant/account_detail.html:26
+#: accountant/templates/accountant/account_detail.html:19
 msgid "Time"
 msgstr "Время"
 
-#: accountant/templates/accountant/account_detail.html:27
+#: accountant/templates/accountant/account_detail.html:20
 msgid "Value"
 msgstr "Сумма"
 
-#: accountant/templates/accountant/account_detail.html:28
+#: accountant/templates/accountant/account_detail.html:21
+msgid "Category"
+msgstr ""
+
+#: accountant/templates/accountant/account_detail.html:22
+#: accountant/templates/accountant/invoice_list.html:14
 msgid "Comment"
 msgstr "Комментарий"
 
-#: accountant/templates/accountant/account_list.html:4
+#: accountant/templates/accountant/account_list.html:5
 msgid "List of accounts"
 msgstr "Список счетов"
 
-#: accountant/templates/accountant/account_list.html:10
+#: accountant/templates/accountant/account_list.html:7
+#, fuzzy
+#| msgid "accounts"
+msgid "Account list"
+msgstr "счета"
+
+#: accountant/templates/accountant/account_list.html:11
+msgid "Recalculate"
+msgstr "Пересчитать"
+
+#: accountant/templates/accountant/account_list.html:17
 msgid "Id"
 msgstr "№"
 
-#: accountant/templates/accountant/account_list.html:11
-#: accountant/templates/accountant/dashboard.html:10
+#: accountant/templates/accountant/account_list.html:18
+#: accountant/templates/accountant/input.html:10
+#: accountant/templates/accountant/input.html:24
 msgid "Title"
 msgstr "Название"
 
-#: accountant/templates/accountant/account_list.html:12
-#: accountant/templates/accountant/dashboard.html:11
+#: accountant/templates/accountant/account_list.html:19
+#: accountant/templates/accountant/input.html:11
+#: accountant/templates/accountant/input.html:25
 msgid "Summary"
 msgstr "Сумма"
 
-#: accountant/templates/accountant/account_list.html:13
+#: accountant/templates/accountant/account_list.html:20
 msgid "Opened"
 msgstr "Открыт"
 
-#: accountant/templates/accountant/account_list.html:14
+#: accountant/templates/accountant/account_list.html:21
 msgid "Closed"
 msgstr "Закрыт"
 
 #: accountant/templates/accountant/base.html:4
-#: accountant/templates/accountant/dashboard.html:4 templates/base.html:16
+#: accountant/templates/accountant/input.html:5 templates/skeleton.html:35
 #, fuzzy
 #| msgid "Account"
 msgid "Accountant"
 msgstr "Счетовод"
 
-#: accountant/templates/accountant/base.html:8
-msgid "Dashboard"
-msgstr "Главная"
-
-#: accountant/templates/accountant/base.html:9
-#, fuzzy
-#| msgid "accounts"
-msgid "Accounts"
-msgstr "счета"
-
-#: accountant/templates/accountant/base.html:11
-msgid "Reports"
-msgstr "Отчёты"
-
-#: accountant/templates/accountant/base.html:12
-msgid "Settings"
-msgstr "Настройки"
-
-#: accountant/templates/accountant/dashboard.html:21
+#: accountant/templates/accountant/input.html:35
 msgid "Total"
 msgstr "Итого"
 
-#: templates/base.html:5
+#: accountant/templates/accountant/invoice_list.html:5
+#, fuzzy
+#| msgid "List of accounts"
+msgid "List of invices"
+msgstr "Список счетов"
+
+#: accountant/templates/accountant/invoice_list.html:7
+#, fuzzy
+#| msgid "Invoice"
+msgid "Invoice list"
+msgstr "Список чеков"
+
+#: accountant/templates/accountant/invoice_list.html:13
+msgid "Date"
+msgstr "Дата"
+
+#: accountant/templates/accountant/invoice_list.html:15
+#: templates/skeleton.html:38
+#, fuzzy
+#| msgid "Income"
+msgid "Incomes"
+msgstr "Доходы"
+
+#: accountant/templates/accountant/invoice_list.html:16
+#: templates/skeleton.html:37
+#, fuzzy
+#| msgid "accounts"
+msgid "Accounts"
+msgstr "Счета"
+
+#: accountant/templates/accountant/invoice_list.html:17
+#, fuzzy
+#| msgid "Expense"
+msgid "Expences"
+msgstr "Расходы"
+
+#: accountant/templates/accountant/invoice_list.html:18
+msgid "P&L"
+msgstr "Доход/расход"
+
+#: templates/base.html:9
 msgid "Freken Bok"
 msgstr "Фрекен Бок"
+
+#: templates/dashboard.html:5
+msgid "Dashboard"
+msgstr "Главная"
+
+#: templates/login.html:15
+msgid "Login"
+msgstr "Войти"
+
+#: templates/login.html:17 templates/login.html:51
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: templates/login.html:20 templates/login.html:57
+msgid "Password"
+msgstr "Пароль"
+
+#: templates/login.html:23 templates/login.html:67
+msgid "Log in"
+msgstr "Войти"
+
+#: templates/login.html:24
+msgid "Lost your password?"
+msgstr "Забыли пароль?"
+
+#: templates/login.html:30
+msgid "New to site?"
+msgstr "Впервые на сайте?"
+
+#: templates/login.html:31
+#, fuzzy
+#| msgid "account"
+msgid "Create Account"
+msgstr "Зарегистрироваться"
+
+#: templates/login.html:54
+msgid "Email"
+msgstr "Email"
+
+#: templates/login.html:66
+msgid "Already a member ?"
+msgstr "Уже зарегистрированы?"
+
+#: templates/skeleton.html:33
+msgid "General"
+msgstr "Общее"
+
+#: templates/skeleton.html:39
+#, fuzzy
+#| msgid "Expense"
+msgid "Expenses"
+msgstr "Расходы"
+
+#: templates/skeleton.html:40
+#, fuzzy
+#| msgid "Invoice"
+msgid "Invoices"
+msgstr "Чеки"
+
+#: templates/skeleton.html:146
+msgid "Logout"
+msgstr "Выход"
+
+#~ msgid "Reports"
+#~ msgstr "Отчёты"
+
+#~ msgid "Settings"
+#~ msgstr "Настройки"
 
 #, fuzzy
 #~| msgid "Source"

@@ -1,7 +1,7 @@
 import logging
 
-from django.db import models, transaction, connection
-from django.db.models import Sum, F
+from django.db import models, transaction
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -217,6 +217,53 @@ class Invoice(models.Model):
     @property
     def is_verified(self):
         return not bool(self.verify())
+
+    @property
+    def pnl(self):
+        """
+        Property contains grouped by currency sum of all transaction of this
+         invoice applied to accounts with type Account.ACCOUNT. It's designed
+         to give a point of the invoice: was it some income, some expense
+         or just some transfer between own accounts.
+        :return: QuerySet with amounts and currencies
+        
+        >>> invoice = Invoice.objects.get(pk=4)
+        >>> invoice.verify()
+        <QuerySet [{'amount': Decimal('-500.00000'), 'currency': 'RUB'}]>
+        """
+        return Transaction.objects\
+            .filter(invoice=self)\
+            .filter(account__type=Account.ACCOUNT)\
+            .values('currency')\
+            .annotate(amount=Sum('amount'))\
+            .order_by('currency')
+
+    def __get_distinct_accounts_by_type(self, type: int):
+        return Account.objects \
+            .filter(transactions__invoice=self) \
+            .filter(type=type) \
+            .distinct()
+
+    @property
+    def incomes(self):
+        """
+        List of Account.INCOME accounts involved to this invoice
+        """
+        return self.__get_distinct_accounts_by_type(Account.INCOME)
+
+    @property
+    def expenses(self):
+        """
+        List of Account.EXPENSE accounts involved to this invoice
+        """
+        return self.__get_distinct_accounts_by_type(Account.EXPENSE)
+
+    @property
+    def accounts(self):
+        """
+        List of Account.ACCOUNT accounts involved to this invoice
+        """
+        return self.__get_distinct_accounts_by_type(Account.ACCOUNT)
 
     def __str__(self):
         return _('Invoice from {timestamp} ({comment})').format(

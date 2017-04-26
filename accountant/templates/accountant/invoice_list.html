@@ -1,0 +1,55 @@
+{% extends 'accountant/base.html' %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} — {% trans 'List of invices' %}{% endblock %}
+
+{% block header %}{% trans 'Invoice list' %}{% endblock header %}
+
+{% block content %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>{% trans 'Date' %}</th>
+            <th>{% trans 'User' %}</th>
+            <th>{% trans 'Comment' %}</th>
+            <th>{% trans 'Incomes' %}</th>
+            <th>{% trans 'Accounts' %}</th>
+            <th>{% trans 'Expences' %}</th>
+            <th>{% trans 'P&L' %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoice_list %}
+        <tr>
+            <td>{{ invoice.timestamp }}</td>
+            <td>{{ invoice.user }}</td>
+            <td>{{ invoice.comment }}</td>
+            <td>{% for income in invoice.incomes %}
+                    <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
+                {% endfor %}</td>
+            <td>{% for account in invoice.accounts %}
+                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
+                {% endfor %}</td>
+            <td>{% for expense in invoice.expenses %}
+                    <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
+                {% endfor %}</td>
+            <td>{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<div class="paging_simple_numbers" id="pagination">
+    <ul class="pagination">
+        <li class="paginate_button previous{% if not page_obj.has_previous %} disabled{% endif %}"><a{% if page_obj.has_previous %} href="{% url 'accountant:invoice_list' %}?page={{ page_obj.previous_page_number }}"{% endif %}>«</a></li>
+    {% for page_number in page_obj.paginator.page_range %}
+        <li class="paginate_button{% if page_obj.number == page_number %} active{% endif %}"><a href="{% url 'accountant:invoice_list' %}?page={{ page_number }}">{{ page_number }}</a></li>
+    {% endfor %}
+        <li class="paginate_button next{% if not page_obj.has_next %} disabled{% endif %}"><a{% if page_obj.has_next %} href="{% url 'accountant:invoice_list' %}?page={{ page_obj.next_page_number }}"{% endif %}>»</a></li>
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}
