@@ -34,7 +34,7 @@
             <td>{% for expense in invoice.expenses %}
                     <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
                 {% endfor %}</td>
-            <td>{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}</td>
+            <td>{% if invoice.pnl %}{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}{% else %}—{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>
