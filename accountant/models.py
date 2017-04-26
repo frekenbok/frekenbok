@@ -272,6 +272,9 @@ class Invoice(models.Model):
             comment=self.comment
         )
 
+    class Meta:
+        ordering = ['-timestamp']
+
 
 class Transaction(models.Model):
     date = models.DateField(
@@ -337,6 +340,9 @@ class Transaction(models.Model):
             self.account.recalculate_summary(atomic=False)
             if self.account != old_account:
                 old_account.recalculate_summary(atomic=False)
+
+    class Meta:
+        ordering = ['-date']
 
 
 class Document(models.Model):

@@ -13,7 +13,6 @@ admin.site.register(Account, AccountAdmin)
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('account', 'comment', 'amount', 'currency', 'date', 'approved')
-    ordering = ('-date',)
 
 admin.site.register(Transaction, TransactionAdmin)
 
@@ -30,7 +29,6 @@ class DocumentInline(admin.TabularInline):
 
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'user', 'comment', 'verify')
-    ordering = ('-timestamp',)
     inlines = (TransactionInline, DocumentInline)
 
 admin.site.register(Invoice, InvoiceAdmin)
