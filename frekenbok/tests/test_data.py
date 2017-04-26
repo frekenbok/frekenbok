@@ -182,6 +182,26 @@ def add_test_data(cls):
         comment='АИ-95'
     )
 
+    cls.internal_transfer_invoice = Invoice.objects.create(
+        comment='Transfer between accounts',
+        timestamp=datetime(2015, 8, 5, tzinfo=timezone.utc)
+    )
+    value = int(random() * 100)
+    Transaction.objects.create(
+        date=date(2015, 8, 5),
+        account=cls.wallet,
+        amount=-value,
+        currency=RUB,
+        invoice=cls.internal_transfer_invoice
+    )
+    Transaction.objects.create(
+        date=date(2015, 8, 5),
+        account=cls.reserve,
+        amount=value,
+        currency=RUB,
+        invoice=cls.internal_transfer_invoice
+    )
+
     # Test futures transaction
     cls.future = Transaction.objects.create(
         date=date.today() + timedelta(days=10),
