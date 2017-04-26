@@ -4,16 +4,16 @@
 
 {% block title %}{{ block.super }} — {% trans 'Details of account' %} {{ account.title }}{% endblock %}
 
-{% block header %}{{ account.title }}{% endblock header %}
+{% block header_large %}{{ account.title }}{% endblock %}
+{% block header_small %}{% trans 'details and last transactions' %}{% endblock %}
 
-{% block content %}
+{% block x_content %}
 <table class="table">
 {% for sheaf in account.sorted_sheaves %}
     <tr><td>{{ sheaf.amount | intcomma }} {{ sheaf.currency }}</td></tr>
 {% endfor %}
 </table>
 <table class="table table-striped">
-<caption>{% trans 'Last actions' %}</caption>
     <thead>
         <tr>
             <th>{% trans 'Time' %}</th>

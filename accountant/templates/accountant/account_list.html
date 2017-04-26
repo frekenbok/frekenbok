@@ -4,9 +4,9 @@
 
 {% block title %}{{ block.super }} — {% trans 'List of accounts' %}{% endblock %}
 
-{% block header %}{% trans 'Account list' %}{% endblock header %}
+{% block x_title %}{% trans 'Account list' %}{% endblock %}
 
-{% block content %}
+{% block x_content %}
 <form action="{% url 'accountant:recalculate' %}" method="get" style="float: right">
 <input class="btn btn-default" type="submit" value="{% trans 'Recalculate' %}">
 </form>

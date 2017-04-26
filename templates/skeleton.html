@@ -251,8 +251,23 @@
     <!-- page content -->
     <div class="right_col" role="main">
       <div class="">
-      <h1>{% block header %}{% endblock header %}</h1>
-      {% block content %}{% endblock content %}
+      <div class="page-title">
+        <div class="title_left"><h3>{% block header_large %}{% endblock %} <small>{% block header_small %}{% endblock %}</small></h3></div>
+        <div class="title_right"></div>
+      </div>
+      {% block content %}
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+            <div class="x_title"><h2>{% block x_title %}{% endblock %}</h2><div class="clearfix"></div></div>
+            <div class="x_content">
+              {% block x_content %}{% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endblock content %}
       </div>
     </div>
     <!-- /page content -->
