@@ -8,31 +8,55 @@
 {% block header_small %}{% trans 'details and last transactions' %}{% endblock %}
 
 {% block x_content %}
-<table class="table">
-{% for sheaf in account.sorted_sheaves %}
-    <tr><td>{{ sheaf.amount | intcomma }} {{ sheaf.currency }}</td></tr>
-{% endfor %}
-</table>
-<table class="table table-striped">
-    <thead>
-        <tr>
+<div class="col-md-9 col-sm-9 col-xs-12">
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Last transactions' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
             <th>{% trans 'Time' %}</th>
             <th>{% trans 'Value' %}</th>
             <th>{% trans 'Category' %}</th>
             <th>{% trans 'Comment' %}</th>
-        </tr>
-    </thead>
-    <tbody>
+          </tr>
+        </thead>
+        <tbody>
         {% for transaction in transaction_list %}
-        <tr>
-            <td>{{ transaction.date }}</td>
+          <tr>
+            <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td style="text-align: right">{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
             <td>{% for counter_transaction in transaction.invoice.transactions.all %}
                 {% if counter_transaction.account.type == transaction.account.EXPENSE %}{{ counter_transaction.account.title }}{% endif %}
                 {% endfor %}</td>
             <td>{% if transaction.comment %}{{ transaction.comment }}{% else %}{{ transaction.invoice.comment }}{% endif %}</td>
-        </tr>
+          </tr>
         {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<div class="col-md-3 col-sm-3 col-xs-12">
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Summary' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>{% for sheaf in account.sorted_sheaves %}
+          <tr>
+            <td width="10%">{{ sheaf.currency }}</td><td>{{ sheaf.amount | intcomma }}</td>
+          </tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% if account.credentials %}
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Credentials' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <pre>{{ account.credentials }}</pre>
+    </div>
+  </section>
+{% endif %}
+</div>
 {% endblock %}
