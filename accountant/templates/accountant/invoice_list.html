@@ -17,13 +17,14 @@
             <th>{% trans 'Accounts' %}</th>
             <th>{% trans 'Expences' %}</th>
             <th>{% trans 'P&L' %}</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         {% for invoice in invoice_list %}
         <tr>
             <td>{{ invoice.timestamp | date:'Y-m-d&\\n\\b\\s\\p;H:i:s' | safe }}</td>
-            <td>{{ invoice.user }}</td>
+            <td>{% if invoice.user %}{{ invoice.user }}{% else %}—{% endif %}</td>
             <td>{{ invoice.comment }}</td>
             <td>{% for income in invoice.incomes %}
                     <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
@@ -35,6 +36,7 @@
                     <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
                 {% endfor %}</td>
             <td>{% if invoice.pnl %}{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}{% else %}—{% endif %}</td>
+            <td>{% if invoice.is_verified %}<span class="fa fa-check"></span>{% else %}<span class="fa fa-close" style="color: #d9534f"></span>{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>
