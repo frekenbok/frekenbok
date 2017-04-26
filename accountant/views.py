@@ -82,6 +82,7 @@ class InvoiceListView(ListView, AccountantViewMixin):
     model = Invoice
     context_object_name = 'invoice_list'
     template_name = 'accountant/invoice_list.html'
+    paginate_by = 20
 
 
 @csrf_exempt
