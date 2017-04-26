@@ -31,9 +31,12 @@ def add_test_data(cls):
 
     cls.bank = Account(title='Банк', type=Account.ACCOUNT, dashboard=True)
     Account.add_root(instance=cls.bank)
-    cls.card = cls.bank.add_child(title='Дебетовая карта',
-                                  bank_title='Karta *1234',
-                                  type=Account.ACCOUNT)
+    cls.card = cls.bank.add_child(
+        title='Дебетовая карта',
+        bank_title='Karta *1234',
+        type=Account.ACCOUNT,
+        credentials='Счёт: 1234567890987654321\nБИК: 0020045354023\nКИК: 235255'
+    )
 
     # Opening balance
     opening_balance = Account(title='Входящий остаток',
