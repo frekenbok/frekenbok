@@ -205,6 +205,19 @@ def add_test_data(cls):
         invoice=cls.internal_transfer_invoice
     )
 
+    cls.disbalanced_invoice = Invoice.objects.create(
+        comment='Invoice with broken balance',
+        timestamp=datetime.now(tz=timezone.utc)
+    )
+    Transaction.objects.create(
+        date=date.today(),
+        account=cls.reserve,
+        amount=int(random() * 100),
+        currency=RUB,
+        invoice=cls.disbalanced_invoice
+    )
+
+
     # Test futures transaction
     cls.future = Transaction.objects.create(
         date=date.today() + timedelta(days=10),
