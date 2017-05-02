@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -80,6 +81,12 @@ class InvoiceListView(ListView, AccountantViewMixin):
     context_object_name = 'invoice_list'
     template_name = 'accountant/invoice_list.html'
     paginate_by = 20
+
+
+class InvoiceDetailView(DetailView, AccountantViewMixin):
+    model = Invoice
+    context_object_name = 'invoice'
+    template_name = 'accountant/invoice_detail.html'
 
 
 @csrf_exempt

@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 
 from django.db import models, transaction
 from django.db.models import Sum
@@ -267,9 +268,9 @@ class Invoice(models.Model):
         return self.__get_distinct_accounts_by_type(Account.ACCOUNT)
 
     def __str__(self):
-        return _('Invoice from {timestamp} ({comment})').format(
+        return _('Invoice dated by {timestamp}{comment}').format(
             timestamp=self.timestamp,
-            comment=self.comment
+            comment=' ({})'.format(self.comment) if self.comment else ''
         )
 
     class Meta:
@@ -361,3 +362,7 @@ class Document(models.Model):
     file = models.FileField(
         verbose_name=_('file with image')
     )
+
+    @property
+    def mime_type(self):
+        return mimetypes.guess_type(self.file.name)

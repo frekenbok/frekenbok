@@ -1,0 +1,63 @@
+{% extends 'accountant/base.html' %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} — {% trans 'Details of invoice' %}{% endblock %}
+
+{% block header_large %}{% if invoice.description %}{{ invoice.description }}{% else %}{{ invoice }}{% endif %}{% endblock %}
+{% block header_small %}{% trans 'invoice details' %}{% endblock %}
+
+{% block x_content %}
+<div class="col-md-9 col-sm-9 col-xs-12">
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Transactions' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{% trans 'Date' %}</th>
+            <th>{% trans 'Account' %}</th>
+            <th>{% trans 'Value' %}</th>
+            <th>{% trans 'Comment' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for transaction in invoice.transactions.all %}
+          <tr>
+            <td>{{ transaction.date|date:'Y-m-d' }}</td>
+            <td>{{ transaction.account.title }}</td>
+            <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.comment }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<div class="col-md-3 col-sm-3 col-xs-12">
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Attached documents' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <ul class="unstyled"> {% for document in invoice.documents.all %}
+        <li><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span>{% if document.description %}{{ document.description }}{% else %}{{ document.file_name }}{% endif %}</li>
+      {% endfor %}</ul>
+    </div>
+  </section>
+    <section class="panel">
+        <div class="x_title"><h2>{% trans 'Uncounted values' %}</h2><div class="clearfix"></div></div>
+        <div class="panel-body">
+          <table class="table">
+            <tbody>{% if invoice.is_verified %}
+            <tr><td>{% trans "The invoice contains no unattended transactions"  %}</td></tr>
+            {% else %}
+            {% for item in invoice.verify %}
+              <tr>
+                <td width="10%">{{ item.currency }}</td><td>{{ item.amount | intcomma }}</td>
+              </tr>{% endfor %}{% endif %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+</div>
+{% endblock %}
