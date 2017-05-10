@@ -86,7 +86,8 @@ class Account(NS_Node):
             result = Transaction.objects.filter(account=self)\
                 .filter(approved=True)\
                 .values('currency')\
-                .annotate(amount=Sum('amount'))
+                .annotate(amount=Sum('amount'))\
+                .order_by('currency')
             for item in result:
                 Sheaf.objects.create(account=self,
                                      amount=item['amount'],
