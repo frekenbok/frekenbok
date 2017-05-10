@@ -270,3 +270,13 @@ class InvoiceTestCase(TestCase):
 
     def test_accounts_property(self):
         self.assertEqual(list(self.first_salary.accounts), [self.wallet])
+
+
+class DocumentTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        add_test_data(cls)
+
+    def test_mime_type_property(self):
+        self.assertEqual(self.document_as_pdf.mime_type, 'application/pdf')
+        self.assertEqual(self.document_as_img.mime_type, 'image/jpeg')

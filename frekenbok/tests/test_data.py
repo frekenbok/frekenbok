@@ -233,7 +233,7 @@ def add_test_data(cls):
         invoice=cls.invoice_with_attached_image,
         file=SimpleUploadedFile('test_invoice_document.pdf', test_pdf, 'application/pdf')
     )
-    cls.document_as_image = Document.objects.create(
+    cls.document_as_img = Document.objects.create(
         description='Some image as document',
         invoice=cls.invoice_with_attached_image,
         file=SimpleUploadedFile('test_invoice_image.jpg', test_img, 'image/jpeg')
