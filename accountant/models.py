@@ -1,5 +1,6 @@
 import logging
 import mimetypes
+import os
 
 from django.db import models, transaction
 from django.db.models import Sum
@@ -379,3 +380,7 @@ class Document(models.Model):
     @property
     def mime_type(self):
         return mimetypes.guess_type(self.file.name)[0]
+
+    @property
+    def file_name(self):
+        return os.path.basename(self.file.name)
