@@ -365,4 +365,4 @@ class Document(models.Model):
 
     @property
     def mime_type(self):
-        return mimetypes.guess_type(self.file.name)
+        return mimetypes.guess_type(self.file.name)[0]

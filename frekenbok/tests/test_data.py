@@ -1,10 +1,13 @@
+import os
 from random import random
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from accountant.models import Account, Sheaf, Invoice, Transaction
+
+from accountant.models import Account, Sheaf, Invoice, Transaction, Document
 from moneyed import RUB, USD, EUR, GBP
 
 
@@ -217,6 +220,24 @@ def add_test_data(cls):
         invoice=cls.disbalanced_invoice
     )
 
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_document.pdf'), 'rb') as f:
+        test_pdf = f.read()
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_image.jpg'), 'rb') as f:
+        test_img = f.read()
+    cls.invoice_with_attached_image = Invoice.objects.create(
+        comment='Invoice with attached image',
+        timestamp=datetime.now(tz=timezone.utc)
+    )
+    cls.document_as_pdf = Document.objects.create(
+        description='Some PDF as document',
+        invoice=cls.invoice_with_attached_image,
+        file=SimpleUploadedFile('test_invoice_document.pdf', test_pdf, 'application/pdf')
+    )
+    cls.document_as_image = Document.objects.create(
+        description='Some image as document',
+        invoice=cls.invoice_with_attached_image,
+        file=SimpleUploadedFile('test_invoice_image.jpg', test_img, 'image/jpeg')
+    )
 
     # Test futures transaction
     cls.future = Transaction.objects.create(

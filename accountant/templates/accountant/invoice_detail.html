@@ -40,7 +40,7 @@
     <div class="x_title"><h2>{% trans 'Attached documents' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <ul class="unstyled"> {% for document in invoice.documents.all %}
-        <li><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span>{% if document.description %}{{ document.description }}{% else %}{{ document.file_name }}{% endif %}</li>
+        <li><a href="{{ document.file.url }}"><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span> {% if document.description %}{{ document.description }}{% else %}{{ document.file_name }}{% endif %}</a></li>
       {% endfor %}</ul>
     </div>
   </section>
