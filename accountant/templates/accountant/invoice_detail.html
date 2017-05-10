@@ -56,11 +56,12 @@
 </div>
 <div class="col-md-3 col-sm-3 col-xs-12">
   <section class="panel">
-    <div class="x_title"><h2>{% trans 'Summary' %}</h2><div class="clearfix"></div></div>
+    <div class="x_title"><h2>{% trans 'Info' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <table class="table">
         <tr><td>{% trans 'Date and time' %}</td><td>{{ invoice.timestamp }}</td></tr>
         <tr><td>{% trans 'User' %}</td><td>{% if invoice.user %}{{ invoice.user }}{% else %}—{% endif %}</td></tr>
+        <tr><td>{% trans 'P&L' %}</td><td>{% if invoice.pnl %}{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}{% else %}—{% endif %}</td></tr>
       </table>
     </div>
   </section>
