@@ -4,7 +4,7 @@
 
 {% block title %}{{ block.super }} — {% trans 'Details of invoice' %}{% endblock %}
 
-{% block header_large %}{% if invoice.description %}{{ invoice.description }}{% else %}{{ invoice }}{% endif %}{% endblock %}
+{% block header_large %}{% if invoice.comment %}{{ invoice.comment }}{% else %}{{ invoice }}{% endif %}{% endblock %}
 {% block header_small %}{% trans 'invoice details' %}{% endblock %}
 
 {% block x_content %}
@@ -22,10 +22,29 @@
           </tr>
         </thead>
         <tbody>
-        {% for transaction in invoice.transactions.all %}
+        {% if invoice.income_transactions %}<tr><th colspan="4">{% trans 'Incomes' %}</th></tr>{% endif %}
+        {% for transaction in invoice.income_transactions %}
           <tr>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
-            <td>{{ transaction.account.title }}</td>
+            <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
+            <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.comment }}</td>
+          </tr>
+        {% endfor %}
+        {% if invoice.internal_transactions %}<tr><th colspan="4">{% trans 'Accounts' %}</th></tr>{% endif %}
+        {% for transaction in invoice.internal_transactions %}
+          <tr>
+            <td>{{ transaction.date|date:'Y-m-d' }}</td>
+            <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
+            <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.comment }}</td>
+          </tr>
+        {% endfor %}
+        {% if invoice.expense_transactions %}<tr><th colspan="4">{% trans 'Expenses' %}</th></tr>{% endif %}
+        {% for transaction in invoice.expense_transactions %}
+          <tr>
+            <td>{{ transaction.date|date:'Y-m-d' }}</td>
+            <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
@@ -37,10 +56,19 @@
 </div>
 <div class="col-md-3 col-sm-3 col-xs-12">
   <section class="panel">
+    <div class="x_title"><h2>{% trans 'Summary' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table">
+        <tr><td>{% trans 'Date and time' %}</td><td>{{ invoice.timestamp }}</td></tr>
+        <tr><td>{% trans 'User' %}</td><td>{% if invoice.user %}{{ invoice.user }}{% else %}—{% endif %}</td></tr>
+      </table>
+    </div>
+  </section>
+  <section class="panel">
     <div class="x_title"><h2>{% trans 'Attached documents' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <ul class="unstyled"> {% for document in invoice.documents.all %}
-        <li><a href="{{ document.file.url }}"><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span> {% if document.description %}{{ document.description }}{% else %}{{ document.file_name }}{% endif %}</a></li>
+        <li><a href="{{ document.file.url }}"><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span> {% if document.description %}{{ document.description }}{% else %}{{ document.file.file_name }}{% endif %}</a></li>
       {% endfor %}</ul>
     </div>
   </section>

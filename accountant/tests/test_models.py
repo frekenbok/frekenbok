@@ -271,6 +271,15 @@ class InvoiceTestCase(TestCase):
     def test_accounts_property(self):
         self.assertEqual(list(self.first_salary.accounts), [self.wallet])
 
+    def test_income_transactions_property(self):
+        self.assertEqual(list(self.first_salary.income_transactions)[0], self.first_salary_income_tx)
+
+    def test_internal_transactions_property(self):
+        self.assertEqual(list(self.first_salary.internal_transactions)[0], self.first_salary_internal_tx)
+
+    def test_expense_transactions_property(self):
+        self.assertEqual(list(self.third_invoice.expense_transactions)[0], self.third_invoice_expense_tx)
+
 
 class DocumentTestCase(TestCase):
     @classmethod

@@ -98,14 +98,14 @@ def add_test_data(cls):
 
     # Test income
     cls.first_salary = Invoice.objects.create(timestamp=datetime(2015, 4, 1, tzinfo=timezone.utc))
-    Transaction.objects.create(
+    cls.first_salary_income_tx = Transaction.objects.create(
         date=date(2015, 4, 1),
         account=cls.salary,
         amount=Decimal(-70000),
         currency=RUB,
         invoice=cls.first_salary,
     )
-    Transaction.objects.create(
+    cls.first_salary_internal_tx = Transaction.objects.create(
         date=date(2015, 4, 1),
         account=cls.wallet,
         amount=Decimal(70000),
@@ -179,7 +179,7 @@ def add_test_data(cls):
         invoice=cls.third_invoice,
         comment='АИ-95'
     )
-    Transaction.objects.create(
+    cls.third_invoice_expense_tx = Transaction.objects.create(
         date=date(2015, 4, 5),
         account=cls.expenses[0],
         amount=value,

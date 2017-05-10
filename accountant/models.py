@@ -268,6 +268,18 @@ class Invoice(models.Model):
         """
         return self.__get_distinct_accounts_by_type(Account.ACCOUNT)
 
+    @property
+    def income_transactions(self):
+        return self.transactions.filter(account__in=self.incomes)
+
+    @property
+    def expense_transactions(self):
+        return self.transactions.filter(account__in=self.expenses)
+
+    @property
+    def internal_transactions(self):
+        return self.transactions.filter(account__in=self.accounts)
+
     def __str__(self):
         return _('Invoice dated by {timestamp}{comment}').format(
             timestamp=self.timestamp,
