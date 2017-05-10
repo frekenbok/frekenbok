@@ -32,10 +32,6 @@ class AccountantViewMixinTestCase(TestCase):
     def test_is_instance_of_login_required_mixin(self):
         self.assertIsInstance(self.mixin, LoginRequiredMixin)
 
-    def test_context_contains_accountant_app(self):
-        context = self.mixin.get_context_data()
-        self.assertTrue(context.get('accountant_app'))
-
 
 class AccountDetailViewTestCase(TestCase):
     @classmethod

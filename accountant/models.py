@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 
 from django.db import models, transaction
 from django.db.models import Sum
@@ -85,7 +86,8 @@ class Account(NS_Node):
             result = Transaction.objects.filter(account=self)\
                 .filter(approved=True)\
                 .values('currency')\
-                .annotate(amount=Sum('amount'))
+                .annotate(amount=Sum('amount'))\
+                .order_by('currency')
             for item in result:
                 Sheaf.objects.create(account=self,
                                      amount=item['amount'],
@@ -236,6 +238,7 @@ class Invoice(models.Model):
             .filter(account__type=Account.ACCOUNT)\
             .values('currency')\
             .annotate(amount=Sum('amount'))\
+            .exclude(amount=0)\
             .order_by('currency')
 
     def __get_distinct_accounts_by_type(self, type: int):
@@ -265,11 +268,26 @@ class Invoice(models.Model):
         """
         return self.__get_distinct_accounts_by_type(Account.ACCOUNT)
 
+    @property
+    def income_transactions(self):
+        return self.transactions.filter(account__in=self.incomes)
+
+    @property
+    def expense_transactions(self):
+        return self.transactions.filter(account__in=self.expenses)
+
+    @property
+    def internal_transactions(self):
+        return self.transactions.filter(account__in=self.accounts)
+
     def __str__(self):
-        return _('Invoice from {timestamp} ({comment})').format(
+        return _('Invoice dated by {timestamp}{comment}').format(
             timestamp=self.timestamp,
-            comment=self.comment
+            comment=' ({})'.format(self.comment) if self.comment else ''
         )
+
+    class Meta:
+        ordering = ['-timestamp']
 
 
 class Transaction(models.Model):
@@ -337,6 +355,9 @@ class Transaction(models.Model):
             if self.account != old_account:
                 old_account.recalculate_summary(atomic=False)
 
+    class Meta:
+        ordering = ['-date']
+
 
 class Document(models.Model):
     description = models.CharField(
@@ -354,3 +375,7 @@ class Document(models.Model):
     file = models.FileField(
         verbose_name=_('file with image')
     )
+
+    @property
+    def mime_type(self):
+        return mimetypes.guess_type(self.file.name)[0]

@@ -2,11 +2,11 @@
 {% load i18n %}
 {% load humanize %}
 
-{% block title %}{{ block.super }} — {% trans 'List of invices' %}{% endblock %}
+{% block title %}{{ block.super }} — {% trans 'List of invoices' %}{% endblock %}
 
-{% block header %}{% trans 'Invoice list' %}{% endblock header %}
+{% block x_title %}{% trans 'Invoice list' %}{% endblock x_title %}
 
-{% block content %}
+{% block x_content %}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -17,14 +17,15 @@
             <th>{% trans 'Accounts' %}</th>
             <th>{% trans 'Expences' %}</th>
             <th>{% trans 'P&L' %}</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         {% for invoice in invoice_list %}
         <tr>
-            <td>{{ invoice.timestamp }}</td>
-            <td>{{ invoice.user }}</td>
-            <td>{{ invoice.comment }}</td>
+            <td><a href="{% url 'accountant:invoice_detail' invoice.id %}">{{ invoice.timestamp | date:'Y-m-d&\\n\\b\\s\\p;H:i:s' | safe }}</a></td>
+            <td>{% if invoice.user %}{{ invoice.user }}{% else %}—{% endif %}</td>
+            <td><a href="{% url 'accountant:invoice_detail' invoice.id %}">{{ invoice.comment }}</a></td>
             <td>{% for income in invoice.incomes %}
                     <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
                 {% endfor %}</td>
@@ -34,7 +35,8 @@
             <td>{% for expense in invoice.expenses %}
                     <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
                 {% endfor %}</td>
-            <td>{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}</td>
+            <td>{% if invoice.pnl %}{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}{% else %}—{% endif %}</td>
+            <td>{% if invoice.is_verified %}<span class="fa fa-check"></span>{% else %}<span class="fa fa-close" style="color: #d9534f"></span>{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>

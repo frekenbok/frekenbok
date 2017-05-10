@@ -1,10 +1,13 @@
+import os
 from random import random
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 
-from accountant.models import Account, Sheaf, Invoice, Transaction
+
+from accountant.models import Account, Sheaf, Invoice, Transaction, Document
 from moneyed import RUB, USD, EUR, GBP
 
 
@@ -31,9 +34,12 @@ def add_test_data(cls):
 
     cls.bank = Account(title='Банк', type=Account.ACCOUNT, dashboard=True)
     Account.add_root(instance=cls.bank)
-    cls.card = cls.bank.add_child(title='Дебетовая карта',
-                                  bank_title='Karta *1234',
-                                  type=Account.ACCOUNT)
+    cls.card = cls.bank.add_child(
+        title='Дебетовая карта',
+        bank_title='Karta *1234',
+        type=Account.ACCOUNT,
+        credentials='Счёт: 1234567890987654321\nБИК: 0020045354023\nКИК: 235255'
+    )
 
     # Opening balance
     opening_balance = Account(title='Входящий остаток',
@@ -92,14 +98,14 @@ def add_test_data(cls):
 
     # Test income
     cls.first_salary = Invoice.objects.create(timestamp=datetime(2015, 4, 1, tzinfo=timezone.utc))
-    Transaction.objects.create(
+    cls.first_salary_income_tx = Transaction.objects.create(
         date=date(2015, 4, 1),
         account=cls.salary,
         amount=Decimal(-70000),
         currency=RUB,
         invoice=cls.first_salary,
     )
-    Transaction.objects.create(
+    cls.first_salary_internal_tx = Transaction.objects.create(
         date=date(2015, 4, 1),
         account=cls.wallet,
         amount=Decimal(70000),
@@ -173,13 +179,64 @@ def add_test_data(cls):
         invoice=cls.third_invoice,
         comment='АИ-95'
     )
-    Transaction.objects.create(
+    cls.third_invoice_expense_tx = Transaction.objects.create(
         date=date(2015, 4, 5),
         account=cls.expenses[0],
         amount=value,
         currency=RUB,
         invoice=cls.third_invoice,
         comment='АИ-95'
+    )
+
+    cls.internal_transfer_invoice = Invoice.objects.create(
+        comment='Transfer between accounts',
+        timestamp=datetime(2015, 8, 5, tzinfo=timezone.utc)
+    )
+    value = int(random() * 100)
+    Transaction.objects.create(
+        date=date(2015, 8, 5),
+        account=cls.wallet,
+        amount=-value,
+        currency=RUB,
+        invoice=cls.internal_transfer_invoice
+    )
+    Transaction.objects.create(
+        date=date(2015, 8, 5),
+        account=cls.reserve,
+        amount=value,
+        currency=RUB,
+        invoice=cls.internal_transfer_invoice
+    )
+
+    cls.disbalanced_invoice = Invoice.objects.create(
+        comment='Invoice with broken balance',
+        timestamp=datetime.now(tz=timezone.utc)
+    )
+    Transaction.objects.create(
+        date=date.today(),
+        account=cls.reserve,
+        amount=int(random() * 100),
+        currency=RUB,
+        invoice=cls.disbalanced_invoice
+    )
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_document.pdf'), 'rb') as f:
+        test_pdf = f.read()
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_image.jpg'), 'rb') as f:
+        test_img = f.read()
+    cls.invoice_with_attached_image = Invoice.objects.create(
+        comment='Invoice with attached image',
+        timestamp=datetime.now(tz=timezone.utc)
+    )
+    cls.document_as_pdf = Document.objects.create(
+        description='Some PDF as document',
+        invoice=cls.invoice_with_attached_image,
+        file=SimpleUploadedFile('test_invoice_document.pdf', test_pdf, 'application/pdf')
+    )
+    cls.document_as_img = Document.objects.create(
+        description='Some image as document',
+        invoice=cls.invoice_with_attached_image,
+        file=SimpleUploadedFile('test_invoice_image.jpg', test_img, 'image/jpeg')
     )
 
     # Test futures transaction
