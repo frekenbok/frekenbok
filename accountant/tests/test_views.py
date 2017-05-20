@@ -167,6 +167,32 @@ class ExpenseListViewTestCase(TestCase):
         )
 
 
+class InvoiceListViewTestCase(TestCase):
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:invoice_list'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(
+                reverse('login'),
+                reverse('accountant:invoice_list')
+            )
+        )
+
+
+class InvoiceDetailViewTestCase(TestCase):
+    def test_login_less_request(self):
+        invoice_url = reverse('accountant:invoice_detail', kwargs={'pk': 3})
+        client = Client()
+        response = client.get(invoice_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(reverse('login'), invoice_url)
+        )
+
+
 class SmsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
