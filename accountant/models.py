@@ -5,6 +5,7 @@ import os
 from django.db import models, transaction
 from django.db.models import Sum
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from djmoney.models.fields import CurrencyField
@@ -55,6 +56,9 @@ class Account(NS_Node):
         verbose_name=_('credentials'),
         blank=True
     )
+
+    def get_absolute_url(self):
+        return reverse('accountant:account_detail', kwargs={'pk': self.pk})
 
     @property
     def depth_dashes(self):
@@ -199,6 +203,9 @@ class Invoice(models.Model):
         blank=True,
         null=True
     )
+
+    def get_absolute_url(self):
+        return reverse('accountant:invoice_detail', kwargs={'pk': self.pk})
 
     def verify(self):
         """
