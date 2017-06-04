@@ -1,3 +1,4 @@
+dateutil
 django
 django_money
 django-treebeard
