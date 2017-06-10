@@ -41,32 +41,32 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         See `InvoiceCreateOrEditView.get_transactions_data` source for details.
         :param invoice: invoice for returned transaction
         :param data: tuple with 6 elements
-        :return: dict that can be used as kwarg for Transaction constructor
+        :return: tuple that can be used for Transaction create_or_update method
         """
         accounts = {i.pk: i for i in Account.objects.all()}
-        return {
-            'pk': int(data[0]) if data[0] else None,
-            'date': parse(data[1]),
-            'amount': Decimal(data[2].replace(',', '.').replace(' ', '')),
-            'currency': get_currency(data[3]),
-            'comment': data[4],
-            'account': accounts[int(data[5])],
-            'invoice': invoice
-        }
+        return (
+            int(data[0]) if data[0] else None,
+            {
+                'date': parse(data[1]).date(),
+                'amount': Decimal(data[2].replace(',', '.').replace(' ', '')),
+                'currency': get_currency(data[3]),
+                'comment': data[4],
+                'account': accounts[int(data[5])],
+                'invoice': invoice
+            }
+        )
 
     # noinspection PyCallByClass,PyArgumentList
-    @staticmethod
-    def get_transactions_data(request: HttpRequest, invoice: Invoice=None):
+    def get_transactions_data(self, request: HttpRequest, invoice: Invoice=None):
         """
-        Method returns generator with dictionaries that can be used as kwarg
-        for Transaction constructor
+        Method returns generator with tuples that can be used for
+         create_or_update method.
         :param invoice: it will be used as invoice for all returned transactions
         :param request: HttpRequest with proper formed POST
-        :return: generator with dicts
+        :return: generator with tuples
         """
         return map(
-            partial(InvoiceCreateOrEditView.transaction_data_to_dict,
-                    invoice=invoice),
+            partial(self.transaction_data_to_dict, invoice=invoice),
             filter(
                 lambda x: x[1] and x[2] and x[3] and x[5],
                 zip(
@@ -83,16 +83,24 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
     # noinspection PyCallByClass,PyArgumentList
     @transaction.atomic
     def post(self, request: HttpRequest, pk: int=None, *args, **kwargs):
-        if request.POST.get('invoice-timestamp') and request.POST.get('invoice-comment'):
+        logger.debug('Trying to create or update invoice with pk {}'.format(pk))
+        logger.debug('Timestamp {}, comment {}'.format(request.POST.get('invoice-timestamp'), request.POST.get('invoice-comment')))
+        if request.POST.get('invoice-timestamp'):
             invoice, created = Invoice.objects.update_or_create(
-                pk=pk,
-                timestamp=request.POST['invoice-timestamp'],
-                comment=request.POST['invoice-comment'],
-                user=request.user
+                pk=int(pk) if pk else None,
+                defaults={
+                    'timestamp': parse(request.POST['invoice-timestamp']),
+                    'comment': request.POST['invoice-comment'],
+                    'user': request.user
+                }
             )
+            logger.debug('Invoice {} was {}'.format(invoice, 'created' if created else 'found'))
 
-            for item in self.get_transactions_data(request, invoice):
-                Transaction.objects.update_or_create(**item)
+            for pk, defaults in self.get_transactions_data(request, invoice):
+                tx, created = Transaction.objects.update_or_create(
+                    pk=pk, defaults=defaults
+                )
+                logger.debug('Transaction {} was {}'.format(tx, 'created' if created else 'found'))
 
             return redirect(invoice.get_absolute_url())
         else:

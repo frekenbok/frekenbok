@@ -8,7 +8,7 @@
 
 {% block x_content %}
 <div class="col-md-9 col-sm-9 col-xs-12">
-  <form action="{% url 'accountant:invoice_create' %}" method="post" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <section class="panel">
     <div class="x_title"><h2>{% trans 'General info' %}</h2><div class="clearfix"></div></div>
@@ -16,13 +16,13 @@
       <div class="row">
         <div class="form-group">
           <label class="control-label col-md-3 col-sm-3 col-xs-12" for="invoice-timestamp">{% trans 'Date and time' %}</label>
-          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-timestamp" name="invoice-timestamp" required="required" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.timestamp }}{% endif %}"></div>
+          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-timestamp" name="invoice-timestamp" required="required" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.timestamp | date:'Y-m-d H:i:s' }}{% endif %}"></div>
         </div>
       </div>
       <div class="row">
         <div class="form-group">
           <label class="control-label col-md-3 col-sm-3 col-xs-12" for="invoice-comment">{% trans 'Comment' %}</label>
-          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-comment" name="invoice-comment" required="required" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.comment }}{% endif %}"></div>
+          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-comment" name="invoice-comment" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.comment }}{% endif %}"></div>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <div class="row form-horizontal transaction">
         <input type="hidden" name="transaction-id" value="{{ transaction.id }}">
         <div class="col-md-2 col-sm-4 form-group has-feedback">
-          <input type="text" class="form-control has-feedback-left" name="date">
+          <input type="text" class="form-control has-feedback-left" name="date" value="{{ transaction.date | date:'Y-m-d' }}">
           <span class="fa fa-calendar form-control-feedback left"></span>
         </div>
         <div class="col-md-2 col-sm-4"><input type="number" class="form-control" name="amount" placeholder="{% trans 'amount' %}" value="{{ transaction.amount }}"></div>
@@ -42,7 +42,7 @@
         <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
         <div class="col-md-2 col-sm-12">
           <select class="select2_group form-control" name="account">{% for account in accounts %}
-            <option value="{{ account.id }}">{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
+            <option value="{{ account.id }}"{% if account.id == transaction.id %} selected="selected"{% endif %}>{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
           </select>
         </div>
       </div>
