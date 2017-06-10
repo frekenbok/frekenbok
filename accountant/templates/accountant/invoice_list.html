@@ -4,7 +4,10 @@
 
 {% block title %}{{ block.super }} — {% trans 'List of invoices' %}{% endblock %}
 
-{% block x_title %}{% trans 'Invoice list' %}{% endblock x_title %}
+{% block header_large %}{% trans 'Invoice list' %}{% endblock %}
+{% block title_right %}<a href="{% url 'accountant:invoice_create' %}" class="btn btn-default">{% trans 'Add invoice' %}</a>{% endblock %}
+
+{% block x_title %}{% trans 'Invoices' %}{% endblock x_title %}
 
 {% block x_content %}
 <table class="table table-striped">

@@ -2,3 +2,4 @@ django
 django_money
 django-treebeard
 pytz
+python-dateutil

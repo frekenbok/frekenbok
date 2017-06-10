@@ -5,6 +5,7 @@ import os
 from django.db import models, transaction
 from django.db.models import Sum
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from djmoney.models.fields import CurrencyField
@@ -56,14 +57,26 @@ class Account(NS_Node):
         blank=True
     )
 
+    def get_absolute_url(self):
+        return reverse('accountant:account_detail', kwargs={'pk': self.pk})
+
     @property
     def depth_dashes(self):
         """
-        That's a sort of dirty hack, returns srting with several m-dashes.
+        That's a sort of dirty hack, returns string with several m-dashes.
         Number of dashes is equal to depth level of account in tree.
         :return: string with dashes
         """
         return '— ' * (self.depth - 1)
+
+    @property
+    def depth_nbsp(self):
+        """
+        That's a sort of dirty hack, returns string with several non-broken
+        spaces. Number of spaces is equal to depth level of account in tree.
+        :return: string with dashes
+        """
+        return '\u00A0' * (self.depth - 1)
 
     @property
     def sorted_sheaves(self):
@@ -199,6 +212,9 @@ class Invoice(models.Model):
         blank=True,
         null=True
     )
+
+    def get_absolute_url(self):
+        return reverse('accountant:invoice_detail', kwargs={'pk': self.pk})
 
     def verify(self):
         """

@@ -1,0 +1,98 @@
+{% extends 'accountant/base.html' %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} — {% trans 'Add invoice' %}{% endblock %}
+
+{% block header_large %}{% trans 'Add new invoice' %}{% endblock %}
+
+{% block x_content %}
+<div class="col-md-9 col-sm-9 col-xs-12">
+  <form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'General info' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body form-horizontal form-label-left">
+      <div class="row">
+        <div class="form-group">
+          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="invoice-timestamp">{% trans 'Date and time' %}</label>
+          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-timestamp" name="invoice-timestamp" required="required" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.timestamp | date:'Y-m-d H:i:s' }}{% endif %}"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="control-label col-md-3 col-sm-3 col-xs-12" for="invoice-comment">{% trans 'Comment' %}</label>
+          <div class="col-md-6 col-sm-6 col-xs-12"><input type="text" id="invoice-comment" name="invoice-comment" class="form-control col-md-7 col-xs-12" value="{% if invoice %}{{ invoice.comment }}{% endif %}"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Transactions' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      {% for transaction in transactions %}
+      <div class="row form-horizontal transaction">
+        <input type="hidden" name="transaction-id" value="{{ transaction.id }}">
+        <div class="col-md-2 col-sm-4 form-group has-feedback">
+          <input type="text" class="form-control has-feedback-left" name="date" value="{{ transaction.date | date:'Y-m-d' }}">
+          <span class="fa fa-calendar form-control-feedback left"></span>
+        </div>
+        <div class="col-md-2 col-sm-4"><input type="number" class="form-control" name="amount" placeholder="{% trans 'amount' %}" value="{{ transaction.amount }}"></div>
+        <div class="col-md-2 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ transaction.currency }}"></div>
+        <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
+        <div class="col-md-2 col-sm-12">
+          <select class="select2_group form-control" name="account">{% for account in accounts %}
+            <option value="{{ account.id }}"{% if account.id == transaction.account_id %} selected="selected"{% endif %}>{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="row form-horizontal transaction">
+        <input type="hidden" name="transaction-id" value="">
+        <div class="col-md-2 col-sm-4 form-group has-feedback">
+          <input type="text" class="form-control has-feedback-left" name="date">
+          <span class="fa fa-calendar form-control-feedback left"></span>
+        </div>
+        <div class="col-md-2 col-sm-4"><input type="number" class="form-control" name="amount" placeholder="{% trans 'amount' %}"></div>
+        <div class="col-md-2 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ base_currency }}"></div>
+        <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}"></div>
+        <div class="col-md-2 col-sm-12">
+          <select class="select2_group form-control" name="account">{% for account in accounts %}
+            <option value="{{ account.id }}">{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+    <input class="btn btn-default" type="submit" value="{% trans 'Save' %}">
+  </form>
+</div>
+{% endblock x_content %}
+
+{% block inline-js %}
+  <script language="JavaScript">
+        function addTransaction() {
+            var lastTransaction = jQuery('.transaction:last');
+            var newTransaction = lastTransaction.clone(true);
+
+            lastTransaction.off('change', '[name=amount]');
+            if (lastTransaction.find('[name=date]').val() === '') {
+                lastTransaction.find('[name=date]').val(moment(jQuery('#invoice-timestamp').val()).format('YYYY-MM-DD'))
+            }
+
+            if (lastTransaction.find('[name=currency]').val() === '') {
+                lastTransaction.find('[name=currency]').val('{{ base_currency }}')
+            }
+
+            newTransaction.find('input').val('');
+            newTransaction.insertAfter(lastTransaction);
+            }
+
+        jQuery('.transaction:last').on('change', '[name=amount]', addTransaction);
+
+        var invoiceTimestamp = jQuery('#invoice-timestamp');
+        if (invoiceTimestamp.val() === '') {
+            invoiceTimestamp.val(moment().format('YYYY-MM-DD HH:mm'))
+            }
+      </script>
+{% endblock %}

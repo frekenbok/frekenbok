@@ -9,28 +9,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.test import TestCase, Client
-from django.views.generic.base import ContextMixin
 
 from accountant.models import Account, Transaction, Invoice
-from accountant.views import AccountantViewMixin, \
-    AccountDetailView, AccountListView, IncomeListView
+from accountant.views.account_detail_view import AccountDetailView
+from accountant.views.expense_list_view import ExpenseListView
+from accountant.views.income_list_view import IncomeListView
+from accountant.views.account_list_view import AccountListView
 from frekenbok.tests.test_data import add_test_data
 
 logger = logging.getLogger(__name__)
-
-
-class AccountantViewMixinTestCase(TestCase):
-    def setUp(self):
-        self.mixin = AccountantViewMixin()
-
-    def tearDown(self):
-        del self.mixin
-
-    def test_is_instance_of_context_mixin(self):
-        self.assertIsInstance(self.mixin, ContextMixin)
-
-    def test_is_instance_of_login_required_mixin(self):
-        self.assertIsInstance(self.mixin, LoginRequiredMixin)
 
 
 class AccountDetailViewTestCase(TestCase):
@@ -49,8 +36,8 @@ class AccountDetailViewTestCase(TestCase):
         del self.client
         del self.context
 
-    def test_is_instance_of_accountant_view_mixin(self):
-        self.assertIsInstance(self.view, AccountantViewMixin)
+    def test_is_instance_of_login_required_mixin(self):
+        self.assertIsInstance(self.view, LoginRequiredMixin)
 
     def test_login_less_request(self):
         client = Client()
@@ -78,8 +65,8 @@ class AccountListViewTestCase(TestCase):
     def tearDown(self):
         del self.view
 
-    def test_is_instance_of_accountant_view_mixin(self):
-        self.assertIsInstance(self.view, AccountantViewMixin)
+    def test_is_instance_of_login_required_mixin(self):
+        self.assertIsInstance(self.view, LoginRequiredMixin)
 
     def test_type_of_accounts_in_queryset(self):
         for account in self.query_set:
@@ -116,8 +103,8 @@ class IncomeListViewTestCase(TestCase):
     def tearDown(self):
         del self.view
 
-    def test_is_instance_of_accountant_view_mixin(self):
-        self.assertIsInstance(self.view, AccountantViewMixin)
+    def test_is_instance_of_login_required_mixin(self):
+        self.assertIsInstance(self.view, LoginRequiredMixin)
 
     def test_type_of_accounts_in_queryset(self):
         for account in self.query_set:
@@ -140,6 +127,71 @@ class IncomeListViewTestCase(TestCase):
                 reverse('accountant:income_list')
             )
         )
+
+
+class ExpenseListViewTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        add_test_data(cls)
+
+    def setUp(self):
+        self.view = ExpenseListView()
+        self.query_set = self.view.get_queryset()
+
+    def tearDown(self):
+        del self.view
+
+    def test_is_instance_of_login_required_mixin(self):
+        self.assertIsInstance(self.view, LoginRequiredMixin)
+
+    def test_type_of_accounts_in_queryset(self):
+        for account in self.query_set:
+            self.assertEqual(account.type, Account.EXPENSE)
+
+    def test_closed_date_in_queryset(self):
+        for account in self.query_set:
+            self.assertTrue(
+                not account.closed or account.closed >= date.today()
+            )
+
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:expense_list'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(
+                reverse('login'),
+                reverse('accountant:expense_list')
+            )
+        )
+
+
+class InvoiceListViewTestCase(TestCase):
+    def test_login_less_request(self):
+        client = Client()
+        response = client.get(reverse('accountant:invoice_list'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(
+                reverse('login'),
+                reverse('accountant:invoice_list')
+            )
+        )
+
+
+class InvoiceDetailViewTestCase(TestCase):
+    def test_login_less_request(self):
+        invoice_url = reverse('accountant:invoice_detail', kwargs={'pk': 3})
+        client = Client()
+        response = client.get(invoice_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            '{}?next={}'.format(reverse('login'), invoice_url)
+        )
+
 
 class SmsTestCase(TestCase):
     @classmethod

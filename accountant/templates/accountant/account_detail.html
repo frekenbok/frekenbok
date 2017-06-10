@@ -15,6 +15,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th></th>
             <th>{% trans 'Time' %}</th>
             <th>{% trans 'Value' %}</th>
             <th>{% trans 'Category' %}</th>
@@ -24,6 +25,7 @@
         <tbody>
         {% for transaction in transaction_list %}
           <tr>
+            <td><a href="{{ transaction.invoice.get_absolute_url }}"><span class="fa fa-file-text-o"></span></a></td>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td style="text-align: right">{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
             <td>{% for counter_transaction in transaction.invoice.transactions.all %}

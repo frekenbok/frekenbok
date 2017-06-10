@@ -6,6 +6,7 @@
 
 {% block header_large %}{% if invoice.comment %}{{ invoice.comment }}{% else %}{{ invoice }}{% endif %}{% endblock %}
 {% block header_small %}{% trans 'invoice details' %}{% endblock %}
+{% block title_right %}<a href="{% url 'accountant:invoice_edit' pk=invoice.id %}" class="btn btn-default">{% trans 'Edit' %}</a>{% endblock %}
 
 {% block x_content %}
 <div class="col-md-9 col-sm-9 col-xs-12">
@@ -68,9 +69,9 @@
   <section class="panel">
     <div class="x_title"><h2>{% trans 'Attached documents' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
-      <ul class="unstyled"> {% for document in invoice.documents.all %}
+      {% if invoice.documents.all %}<ul class="unstyled">{% for document in invoice.documents.all %}
         <li><a href="{{ document.file.url }}"><span class="fa {% if document.mime_type == 'image/jpeg' %}fa-file-image-o{% elif document.mime_type == 'application/pdf' %}fa-file-pdf-o{% else %}fa-file-o{% endif %}"></span> {% if document.description %}{{ document.description }}{% else %}{{ document.file_name }}{% endif %}</a></li>
-      {% endfor %}</ul>
+      {% endfor %}</ul>{% else %}{% trans 'No documents attached' %}{% endif %}
     </div>
   </section>
     <section class="panel">
