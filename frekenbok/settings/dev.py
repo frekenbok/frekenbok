@@ -42,10 +42,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
-        },
         'django.request': {
             'handlers': ['console'],
             'level': 'DEBUG',
