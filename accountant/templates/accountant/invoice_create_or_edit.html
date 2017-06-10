@@ -42,7 +42,7 @@
         <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
         <div class="col-md-2 col-sm-12">
           <select class="select2_group form-control" name="account">{% for account in accounts %}
-            <option value="{{ account.id }}"{% if account.id == transaction.id %} selected="selected"{% endif %}>{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
+            <option value="{{ account.id }}"{% if account.id == transaction.account_id %} selected="selected"{% endif %}>{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
           </select>
         </div>
       </div>
