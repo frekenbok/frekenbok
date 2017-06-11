@@ -15,10 +15,7 @@
         <tr>
             <th>{% trans 'Date' %}</th>
             <th>{% trans 'User' %}</th>
-            <th>{% trans 'Comment' %}</th>
-            <th>{% trans 'Incomes' %}</th>
-            <th>{% trans 'Accounts' %}</th>
-            <th>{% trans 'Expences' %}</th>
+            <th width="70%">{% trans 'Comment' %}</th>
             <th>{% trans 'P&L' %}</th>
             <th></th>
         </tr>
@@ -29,15 +26,6 @@
             <td><a href="{% url 'accountant:invoice_detail' invoice.id %}">{{ invoice.timestamp | date:'Y-m-d&\\n\\b\\s\\p;H:i:s' | safe }}</a></td>
             <td>{% if invoice.user %}{{ invoice.user }}{% else %}—{% endif %}</td>
             <td><a href="{% url 'accountant:invoice_detail' invoice.id %}">{{ invoice.comment }}</a></td>
-            <td>{% for income in invoice.incomes %}
-                    <a href="{% url 'accountant:account_detail' income.id %}">{{ income.title }}</a>
-                {% endfor %}</td>
-            <td>{% for account in invoice.accounts %}
-                    <a href="{% url 'accountant:account_detail' account.id %}">{{ account.title }}</a>
-                {% endfor %}</td>
-            <td>{% for expense in invoice.expenses %}
-                    <a href="{% url 'accountant:account_detail' expense.id %}">{{ expense.title }}</a>
-                {% endfor %}</td>
             <td>{% if invoice.pnl %}{% for item in invoice.pnl %}{{ item.amount }} {{ item.currency }}{% endfor %}{% else %}—{% endif %}</td>
             <td>{% if invoice.is_verified %}<span class="fa fa-check"></span>{% else %}<span class="fa fa-close" style="color: #d9534f"></span>{% endif %}</td>
         </tr>
