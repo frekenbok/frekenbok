@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
     template_name = 'accountant/invoice_create_or_edit.html'
 
+    def __init__(self, **kwargs):
+        super(InvoiceCreateOrEditView, self).__init__(**kwargs)
+        self.accounts = {i.pk: i for i in Account.objects.all()}
+
     def get_context_data(self, pk: int = None, **kwargs):
         if pk is not None:
             context = {
@@ -34,8 +38,7 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         context['base_currency'] = settings.BASE_CURRENCY
         return context
 
-    @staticmethod
-    def transaction_data_to_dict(data: tuple, invoice: Invoice=None):
+    def transaction_data_to_dict(self, data: tuple, invoice: Invoice=None):
         """
         Internal method used to transform tuple with transactions data to dict.
         See `InvoiceCreateOrEditView.get_transactions_data` source for details.
@@ -43,7 +46,6 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         :param data: tuple with 6 elements
         :return: tuple that can be used for Transaction create_or_update method
         """
-        accounts = {i.pk: i for i in Account.objects.all()}
         return (
             int(data[0]) if data[0] else None,
             {
@@ -51,7 +53,7 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
                 'amount': Decimal(data[2].replace(',', '.').replace(' ', '')),
                 'currency': get_currency(data[3]),
                 'comment': data[4],
-                'account': accounts[int(data[5])],
+                'account': self.accounts[int(data[5])],
                 'invoice': invoice
             }
         )
@@ -65,6 +67,7 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         :param request: HttpRequest with proper formed POST
         :return: generator with tuples
         """
+        self.accounts = {i.pk: i for i in Account.objects.all()}
         return map(
             partial(self.transaction_data_to_dict, invoice=invoice),
             filter(
