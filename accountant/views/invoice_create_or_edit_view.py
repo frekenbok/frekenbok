@@ -29,7 +29,8 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         if pk is not None:
             context = {
                 'invoice': Invoice.objects.get(pk=pk),
-                'transactions': Transaction.objects.filter(invoice=pk)
+                'transactions': Transaction.objects.filter(invoice=pk),
+                'quantity_units': Transaction.UNITS
             }
         else:
             context = {'transactions': tuple(), 'invoice': None}
@@ -52,8 +53,10 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
                 'date': parse(data[1]).date(),
                 'amount': Decimal(data[2].replace(',', '.').replace(' ', '')),
                 'currency': get_currency(data[3]),
-                'comment': data[4],
-                'account': self.accounts[int(data[5])],
+                'quantity': Decimal(data[4].replace(',', '.').replace(' ', '')),
+                'unit': data[5],
+                'comment': data[6],
+                'account': self.accounts[int(data[7])],
                 'invoice': invoice
             }
         )
@@ -77,6 +80,8 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
                     request.POST.getlist('date'),
                     request.POST.getlist('amount'),
                     request.POST.getlist('currency'),
+                    request.POST.getlist('quantity'),
+                    request.POST.getlist('unit'),
                     request.POST.getlist('comment'),
                     request.POST.getlist('account')
                 )
