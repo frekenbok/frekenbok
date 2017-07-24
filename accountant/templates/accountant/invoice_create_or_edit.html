@@ -46,7 +46,7 @@
             <option value="{{ unit.0 }}"{% if transaction.unit == unit.0 %} selected="selected"{% endif %}>{{ unit.0 }}</option>{% endfor %}
           </select>
         </div>
-        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="price" placeholder="{% trans 'price' %}" value="{{ transaction.price }}"></div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="price" placeholder="{% trans 'price' %}" value="{{ transaction.price | unlocalize }}"></div>
         <div class="col-md-2 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
         <div class="col-md-2 col-sm-12">
           <select class="select2_group form-control" name="account">{% for account in accounts %}
