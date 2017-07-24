@@ -40,7 +40,7 @@
         </div>
         <div class="col-md-2 col-sm-4"><input type="number" step="any" lang="en-150" class="form-control" name="amount" placeholder="{% trans 'amount' %}" value="{{ transaction.amount | unlocalize }}"></div>
         <div class="col-md-1 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ transaction.currency }}"></div>
-        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}" value="{{ transaction.quantity }}"></div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}" value="{{ transaction.quantity | unlocalize }}"></div>
         <div class="col-md-1">
           <select class="select2_group form-control" name="unit">{% for unit in quantity_units %}
             <option value="{{ unit.0 }}"{% if transaction.unit == unit.0 %} selected="selected"{% endif %}>{{ unit.0 }}</option>{% endfor %}
@@ -63,7 +63,7 @@
         </div>
         <div class="col-md-2 col-sm-4"><input type="number" step="any" lang="en-150" class="form-control" name="amount" placeholder="{% trans 'amount' %}"></div>
         <div class="col-md-1 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ base_currency }}"></div>
-        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}" value="{{ transaction.quantity }}"></div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}"></div>
         <div class="col-md-1">
           <select class="select2_group form-control" name="unit">
             <option value=""></option>{% for unit in quantity_units %}
