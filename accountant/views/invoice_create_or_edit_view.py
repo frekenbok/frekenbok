@@ -74,7 +74,7 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         return map(
             partial(self.transaction_data_to_dict, invoice=invoice),
             filter(
-                lambda x: x[1] and x[2] and x[3] and x[5],
+                lambda x: x[1] and x[2] and x[3] and x[7],
                 zip(
                     request.POST.getlist('transaction-id'),
                     request.POST.getlist('date'),
