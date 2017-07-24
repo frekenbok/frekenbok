@@ -1,6 +1,7 @@
 import logging
 import mimetypes
 import os
+from decimal import Decimal
 
 from django.db import models, transaction
 from django.db.models import Sum
@@ -308,6 +309,15 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
+    UNITS = (
+        ('pcs', _('pieces')),
+        ('kg', _('kilos')),
+        ('g', _('grams')),
+        ('l', _('liters')),
+        ('gal', _('gallons')),
+        ('p', _('pounds'))
+    )
+
     date = models.DateField(
         verbose_name=_('date')
     )
@@ -327,11 +337,23 @@ class Transaction(models.Model):
         max_digits=settings.MAX_DIGITS,
         decimal_places=settings.DECIMAL_PLACES,
     )
-
     currency = CurrencyField(
         verbose_name=_('currency'),
         default=settings.BASE_CURRENCY,
         price_field=amount
+    )
+
+    quantity = models.DecimalField(
+        verbose_name=_('good quantity'),
+        max_digits=settings.MAX_DIGITS,
+        decimal_places=settings.DECIMAL_PLACES,
+        default=Decimal(1)
+    )
+    unit = models.CharField(
+        verbose_name=_('unit of measurement'),
+        max_length=255,
+        choices=UNITS,
+        default='pcs'
     )
 
     invoice = models.ForeignKey(
@@ -344,6 +366,10 @@ class Transaction(models.Model):
         verbose_name=_('comment'),
         blank=True
     )
+
+    @property
+    def price(self):
+        return self.amount / self.quantity
 
     def __str__(self):
         return ('{amount} {currency} @ {account} on {date} ({app}approved)'

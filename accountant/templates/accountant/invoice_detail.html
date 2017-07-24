@@ -19,34 +19,42 @@
             <th>{% trans 'Date' %}</th>
             <th>{% trans 'Account' %}</th>
             <th>{% trans 'Value' %}</th>
+            <th>{% trans 'Quantity' %}</th>
+            <th>{% trans 'Price' %}</th>
             <th>{% trans 'Comment' %}</th>
           </tr>
         </thead>
         <tbody>
-        {% if invoice.income_transactions %}<tr><th colspan="4">{% trans 'Incomes' %}</th></tr>{% endif %}
+        {% if invoice.income_transactions %}<tr><th colspan="6">{% trans 'Incomes' %}</th></tr>{% endif %}
         {% for transaction in invoice.income_transactions %}
           <tr>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
+            <td>{{ transaction.price }}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}
-        {% if invoice.internal_transactions %}<tr><th colspan="4">{% trans 'Accounts' %}</th></tr>{% endif %}
+        {% if invoice.internal_transactions %}<tr><th colspan="6">{% trans 'Accounts' %}</th></tr>{% endif %}
         {% for transaction in invoice.internal_transactions %}
           <tr>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
+            <td>{{ transaction.price }}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}
-        {% if invoice.expense_transactions %}<tr><th colspan="4">{% trans 'Expenses' %}</th></tr>{% endif %}
+        {% if invoice.expense_transactions %}<tr><th colspan="6">{% trans 'Expenses' %}</th></tr>{% endif %}
         {% for transaction in invoice.expense_transactions %}
           <tr>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
+            <td>{{ transaction.price }}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}
