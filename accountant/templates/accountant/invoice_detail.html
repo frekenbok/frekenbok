@@ -31,8 +31,8 @@
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
-            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
-            <td>{{ transaction.price }}</td>
+            <td>{% if transaction.quantity %}{{ transaction.quantity }} {{ transaction.unit }}{% endif %}</td>
+            <td>{% if transaction.quantity %}{{ transaction.price }}{% endif %}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}
@@ -42,8 +42,8 @@
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
-            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
-            <td>{{ transaction.price }}</td>
+            <td>{% if transaction.quantity %}{{ transaction.quantity }} {{ transaction.unit }}{% endif %}</td>
+            <td>{% if transaction.quantity %}{{ transaction.price }}{% endif %}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}
@@ -53,8 +53,8 @@
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td><a href="{% url 'accountant:account_detail' transaction.account.id %}">{{ transaction.account.title }}</a></td>
             <td>{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
-            <td>{{ transaction.quantity }} {{ transaction.unit }}</td>
-            <td>{{ transaction.price }}</td>
+            <td>{% if transaction.quantity %}{{ transaction.quantity }} {{ transaction.unit }}{% endif %}</td>
+            <td>{% if transaction.quantity %}{{ transaction.price }}{% endif %}</td>
             <td>{{ transaction.comment }}</td>
           </tr>
         {% endfor %}

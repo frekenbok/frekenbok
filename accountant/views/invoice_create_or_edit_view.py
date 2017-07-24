@@ -39,6 +39,11 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
         context['base_currency'] = settings.BASE_CURRENCY
         return context
 
+    @staticmethod
+    def get_decimal(string: str):
+        if string:
+            return Decimal(string.replace(',', '.').replace(' ', ''))
+
     def transaction_data_to_dict(self, data: tuple, invoice: Invoice=None):
         """
         Internal method used to transform tuple with transactions data to dict.
@@ -51,9 +56,9 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
             int(data[0]) if data[0] else None,
             {
                 'date': parse(data[1]).date(),
-                'amount': Decimal(data[2].replace(',', '.').replace(' ', '')),
+                'amount': self.get_decimal(data[2]),
                 'currency': get_currency(data[3]),
-                'quantity': Decimal(data[4].replace(',', '.').replace(' ', '')),
+                'quantity': self.get_decimal(data[4]),
                 'unit': data[5],
                 'comment': data[6],
                 'account': self.accounts[int(data[7])],

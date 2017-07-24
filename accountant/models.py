@@ -347,13 +347,17 @@ class Transaction(models.Model):
         verbose_name=_('good quantity'),
         max_digits=settings.MAX_DIGITS,
         decimal_places=settings.DECIMAL_PLACES,
-        default=Decimal(1)
+        null=True,
+        blank=True,
+        default=None
     )
     unit = models.CharField(
         verbose_name=_('unit of measurement'),
         max_length=255,
         choices=UNITS,
-        default='pcs'
+        null=True,
+        blank=True,
+        default=None
     )
 
     invoice = models.ForeignKey(
@@ -369,7 +373,8 @@ class Transaction(models.Model):
 
     @property
     def price(self):
-        return self.amount / self.quantity
+        if self.quantity:
+            return self.amount / self.quantity
 
     def __str__(self):
         return ('{amount} {currency} @ {account} on {date} ({app}approved)'
