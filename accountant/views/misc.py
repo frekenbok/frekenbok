@@ -81,3 +81,5 @@ def recalculate_request(request: HttpRequest):
         request.META.get('HTTP_REFERER', reverse('accountant:account_list'))
     )
 
+def fns_invoice_parser(request: HttpRequest):
+    pass
