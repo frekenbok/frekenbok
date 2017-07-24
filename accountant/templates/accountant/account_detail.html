@@ -43,7 +43,7 @@
 </div>
 <div class="col-md-3 col-sm-3 col-xs-12">
   <section class="panel">
-    <div class="x_title"><h2>{% trans 'Summary' %}</h2><div class="clearfix"></div></div>
+    <div class="x_title"><h2>{% trans 'Total summary' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <table class="table">
         <tbody>{% for sheaf in account.sorted_sheaves %}
@@ -54,6 +54,19 @@
       </table>
     </div>
   </section>
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Total quantity' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>{% for quantity in total_quantity %}
+          <tr>
+            <td width="10%">{{ quantity.unit }}</td><td>{{ quantity.quantity | intcomma }}</td>
+          </tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
 {% if account.credentials %}
   <section class="panel">
     <div class="x_title"><h2>{% trans 'Credentials' %}</h2><div class="clearfix"></div></div>
