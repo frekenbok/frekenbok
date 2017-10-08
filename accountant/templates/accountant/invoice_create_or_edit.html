@@ -97,7 +97,7 @@
           </tr>
         {% endfor %}
       </table>
-    <div id="documentDropzone" class="dropzone"></div>
+      <div id="documentDropzone" class="dropzone"></div>
     </div>
   </section>
     <input class="btn btn-default" type="submit" value="{% trans 'Save' %}">
@@ -184,5 +184,8 @@
   }
 
   var documentDropzone = new Dropzone('#documentDropzone', { url: '{% url 'accountant:document_upload' %}'});
+  documentDropzone.on('success', function (file, response) {
+      jQuery('<input type="hidden" value="' + response.id + '" name="document">').insertAfter('#documentDropzone');
+  })
 </script>
 {% endblock %}

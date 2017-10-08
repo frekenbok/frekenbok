@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from accountant.models import Account, Invoice, Transaction
+from accountant.models import Account, Invoice, Transaction, Document
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +82,19 @@ def recalculate_request(request: HttpRequest):
     )
 
 
+@csrf_exempt
 def document_upload(request: HttpRequest):
-    request.FILES.get('file')
+    file = request.FILES.get('file')
+    document = Document.objects.create(
+        description='',
+        invoice=None,
+        file=file
+    )
+    return JsonResponse({
+        'id': document.id,
+        'description': document.description,
+        'invoice': document.invoice,
+    })
 
 
 def document_delete(request: HttpRequest):

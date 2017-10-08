@@ -422,7 +422,8 @@ class Document(models.Model):
     )
 
     file = models.FileField(
-        verbose_name=_('file with image')
+        verbose_name=_('file with image'),
+        upload_to='documents/%Y/%m/'
     )
 
     @property

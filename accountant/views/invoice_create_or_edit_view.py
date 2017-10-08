@@ -111,13 +111,22 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
                     'user': request.user
                 }
             )
-            logger.debug('Invoice {} was {}'.format(invoice, 'created' if created else 'found'))
+            logger.info('Invoice {} was {}'.format(
+                invoice, 'created' if created else 'found'))
 
             for pk, defaults in self.get_transactions_data(request, invoice):
                 tx, created = Transaction.objects.update_or_create(
                     pk=pk, defaults=defaults
                 )
-                logger.debug('Transaction {} was {}'.format(tx, 'created' if created else 'found'))
+                logger.info('Transaction {} was {}'.format(
+                    tx, 'created' if created else 'found'))
+
+            counter = Document.objects\
+                .filter(pk__in=request.POST.getlist('document'))\
+                .update(invoice=invoice)
+            logger.info('{} documents attached to invoice {}'.format(
+                counter, invoice
+            ))
 
             return redirect(invoice.get_absolute_url())
         else:
