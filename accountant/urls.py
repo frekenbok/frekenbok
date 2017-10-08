@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^sms/', sms, name='sms'),
     url(r'^recalculate/', recalculate_request, name='recalculate'),
     url(r'^document/upload', document_upload, name='document_upload'),
-    url(r'^document/delete', document_delete, name='document_delete')
+    url(r'^document/(?P<pk>[0-9]+)/delete', document_delete, name='document_delete')
 ]

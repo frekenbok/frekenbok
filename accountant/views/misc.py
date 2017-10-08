@@ -77,11 +77,11 @@ def sms(request: HttpRequest):
 def recalculate_request(request: HttpRequest):
     for account in Account.objects.all():
         account.recalculate_summary(atomic=False)
-    return redirect(
-        request.META.get('HTTP_REFERER', reverse('accountant:account_list'))
-    )
+    return redirect_to_referer(request, reverse('accountant:account_list'))
 
 
+#TODO `csrf_exempt` here looks like dirty hack, we need some way to
+# support built-in CSRF-protecting engine
 @csrf_exempt
 def document_upload(request: HttpRequest):
     file = request.FILES.get('file')
@@ -97,5 +97,15 @@ def document_upload(request: HttpRequest):
     })
 
 
-def document_delete(request: HttpRequest):
-    pass
+@transaction.atomic
+def document_delete(request: HttpRequest, pk: int):
+    document = Document.objects.get(pk=pk)
+    document.delete()
+    logger.info('Document {} deleted'.format(document))
+    return redirect_to_referer(request, reverse('accountant:account_list'))
+
+
+def redirect_to_referer(request: HttpRequest, default=None):
+    return redirect(
+        request.META.get('HTTP_REFERER', default)
+    )

@@ -93,7 +93,7 @@
           <tr>
             <td>{{ document.file_name }}</td>
             <td>{{ document.description }}</td>
-            <td><a href="{% url 'accountant:document_delete' %}"><span class="fa fa-close" style="color: #d9534f"></span></a></td>
+            <td><a href="{% url 'accountant:document_delete' pk=document.id %}"><span class="fa fa-close" style="color: #d9534f"></span></a></td>
           </tr>
         {% endfor %}
       </table>
