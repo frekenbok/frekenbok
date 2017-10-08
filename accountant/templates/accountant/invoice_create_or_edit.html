@@ -80,6 +80,26 @@
       </div>
     </div>
   </section>
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Documents' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table" id="documents-table">
+        <tr>
+          <th>{% trans 'File name' %}</th>
+          <th>{% trans 'Description' %}</th>
+          <th></th>
+        </tr>
+        {% for document in documents %}
+          <tr>
+            <td>{{ document.file_name }}</td>
+            <td>{{ document.description }}</td>
+            <td><a href="{% url 'accountant:document_delete' %}"><span class="fa fa-close" style="color: #d9534f"></span></a></td>
+          </tr>
+        {% endfor %}
+      </table>
+    <div id="documentDropzone" class="dropzone"></div>
+    </div>
+  </section>
     <input class="btn btn-default" type="submit" value="{% trans 'Save' %}">
   </form>
 </div>
@@ -162,5 +182,7 @@
   if (invoiceTimestamp.val() === '') {
     invoiceTimestamp.val(moment().format('YYYY-MM-DD HH:mm'))
   }
+
+  var documentDropzone = new Dropzone('#documentDropzone', { url: '{% url 'accountant:document_upload' %}'});
 </script>
 {% endblock %}

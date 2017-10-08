@@ -81,3 +81,10 @@ def recalculate_request(request: HttpRequest):
         request.META.get('HTTP_REFERER', reverse('accountant:account_list'))
     )
 
+
+def document_upload(request: HttpRequest):
+    request.FILES.get('file')
+
+
+def document_delete(request: HttpRequest):
+    pass
