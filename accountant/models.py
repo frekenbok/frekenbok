@@ -417,11 +417,13 @@ class Document(models.Model):
     invoice = models.ForeignKey(
         verbose_name=_('invoice'),
         to=Invoice,
+        null=True,
         related_name='documents'
     )
 
     file = models.FileField(
-        verbose_name=_('file with image')
+        verbose_name=_('file with image'),
+        upload_to='documents/%Y/%m/'
     )
 
     @property

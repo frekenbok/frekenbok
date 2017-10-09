@@ -28,6 +28,6 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
             Transaction.objects.filter(account=self.object)\
                 .values('unit')\
                 .annotate(quantity=Sum('quantity'))\
-                .filter(unit__isnull=False)\
+                .filter(quantity__isnull=False)\
                 .order_by('quantity')
         return context

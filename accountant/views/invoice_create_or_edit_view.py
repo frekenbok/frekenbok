@@ -13,7 +13,7 @@ from django.db import transaction
 from django.http import HttpRequest
 from django.views.generic.base import TemplateView
 
-from accountant.models import Invoice, Account, Transaction
+from accountant.models import Invoice, Account, Transaction, Document
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +30,15 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
             context = {
                 'invoice': Invoice.objects.get(pk=pk),
                 'transactions': Transaction.objects.filter(invoice=pk),
+                'documents': Document.objects.filter(invoice=pk),
                 'quantity_units': Transaction.UNITS
             }
         else:
-            context = {'transactions': tuple(), 'invoice': None}
+            context = {
+                'invoice': None,
+                'transactions': tuple(),
+                'documents': tuple()
+            }
         # TODO There should be another way to get sorted tree
         context['accounts'] = Account.objects.order_by('tree_id', 'lft').all()
         context['base_currency'] = settings.BASE_CURRENCY
@@ -97,7 +102,6 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
     @transaction.atomic
     def post(self, request: HttpRequest, pk: int=None, *args, **kwargs):
         logger.debug('Trying to create or update invoice with pk {}'.format(pk))
-        logger.debug('Timestamp {}, comment {}'.format(request.POST.get('invoice-timestamp'), request.POST.get('invoice-comment')))
         if request.POST.get('invoice-timestamp'):
             invoice, created = Invoice.objects.update_or_create(
                 pk=int(pk) if pk else None,
@@ -107,13 +111,22 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
                     'user': request.user
                 }
             )
-            logger.debug('Invoice {} was {}'.format(invoice, 'created' if created else 'found'))
+            logger.info('Invoice {} was {}'.format(
+                invoice, 'created' if created else 'found'))
 
             for pk, defaults in self.get_transactions_data(request, invoice):
                 tx, created = Transaction.objects.update_or_create(
                     pk=pk, defaults=defaults
                 )
-                logger.debug('Transaction {} was {}'.format(tx, 'created' if created else 'found'))
+                logger.info('Transaction {} was {}'.format(
+                    tx, 'created' if created else 'found'))
+
+            counter = Document.objects\
+                .filter(pk__in=request.POST.getlist('document'))\
+                .update(invoice=invoice)
+            logger.info('{} documents attached to invoice {}'.format(
+                counter, invoice
+            ))
 
             return redirect(invoice.get_absolute_url())
         else:
