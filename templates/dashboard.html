@@ -173,6 +173,11 @@
      barColor: '#26B99A'
   });
 
-  var statementDropzone = new Dropzone('#statementDropzone', { url: '{% url 'accountant:statement_import' %}'});
+  var statementDropzone = new Dropzone('#statementDropzone', {
+      url: '{% url 'accountant:statement_import' %}',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+  });
 </script>
 {% endblock %}
