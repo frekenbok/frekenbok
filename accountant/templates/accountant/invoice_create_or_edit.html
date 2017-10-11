@@ -183,7 +183,12 @@
     invoiceTimestamp.val(moment().format('YYYY-MM-DD HH:mm'))
   }
 
-  var documentDropzone = new Dropzone('#documentDropzone', { url: '{% url 'accountant:document_upload' %}'});
+  var documentDropzone = new Dropzone('#documentDropzone', {
+      url: '{% url 'accountant:document_upload' %}',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+  });
   documentDropzone.on('success', function (file, response) {
       jQuery('<input type="hidden" value="' + response.id + '" name="document">').insertAfter('#documentDropzone');
   })
