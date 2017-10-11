@@ -80,9 +80,6 @@ def recalculate_request(request: HttpRequest):
     return redirect_to_referer(request, reverse('accountant:account_list'))
 
 
-#TODO `csrf_exempt` here looks like dirty hack, we need some way to
-# support built-in CSRF-protecting engine
-@csrf_exempt
 def document_upload(request: HttpRequest):
     file = request.FILES.get('file')
     document = Document.objects.create(
