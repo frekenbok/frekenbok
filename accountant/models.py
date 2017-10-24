@@ -433,3 +433,11 @@ class Document(models.Model):
     @property
     def file_name(self):
         return os.path.basename(self.file.name)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'description': self.description,
+            'invoice': self.invoice,
+            'file': self.file.url
+        }
