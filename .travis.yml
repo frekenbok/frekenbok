@@ -8,6 +8,6 @@ install:
 script: python manage.py test
 env:
   - DJANGO_SETTINGS_MODULE=frekenbok.settings.test_sqlite
-  - DJANGO_SETTINGS_MODULE=frekenbok.settings.test_mysql
+  - DJANGO_SETTINGS_MODULE=frekenbok.settings.test_mysql_travis
 services:
   - mysql
