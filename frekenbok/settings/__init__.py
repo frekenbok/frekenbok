@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+from appdirs import site_config_dir
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from os.path import isdir, join
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Application definition
@@ -29,6 +33,12 @@ INSTALLED_APPS = [
     'treebeard',
     'accountant',
 ]
+
+# Including plugins
+for item in os.listdir(join(site_config_dir('frekenbok'), 'plugins')):
+    if isdir(item):
+        INSTALLED_APPS.append(item)
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
