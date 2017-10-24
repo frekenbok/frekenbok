@@ -3,4 +3,9 @@ python:
   - "3.5"
   - "3.6"
 install: "pip install -r requirements.txt"
-script: python manage.py test --settings frekenbok.settings.test_sqlite
+script: python manage.py test
+env:
+  - DJANGO_SETTINGS_MODULE=frekenbok.settings.test_sqlite
+  - DJANGO_SETTINGS_MODULE=frekenbok.settings.test_mysql
+services:
+  - mysql
