@@ -1,14 +1,13 @@
-import os
-from random import random
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
+from os.path import join, dirname, realpath
+from random import random
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-
+from moneyed import RUB, USD, EUR
 
 from accountant.models import Account, Sheaf, Invoice, Transaction, Document
-from moneyed import RUB, USD, EUR, GBP
 
 
 def add_test_data(cls):
@@ -220,10 +219,9 @@ def add_test_data(cls):
         invoice=cls.disbalanced_invoice
     )
 
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_document.pdf'), 'rb') as f:
-        test_pdf = f.read()
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_invoice_image.jpg'), 'rb') as f:
-        test_img = f.read()
+    test_pdf = read_file('test_invoice_document.pdf')
+    test_img = read_file('test_invoice_image.jpg')
+
     cls.invoice_with_attached_image = Invoice.objects.create(
         comment='Invoice with attached image',
         timestamp=datetime.now(tz=timezone.utc)
@@ -231,12 +229,17 @@ def add_test_data(cls):
     cls.document_as_pdf = Document.objects.create(
         description='Some PDF as document',
         invoice=cls.invoice_with_attached_image,
-        file=SimpleUploadedFile('test_invoice_document.pdf', test_pdf, 'application/pdf')
+        file=SimpleUploadedFile('test_doc.pdf', test_pdf, 'application/pdf')
     )
     cls.document_as_img = Document.objects.create(
         description='Some image as document',
         invoice=cls.invoice_with_attached_image,
-        file=SimpleUploadedFile('test_invoice_image.jpg', test_img, 'image/jpeg')
+        file=SimpleUploadedFile('test_image.jpg', test_img, 'image/jpeg')
+    )
+    cls.document_without_invoice = Document.objects.create(
+        description='Some document without invoice',
+        invoice=None,
+        file=SimpleUploadedFile('test_image.jpg', test_img, 'image/jpeg')
     )
 
     # Test futures transaction
@@ -247,3 +250,9 @@ def add_test_data(cls):
         currency=RUB,
         comment='Future transaction'
     )
+
+
+def read_file(filename: str, mode='rb'):
+    with open(join(dirname(realpath(__file__)), filename), mode) as f:
+        result = f.read()
+    return result

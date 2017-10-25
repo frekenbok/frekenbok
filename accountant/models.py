@@ -1,17 +1,15 @@
 import logging
 import mimetypes
 import os
-from decimal import Decimal
 
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models import Sum
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
-
 
 logger = logging.getLogger(__name__)
 
@@ -423,7 +421,7 @@ class Document(models.Model):
 
     file = models.FileField(
         verbose_name=_('file with image'),
-        upload_to='documents/%Y/%m/'
+        upload_to='documents/%Y/%m/',
     )
 
     @property
@@ -438,6 +436,6 @@ class Document(models.Model):
         return {
             'id': self.id,
             'description': self.description,
-            'invoice': self.invoice,
+            'invoice': self.invoice.id if self.invoice else None,
             'file': self.file.url
         }
