@@ -2,15 +2,14 @@ import logging
 import mimetypes
 import os
 
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models import Sum
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
-
 
 logger = logging.getLogger(__name__)
 
@@ -308,6 +307,15 @@ class Invoice(models.Model):
 
 
 class Transaction(models.Model):
+    UNITS = (
+        ('pcs', _('pieces')),
+        ('kg', _('kilos')),
+        ('g', _('grams')),
+        ('l', _('liters')),
+        ('gal', _('gallons')),
+        ('p', _('pounds'))
+    )
+
     date = models.DateField(
         verbose_name=_('date')
     )
@@ -327,11 +335,27 @@ class Transaction(models.Model):
         max_digits=settings.MAX_DIGITS,
         decimal_places=settings.DECIMAL_PLACES,
     )
-
     currency = CurrencyField(
         verbose_name=_('currency'),
         default=settings.BASE_CURRENCY,
         price_field=amount
+    )
+
+    quantity = models.DecimalField(
+        verbose_name=_('good quantity'),
+        max_digits=settings.MAX_DIGITS,
+        decimal_places=settings.DECIMAL_PLACES,
+        null=True,
+        blank=True,
+        default=None
+    )
+    unit = models.CharField(
+        verbose_name=_('unit of measurement'),
+        max_length=255,
+        choices=UNITS,
+        null=True,
+        blank=True,
+        default=None
     )
 
     invoice = models.ForeignKey(
@@ -344,6 +368,11 @@ class Transaction(models.Model):
         verbose_name=_('comment'),
         blank=True
     )
+
+    @property
+    def price(self):
+        if self.quantity:
+            return self.amount / self.quantity
 
     def __str__(self):
         return ('{amount} {currency} @ {account} on {date} ({app}approved)'
@@ -386,11 +415,13 @@ class Document(models.Model):
     invoice = models.ForeignKey(
         verbose_name=_('invoice'),
         to=Invoice,
+        null=True,
         related_name='documents'
     )
 
     file = models.FileField(
-        verbose_name=_('file with image')
+        verbose_name=_('file with image'),
+        upload_to='documents/%Y/%m/',
     )
 
     @property
@@ -400,3 +431,11 @@ class Document(models.Model):
     @property
     def file_name(self):
         return os.path.basename(self.file.name)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'description': self.description,
+            'invoice': self.invoice.id if self.invoice else None,
+            'file': self.file.url
+        }

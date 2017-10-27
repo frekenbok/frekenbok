@@ -8,7 +8,7 @@
 {% block header_large %}{% trans 'Add new invoice' %}{% endblock %}
 
 {% block x_content %}
-<div class="col-md-9 col-sm-9 col-xs-12">
+<div class="col-md-12">
   <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <section class="panel">
@@ -39,8 +39,15 @@
           <span class="fa fa-calendar form-control-feedback left"></span>
         </div>
         <div class="col-md-2 col-sm-4"><input type="number" step="any" lang="en-150" class="form-control" name="amount" placeholder="{% trans 'amount' %}" value="{{ transaction.amount | unlocalize }}"></div>
-        <div class="col-md-2 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ transaction.currency }}"></div>
-        <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
+        <div class="col-md-1 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ transaction.currency }}"></div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}" value="{{ transaction.quantity | unlocalize }}"></div>
+        <div class="col-md-1">
+          <select class="select2_group form-control" name="unit">{% for unit in quantity_units %}
+            <option value="{{ unit.0 }}"{% if transaction.unit == unit.0 %} selected="selected"{% endif %}>{{ unit.0 }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="price" placeholder="{% trans 'price' %}" value="{{ transaction.price | unlocalize }}"></div>
+        <div class="col-md-2 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}" value="{{ transaction.comment }}"></div>
         <div class="col-md-2 col-sm-12">
           <select class="select2_group form-control" name="account">{% for account in accounts %}
             <option value="{{ account.id }}"{% if account.id == transaction.account_id %} selected="selected"{% endif %}>{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
@@ -55,8 +62,16 @@
           <span class="fa fa-calendar form-control-feedback left"></span>
         </div>
         <div class="col-md-2 col-sm-4"><input type="number" step="any" lang="en-150" class="form-control" name="amount" placeholder="{% trans 'amount' %}"></div>
-        <div class="col-md-2 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ base_currency }}"></div>
-        <div class="col-md-4 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}"></div>
+        <div class="col-md-1 col-sm-4"><input type="text" class="form-control" name="currency" placeholder="{% trans 'currency' %}" value="{{ base_currency }}"></div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="quantity" placeholder="{% trans 'quantity' %}"></div>
+        <div class="col-md-1">
+          <select class="select2_group form-control" name="unit">
+            <option value=""></option>{% for unit in quantity_units %}
+            <option value="{{ unit.0 }}">{{ unit.0 }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="col-md-1"><input type="number" step="any" lang="en-150" class="form-control" name="price" placeholder="{% trans 'price' %}"></div>
+        <div class="col-md-2 col-sm-12"><input type="text" class="form-control" name="comment" placeholder="{% trans 'comment' %}"></div>
         <div class="col-md-2 col-sm-12">
           <select class="select2_group form-control" name="account">{% for account in accounts %}
             <option value="{{ account.id }}">{{ account.depth_nbsp }}{{ account.title }}</option>{% endfor %}
@@ -65,35 +80,118 @@
       </div>
     </div>
   </section>
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Documents' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table" id="documents-table">
+        <tr>
+          <th>{% trans 'File name' %}</th>
+          <th>{% trans 'Description' %}</th>
+          <th></th>
+        </tr>
+        {% for document in documents %}
+          <tr>
+            <td>{{ document.file_name }}</td>
+            <td>{{ document.description }}</td>
+            <td><a href="{% url 'accountant:document_delete' pk=document.id %}"><span class="fa fa-close" style="color: #d9534f"></span></a></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div id="documentDropzone" class="dropzone"></div>
+    </div>
+  </section>
     <input class="btn btn-default" type="submit" value="{% trans 'Save' %}">
   </form>
 </div>
 {% endblock x_content %}
 
 {% block inline-js %}
-  <script language="JavaScript">
-        function addTransaction() {
-            var lastTransaction = jQuery('.transaction:last');
-            var newTransaction = lastTransaction.clone(true);
+<script language="JavaScript">
+  function getField(row, fieldName) {
+    return row.find('[name=' + fieldName + ']');
+  }
 
-            lastTransaction.off('change', '[name=amount]');
-            if (lastTransaction.find('[name=date]').val() === '') {
-                lastTransaction.find('[name=date]').val(moment(jQuery('#invoice-timestamp').val()).format('YYYY-MM-DD'))
-            }
+  function priceUpdated() {
+    var row = jQuery(this).parent().parent();
+    var amount = getField(row, 'amount');
+    var quantity = getField(row, 'quantity');
+    var price = getField(row, 'price');
 
-            if (lastTransaction.find('[name=currency]').val() === '') {
-                lastTransaction.find('[name=currency]').val('{{ base_currency }}')
-            }
+    if (quantity.val()) {
+      amount.val(quantity.val() * price.val());
+      amount.change();
+    } else if (amount.val()) {
+      quantity.val(amount.val() / price.val());
+    }
+  }
 
-            newTransaction.find('input').val('');
-            newTransaction.insertAfter(lastTransaction);
-            }
+  function amountUpdated() {
+    var row = jQuery(this).parent().parent();
+    var amount = getField(row, 'amount');
+    var quantity = getField(row, 'quantity');
+    var price = getField(row, 'price');
 
-        jQuery('.transaction:last').on('change', '[name=amount]', addTransaction);
+    if (quantity.val()) {
+      price.val(amount.val() / quantity.val());
+    } else if (price.val()) {
+      quantity.val(amount.val() / price.val());
+    }
+  }
 
-        var invoiceTimestamp = jQuery('#invoice-timestamp');
-        if (invoiceTimestamp.val() === '') {
-            invoiceTimestamp.val(moment().format('YYYY-MM-DD HH:mm'))
-            }
-      </script>
+  function quantityUpdated() {
+    var row = jQuery(this).parent().parent();
+    var amount = getField(row, 'amount');
+    var quantity = getField(row, 'quantity');
+    var price = getField(row, 'price');
+
+    if (amount.val()) {
+      price.val(amount.val() / quantity.val());
+    } else if (price.val()) {
+      amount.val(quantity.val() * price.val());
+      amount.change();
+    }
+  }
+
+  function addTransaction() {
+    var lastTransaction = jQuery('.transaction:last');
+    var newTransaction = lastTransaction.clone(true);
+
+    lastTransaction
+      .on('change', '[name=amount]', amountUpdated)
+      .on('change', '[name=price]', priceUpdated)
+      .on('change', '[name=quantity]', quantityUpdated);
+    if (lastTransaction.find('[name=date]').val() === '') {
+      lastTransaction.find('[name=date]').val(moment(jQuery('#invoice-timestamp').val()).format('YYYY-MM-DD'))
+    }
+
+    if (lastTransaction.find('[name=currency]').val() === '') {
+      lastTransaction.find('[name=currency]').val('{{ base_currency }}')
+    }
+
+    newTransaction.find('input').val('');
+    newTransaction.insertAfter(lastTransaction);
+  }
+
+  jQuery('.transaction')
+    .on('change', '[name=amount]', amountUpdated)
+    .on('change', '[name=price]', priceUpdated)
+    .on('change', '[name=quantity]', quantityUpdated);
+  jQuery('.transaction:last').on('change', '[name=amount]', addTransaction);
+
+  var invoiceTimestamp = jQuery('#invoice-timestamp');
+  if (invoiceTimestamp.val() === '') {
+    invoiceTimestamp.val(moment().format('YYYY-MM-DD HH:mm'))
+  }
+
+  var documentDropzone = new Dropzone('#documentDropzone', {
+      paramName: 'document',
+      url: '{% url 'accountant:document_upload' %}',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+  });
+  documentDropzone.on('success', function (file, response) {
+      jQuery('<input type="hidden" value="' + response.id + '" name="document">').insertAfter('#documentDropzone');
+  })
+</script>
 {% endblock %}

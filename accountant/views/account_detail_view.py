@@ -2,7 +2,7 @@ import logging
 from datetime import date
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.generic import DetailView
 
 from accountant.models import Account, Transaction
@@ -24,4 +24,10 @@ class AccountDetailView(LoginRequiredMixin, DetailView):
         context['transaction_list'] = \
             Transaction.objects.filter(account=self.object)\
                 .order_by('-date')[:10]
+        context['total_quantity'] = \
+            Transaction.objects.filter(account=self.object)\
+                .values('unit')\
+                .annotate(quantity=Sum('quantity'))\
+                .filter(quantity__isnull=False)\
+                .order_by('quantity')
         return context

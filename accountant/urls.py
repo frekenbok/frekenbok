@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
-from accountant.views.misc import sms, recalculate_request
+from accountant.views.misc import sms, recalculate_request, document_upload, \
+    document_delete
 from accountant.views.invoice_create_or_edit_view import InvoiceCreateOrEditView
 from accountant.views.invoice_detail_view import InvoiceDetailView
 from accountant.views.invoice_list_view import InvoiceListView
@@ -20,5 +21,7 @@ urlpatterns = [
     url(r'^invoices/(?P<pk>[0-9]+)/', InvoiceDetailView.as_view(), name='invoice_detail'),
     url(r'^invoices/', InvoiceListView.as_view(), name='invoice_list'),
     url(r'^sms/', sms, name='sms'),
-    url(r'^recalculate/', recalculate_request, name='recalculate')
+    url(r'^recalculate/', recalculate_request, name='recalculate'),
+    url(r'^document/upload', document_upload, name='document_upload'),
+    url(r'^document/(?P<pk>[0-9]+)/delete', document_delete, name='document_delete')
 ]

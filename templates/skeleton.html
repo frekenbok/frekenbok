@@ -321,9 +321,17 @@
 <script src="{% static 'gentelella/vendors/moment/min/moment.min.js' %}"></script>
 <script src="{% static 'gentelella/vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
 
+<!-- dropzone -->
+<script src="{% static 'gentelella/vendors/dropzone/dist/dropzone.js' %}"></script>
+<script language="JavaScript">Dropzone.autoDiscover = false;</script>
+
+<!-- js-cookie -->
+<script src="{% static 'js.cookie.js' %}"></script>
+
 <!-- Custom Theme Scripts -->
 <script src="{% static 'gentelella/build/js/custom.min.js' %}"></script>
 
 {% block inline-js %}{% endblock inline-js %}
 
+</body>
 {% endblock body %}

@@ -289,3 +289,22 @@ class DocumentTestCase(TestCase):
     def test_mime_type_property(self):
         self.assertEqual(self.document_as_pdf.mime_type, 'application/pdf')
         self.assertEqual(self.document_as_img.mime_type, 'image/jpeg')
+
+    def test_json_method(self):
+        expected_result = {
+            'description': self.document_as_pdf.description,
+            'id': self.document_as_pdf.id,
+            'invoice': self.invoice_with_attached_image.id
+        }
+        expected_path = '/media/documents/{}/{}/test_doc'.format(
+            date.today().year, date.today().month
+        )
+
+        actual_result = self.document_as_pdf.json()
+        url = actual_result.pop('file')
+
+        self.assertEqual(expected_result, actual_result)
+        self.assertTrue(url.startswith(expected_path))
+
+    def test_json_method_for_invoiceless_document(self):
+        self.assertIsNone(self.document_without_invoice.json()['invoice'])

@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from accountant.models import Account, Invoice, Transaction
+from accountant.models import Account, Invoice, Transaction, Document
 
 logger = logging.getLogger(__name__)
 
@@ -77,8 +77,30 @@ def sms(request: HttpRequest):
 def recalculate_request(request: HttpRequest):
     for account in Account.objects.all():
         account.recalculate_summary(atomic=False)
+    return redirect_to_referer(request, reverse('accountant:account_list'))
+
+
+def document_upload(request: HttpRequest):
+    file = request.FILES.get('document')
+    document = Document.objects.create(
+        description='',
+        invoice=None,
+        file=file
+    )
+    return JsonResponse(document.json())
+
+
+@transaction.atomic
+def document_delete(request: HttpRequest, pk: int):
+    document = Document.objects.get(pk=pk)
+    document.delete()
+    logger.info('Document {} deleted'.format(document))
+    return redirect_to_referer(request, reverse('accountant:account_list'))
+
+
+def redirect_to_referer(request: HttpRequest, default=None):
     return redirect(
-        request.META.get('HTTP_REFERER', reverse('accountant:account_list'))
+        request.META.get('HTTP_REFERER', default)
     )
 
 def fns_invoice_parser(request: HttpRequest):

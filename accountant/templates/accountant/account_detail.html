@@ -18,6 +18,7 @@
             <th></th>
             <th>{% trans 'Time' %}</th>
             <th>{% trans 'Value' %}</th>
+            <th>{% trans 'Quantity' %}</th>
             <th>{% trans 'Category' %}</th>
             <th>{% trans 'Comment' %}</th>
           </tr>
@@ -28,6 +29,7 @@
             <td><a href="{{ transaction.invoice.get_absolute_url }}"><span class="fa fa-file-text-o"></span></a></td>
             <td>{{ transaction.date|date:'Y-m-d' }}</td>
             <td style="text-align: right">{{ transaction.amount | intcomma }} {{ transaction.currency }}</td>
+            <td>{% if transaction.quantity %}{{ transaction.quantity }} {{ transaction.unit }} (≈ {{ transaction.price | floatformat:2 }}/{{ transaction.currency }}){% endif %}</td>
             <td>{% for counter_transaction in transaction.invoice.transactions.all %}
                 {% if counter_transaction.account.type == transaction.account.EXPENSE %}{{ counter_transaction.account.title }}{% endif %}
                 {% endfor %}</td>
@@ -41,7 +43,7 @@
 </div>
 <div class="col-md-3 col-sm-3 col-xs-12">
   <section class="panel">
-    <div class="x_title"><h2>{% trans 'Summary' %}</h2><div class="clearfix"></div></div>
+    <div class="x_title"><h2>{% trans 'Total summary' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <table class="table">
         <tbody>{% for sheaf in account.sorted_sheaves %}
@@ -52,6 +54,19 @@
       </table>
     </div>
   </section>
+  <section class="panel">
+    <div class="x_title"><h2>{% trans 'Total quantity' %}</h2><div class="clearfix"></div></div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>{% for quantity in total_quantity %}
+          <tr>
+            <td width="10%">{{ quantity.unit }}</td><td>{{ quantity.quantity | intcomma }}</td>
+          </tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
 {% if account.credentials %}
   <section class="panel">
     <div class="x_title"><h2>{% trans 'Credentials' %}</h2><div class="clearfix"></div></div>
