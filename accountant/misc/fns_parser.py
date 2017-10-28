@@ -28,21 +28,31 @@ def parse(raw_invoice: str, user: User, default_account: Account):
     )
 
     for item in invoice['items']:
+        comment = item['name']
+        maybe_transaction = Transaction.objects.filter(
+            comment=comment,
+            account__in=Account.get_expenses()
+        ).first()
+        if maybe_transaction:
+            account = maybe_transaction.account
+        else:
+            account = default_account
+
         Transaction.objects.create(
             date=timestamp.date(),
-            account=default_account,
+            account=account,
             amount=item['sum'] / divisor,
             currency=currency,
             quantity=item['quantity'],
             invoice=result,
-            comment=item['name']
+            comment=comment
         )
 
-    pnl_amount = result.pnl[0]['amount']
-    if pnl_amount != total_sum.amount:
+    sum_of_items = sum(i.amount for i in result.transactions.all())
+    if sum_of_items != total_sum.amount:
         raise ValueError(
             'Invoice is broken, total sum {} is not equal to sum of items {}'
-            .format(total_sum.amount, pnl_amount)
+            .format(total_sum.amount, sum_of_items)
         )
 
     return result

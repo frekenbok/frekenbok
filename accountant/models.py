@@ -147,6 +147,18 @@ class Account(NS_Node):
             .values('currency')\
             .annotate(amount=Sum('amount')).order_by('currency')
 
+    @staticmethod
+    def get_expenses():
+        return Account.objects.filter(type=Account.EXPENSE).all()
+
+    @staticmethod
+    def get_accounts():
+        return Account.objects.filter(type=Account.ACCOUNT).all()
+
+    @staticmethod
+    def get_incomes():
+        return Account.objects.filter(type=Account.INCOME).all()
+
     def __str__(self):
         return '{title} ({type})'.format(
             title=self.title,

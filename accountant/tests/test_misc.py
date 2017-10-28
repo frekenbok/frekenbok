@@ -1,15 +1,14 @@
 import json
+from datetime import date
+from decimal import Decimal
+from os.path import abspath, dirname, join
 from unittest import TestCase
 
-from os.path import abspath, dirname, join
-
-from decimal import Decimal
-
 from django.contrib.auth.models import User
+from moneyed import RUB
 
 from accountant.misc.fns_parser import parse
-from accountant.models import Account
-from frekenbok.tests.test_data import add_test_data
+from accountant.models import Account, Transaction
 
 
 class FnsInvoiceParserTestCase(TestCase):
@@ -20,11 +19,36 @@ class FnsInvoiceParserTestCase(TestCase):
             email='captain@enterprise.com',
             password='tiberius'
         )
-        cls.account = Account(title='Банк', type=Account.ACCOUNT, dashboard=True)
+        cls.account = Account(title='Other', type=Account.EXPENSE)
         Account.add_root(instance=cls.account)
+        cls.beer = Account(title='Beer', type=Account.EXPENSE)
+        Account.add_root(instance=cls.beer)
+        cls.wrong_beer = Account(title='Wrong beer', type=Account.ACCOUNT)
+        Account.add_root(instance=cls.wrong_beer)
+
+        cls.beer_comment = 'ПИВО ТРИ МЕДВЕДЯ СВЕТЛОЕ АЛК.4'
+        cls.wrong_beer_comment = 'ПИВО ЧЕРНИГОВСКОЕ СВЕТЛОЕ АЛК.'
+        # This transaction should be used to guess account for transaction
+        Transaction.objects.create(
+            date=date.today(),
+            account=cls.beer,
+            amount=Decimal('124.56'),
+            currency=RUB,
+            comment=cls.beer_comment
+        )
+        # This transaction is false target with wrong account type
+        # (only `Account.EXPENSE` accounts should be used for guessing)
+        Transaction.objects.create(
+            date=date.today(),
+            account=cls.wrong_beer,
+            amount=Decimal('124.56'),
+            currency=RUB,
+            comment=cls.wrong_beer_comment
+        )
 
     def setUp(self):
-        with open(join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
+        with open(
+                join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
             self.incoming = f.read()
         self.invoice = parse(self.incoming, self.user, self.account)
 
@@ -33,7 +57,8 @@ class FnsInvoiceParserTestCase(TestCase):
         del self.invoice
 
     def test_total_sum(self):
-        self.assertEqual(self.invoice.pnl[0]['amount'], Decimal('618.89'))
+        actual_sum = sum(i.amount for i in self.invoice.transactions.all())
+        self.assertEqual(actual_sum, Decimal('618.89'))
 
     def test_failed_total_sum(self):
         adjusted_incoming = json.loads(self.incoming)
@@ -74,9 +99,15 @@ class FnsInvoiceParserTestCase(TestCase):
             'ЧИПСЫ LAY`S СМЕТАНА И ЗЕЛЕНЬ 1',
             'ПАКЕТ-МАЙКА ДИКСИ 38Х65 ПНД 12',
             'ПЕЧЕНЬЕ УШКИ С САХАРОМ 250Г Х/',
-            'ПИВО ТРИ МЕДВЕДЯ СВЕТЛОЕ АЛК.4',
-            'ПИВО ЧЕРНИГОВСКОЕ СВЕТЛОЕ АЛК.',
-            'КОЛБАСА КРАКОВСКАЯ ДИВИНО П/К'
+            'КОЛБАСА КРАКОВСКАЯ ДИВИНО П/К',
+            self.beer_comment,
+            self.wrong_beer_comment
         ])
 
         self.assertEqual(actual_comments, expected_comments)
+
+    def test_account_guessing(self):
+        self.assertEqual(
+            len(self.invoice.transactions.filter(account=self.beer).all()),
+            1
+        )
