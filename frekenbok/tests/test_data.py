@@ -39,6 +39,7 @@ def add_test_data(cls):
         type=Account.ACCOUNT,
         credentials='Счёт: 1234567890987654321\nБИК: 0020045354023\nКИК: 235255'
     )
+    cls.accounts = [cls.cash, cls.wallet, cls.reserve, cls.bank, cls.card]
 
     # Opening balance
     opening_balance = Account(title='Входящий остаток',
@@ -86,6 +87,7 @@ def add_test_data(cls):
     salary = cls.job.add_child(title='Зарплата', type=Account.INCOME)
     cls.salary = Account.objects.get(pk=salary.pk)
     cls.bonus = cls.job.add_child(title='Премия', type=Account.INCOME)
+    cls.incomes = [cls.job, cls.salary, cls.bonus]
 
     # Test expenses
     cls.expenses = [
@@ -95,7 +97,7 @@ def add_test_data(cls):
     for expense in cls.expenses:
         Account.add_root(instance=expense)
 
-    # Test income
+    # Test income invoices
     cls.first_salary = Invoice.objects.create(timestamp=datetime(2015, 4, 1, tzinfo=timezone.utc))
     cls.first_salary_income_tx = Transaction.objects.create(
         date=date(2015, 4, 1),
@@ -128,7 +130,7 @@ def add_test_data(cls):
         invoice=cls.first_bonus
     )
 
-    # Test expenses
+    # Test expense invoices
     cls.first_invoice = Invoice.objects.create(timestamp=datetime(2015, 4, 3, tzinfo=timezone.utc))
     sum_of_first_invoice = Decimal(0)
     for expense in cls.expenses:
