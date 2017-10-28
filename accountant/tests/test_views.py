@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.test import TestCase, Client
+from os.path import join, dirname, abspath
 
 from accountant.models import Account, Transaction, Invoice
 from accountant.views.account_detail_view import AccountDetailView

@@ -102,3 +102,6 @@ def redirect_to_referer(request: HttpRequest, default=None):
     return redirect(
         request.META.get('HTTP_REFERER', default)
     )
+
+def fns_invoice_parser(request: HttpRequest):
+    pass
