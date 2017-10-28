@@ -281,24 +281,3 @@ class SmsTestCase(TestCase):
         self.assertEqual(created_transaction.account, self.card)
         self.assertEqual(created_transaction.invoice, created_invoice)
         self.assertEqual(created_transaction.comment, self.receiver)
-
-
-class FnsInvoiceParserTestCase(TestCase):
-    def setUp(self):
-        with open(join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
-            self.incoming = json.load(f)
-
-    def tearDown(self):
-        del self.incoming
-
-    def test_items_number(self):
-        self.fail()
-
-    def test_total_sum(self):
-        self.fail()
-
-    def test_items_prices(self):
-        self.fail()
-
-    def test_quantity(self):
-        self.fail()
