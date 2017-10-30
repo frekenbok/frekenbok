@@ -26,22 +26,14 @@ class StatementImportView(LoginRequiredMixin, TemplateView):
                 description=""
             )
 
-            default_expense =  getattr(
-                settings,
-               'DEFAULT_EXPENSE',
-                Account.objects.get(pk=10)
-            )
-            default_account = getattr(
-                settings,
-                'DEFAULT_ACCOUNT',
-                Account.objects.get(pk=2)
-            )
+            default_expense = getattr(settings, 'DEFAULT_EXPENSE', 10)
+            default_account = getattr(settings, 'DEFAULT_ACCOUNT', 2)
 
             invoice = fns_parser.parse(
                 doc.file.read().decode(),
                 request.user,
-                default_expense,
-                default_account
+                Account.objects.get(pk=default_expense),
+                Account.objects.get(pk=default_account)
             )
             doc.invoice = invoice
             doc.save()
