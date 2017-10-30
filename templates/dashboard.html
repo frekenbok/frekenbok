@@ -23,7 +23,7 @@
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="x_panel fixed_height_320">
           <div class="x_title">
-            <h2>Incomes<small>for last month</small></h2>
+            <h2>{% trans 'Import bank statement' %}</h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>
@@ -42,60 +42,7 @@
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
-          <table class="" style="width:100%">
-            <tr>
-              <th style="width:37%;">
-                <p>Top 5</p>
-              </th>
-              <th>
-                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                  <p class="">Device</p>
-                </div>
-                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                  <p class="">Progress</p>
-                </div>
-              </th>
-            </tr>
-            <tr>
-              <td>
-                <canvas id="canvas1" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
-              </td>
-              <td>
-                <table class="tile_info">
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square blue"></i>IOS </p>
-                    </td>
-                    <td>30%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square green"></i>Android </p>
-                    </td>
-                    <td>10%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square purple"></i>Blackberry </p>
-                    </td>
-                    <td>20%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square aero"></i>Symbian </p>
-                    </td>
-                    <td>15%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square red"></i>Others </p>
-                    </td>
-                    <td>30%</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+            <div id="statementDropzone" class="dropzone" style="min-height: 240px"></div>
           </div>
         </div>
     </div>
@@ -103,7 +50,7 @@
     <div class="col-md-4 col-sm-6 col-xs-12">
         <div class="x_panel fixed_height_320">
           <div class="x_title">
-            <h2>Accounts<small>right now</small></h2>
+            <h2>{% trans 'Tasks' %}<small>{% trans 'that should be done' %}</small></h2>
             <ul class="nav navbar-right panel_toolbox">
               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
               </li>
@@ -122,60 +69,14 @@
             <div class="clearfix"></div>
           </div>
           <div class="x_content">
-          <table class="" style="width:100%">
-            <tr>
-              <th style="width:37%;">
-                <p>Top 5</p>
-              </th>
-              <th>
-                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                  <p class="">Device</p>
-                </div>
-                <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-                  <p class="">Progress</p>
-                </div>
-              </th>
-            </tr>
-            <tr>
-              <td>
-                <canvas id="canvas1" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
-              </td>
-              <td>
-                <table class="tile_info">
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square blue"></i>IOS </p>
-                    </td>
-                    <td>30%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square green"></i>Android </p>
-                    </td>
-                    <td>10%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square purple"></i>Blackberry </p>
-                    </td>
-                    <td>20%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square aero"></i>Symbian </p>
-                    </td>
-                    <td>15%</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <p><i class="fa fa-square red"></i>Others </p>
-                    </td>
-                    <td>30%</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+            <div class="row">
+              <div class="col-md-6">
+                <h4>Unattached documents</h4>
+              </div>
+              <div class="col-md-6">
+                <h4>Unbalanced invoices</h4>
+              </div>
+            </div>
           </div>
         </div>
     </div>
@@ -263,13 +164,24 @@
 {% endblock content %}
 
 {% block inline-js %}
-<script>
+<script language="JavaScript">
   $('.overview_barchart').sparkline('html', {
      type: 'bar',
      height: '125',
      barWidth: 20,
      barSpacing: 2,
      barColor: '#26B99A'
+  });
+
+  var statementDropzone = new Dropzone('#statementDropzone', {
+      paramName: 'statement',
+      url: '{% url 'accountant:statement_import' %}',
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+  });
+  statementDropzone.on('success', function (file, response) {
+      window.location.replace(response.url)
   });
 </script>
 {% endblock %}

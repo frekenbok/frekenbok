@@ -2,16 +2,22 @@ import logging
 import mimetypes
 import os
 
+from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
-from django.db.models import Sum
+from django.db.models import Sum, Func
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
 
 logger = logging.getLogger(__name__)
+
+
+class Round(Func):
+    function = 'ROUND'
+    template='%(function)s(%(expressions)s, {})'.format(settings.DECIMAL_PLACES)
 
 
 class Account(NS_Node):
@@ -224,6 +230,14 @@ class Invoice(models.Model):
         null=True
     )
 
+    def json(self):
+        return {
+            'id': self.id,
+            'timestamp': self.timestamp.isoformat(),
+            'comment': self.comment,
+            'user': self.user.id
+        }
+
     def get_absolute_url(self):
         return reverse('accountant:invoice_detail', kwargs={'pk': self.pk})
 
@@ -241,8 +255,8 @@ class Invoice(models.Model):
         """
         return Transaction.objects.filter(invoice=self)\
             .values('currency')\
-            .annotate(amount=Sum('amount'))\
-            .exclude(amount=0)
+            .annotate(amount=Round(Sum('amount')))\
+            .exclude(amount=Decimal('0'))
 
     @property
     def is_verified(self):
