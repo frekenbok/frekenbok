@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from moneyed import Decimal, JPY, USD, ZAR
+from typing import Iterable
 
 from accountant.models import Sheaf, Transaction, Account
 from frekenbok.tests.test_data import add_test_data
@@ -108,6 +109,28 @@ class AccountTestCase(TestCase):
         expected_result.sort(key=lambda x: x['currency'])
 
         self.assertEqual(expected_result, list(self.cash.tree_summary()))
+
+    @staticmethod
+    def sorted_ids(accounts: Iterable[Account]):
+        sorted([i.id for i in accounts])
+
+    def test_get_expenses(self):
+        self.assertEqual(
+            self.sorted_ids(Account.get_expenses()),
+            self.sorted_ids(self.expenses)
+        )
+
+    def test_get_accounts(self):
+        self.assertEqual(
+            self.sorted_ids(Account.get_accounts()),
+            self.sorted_ids(self.accounts)
+        )
+
+    def test_get_incomes(self):
+        self.assertEqual(
+            self.sorted_ids(Account.get_incomes()),
+            self.sorted_ids(self.incomes)
+        )
 
 
 class SheafTestCase(TestCase):
@@ -272,13 +295,22 @@ class InvoiceTestCase(TestCase):
         self.assertEqual(list(self.first_salary.accounts), [self.wallet])
 
     def test_income_transactions_property(self):
-        self.assertEqual(list(self.first_salary.income_transactions)[0], self.first_salary_income_tx)
+        self.assertEqual(
+            list(self.first_salary.income_transactions)[0],
+            self.first_salary_income_tx
+        )
 
     def test_internal_transactions_property(self):
-        self.assertEqual(list(self.first_salary.internal_transactions)[0], self.first_salary_internal_tx)
+        self.assertEqual(
+            list(self.first_salary.internal_transactions)[0],
+            self.first_salary_internal_tx
+        )
 
     def test_expense_transactions_property(self):
-        self.assertEqual(list(self.third_invoice.expense_transactions)[0], self.third_invoice_expense_tx)
+        self.assertEqual(
+            list(self.third_invoice.expense_transactions)[0],
+            self.third_invoice_expense_tx
+        )
 
 
 class DocumentTestCase(TestCase):
@@ -289,3 +321,22 @@ class DocumentTestCase(TestCase):
     def test_mime_type_property(self):
         self.assertEqual(self.document_as_pdf.mime_type, 'application/pdf')
         self.assertEqual(self.document_as_img.mime_type, 'image/jpeg')
+
+    def test_json_method(self):
+        expected_result = {
+            'description': self.document_as_pdf.description,
+            'id': self.document_as_pdf.id,
+            'invoice': self.invoice_with_attached_image.id
+        }
+        expected_path = '/media/documents/{}/{}/test_doc'.format(
+            date.today().year, date.today().month
+        )
+
+        actual_result = self.document_as_pdf.json()
+        url = actual_result.pop('file')
+
+        self.assertEqual(expected_result, actual_result)
+        self.assertTrue(url.startswith(expected_path))
+
+    def test_json_method_for_invoiceless_document(self):
+        self.assertIsNone(self.document_without_invoice.json()['invoice'])

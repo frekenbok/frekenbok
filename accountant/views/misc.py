@@ -81,17 +81,13 @@ def recalculate_request(request: HttpRequest):
 
 
 def document_upload(request: HttpRequest):
-    file = request.FILES.get('file')
+    file = request.FILES.get('document')
     document = Document.objects.create(
         description='',
         invoice=None,
         file=file
     )
-    return JsonResponse({
-        'id': document.id,
-        'description': document.description,
-        'invoice': document.invoice,
-    })
+    return JsonResponse(document.json())
 
 
 @transaction.atomic
@@ -106,3 +102,6 @@ def redirect_to_referer(request: HttpRequest, default=None):
     return redirect(
         request.META.get('HTTP_REFERER', default)
     )
+
+def fns_invoice_parser(request: HttpRequest):
+    pass

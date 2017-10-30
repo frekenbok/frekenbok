@@ -8,6 +8,10 @@ DATABASES = {
         'USER': 'frekenbok',
         'PASSWORD': 'frekenbok',
         'NAME': 'frekenbok',
-        'OPTIONS': {'init_command': 'SET names "utf8"'}
+        'OPTIONS': {'init_command': 'SET names "utf8"'},
+        'TEST': {
+            'CHARSET': 'utf8',
+            'COLLATION': 'utf8_general_ci',
+        }
     }
 }

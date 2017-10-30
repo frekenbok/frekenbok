@@ -1,17 +1,15 @@
 import logging
 import mimetypes
 import os
-from decimal import Decimal
 
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models import Sum
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from djmoney.models.fields import CurrencyField
 from treebeard.ns_tree import NS_Node
-
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +146,18 @@ class Account(NS_Node):
         return Sheaf.objects.filter(account__in=self.get_tree(self))\
             .values('currency')\
             .annotate(amount=Sum('amount')).order_by('currency')
+
+    @staticmethod
+    def get_expenses():
+        return Account.objects.filter(type=Account.EXPENSE).all()
+
+    @staticmethod
+    def get_accounts():
+        return Account.objects.filter(type=Account.ACCOUNT).all()
+
+    @staticmethod
+    def get_incomes():
+        return Account.objects.filter(type=Account.INCOME).all()
 
     def __str__(self):
         return '{title} ({type})'.format(
@@ -423,7 +433,7 @@ class Document(models.Model):
 
     file = models.FileField(
         verbose_name=_('file with image'),
-        upload_to='documents/%Y/%m/'
+        upload_to='documents/%Y/%m/',
     )
 
     @property
@@ -433,3 +443,11 @@ class Document(models.Model):
     @property
     def file_name(self):
         return os.path.basename(self.file.name)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'description': self.description,
+            'invoice': self.invoice.id if self.invoice else None,
+            'file': self.file.url
+        }
