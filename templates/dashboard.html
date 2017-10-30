@@ -180,5 +180,8 @@
         'X-CSRFToken': Cookies.get('csrftoken')
       }
   });
+  statementDropzone.on('success', function (file, response) {
+      window.location.replace(response.url)
+  });
 </script>
 {% endblock %}
