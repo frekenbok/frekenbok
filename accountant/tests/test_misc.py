@@ -79,8 +79,10 @@ class FnsInvoiceParserTestCase(TestCase):
 
     def test_items_quantity(self):
         actual_quantities = [i.quantity for i in
-                             self.invoice.transactions.order_by('quantity')]
-        expected_quantities = [None] + [Decimal('1.00000')] * 8
+                             self.invoice.transactions
+                                 .order_by('quantity')
+                                 .exclude(quantity=None)]
+        expected_quantities = [Decimal('1.00000')] * 8
 
         self.assertEqual(actual_quantities, expected_quantities)
 
