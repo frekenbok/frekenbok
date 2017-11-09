@@ -57,6 +57,8 @@ LOGGING = {
     }
 }
 
+DEFAULT_TZ = pytz.timezone('Europe/Moscow')
+
 SMS_SECRET_KEY = 'Gx2spoTD4VrTlmCq0A/9W56jhVusc77/Fpe8QI+m3/TYyzyMNUWfUpLzZjt5Ol5b0iQlGHaE2DvP'
 SMS_PARSERS = {
     'Tinkoff': {

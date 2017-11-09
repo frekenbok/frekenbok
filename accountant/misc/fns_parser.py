@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from decimal import Decimal
 
+import pytz
 from django.contrib.auth.models import User
 from django.db import transaction
 from moneyed import RUB, Money
@@ -10,6 +11,7 @@ from accountant.models import Invoice, Transaction, Account
 
 divisor = Decimal(100)
 currency = RUB
+tz = pytz.timezone('Europe/Moscow')
 
 
 @transaction.atomic
@@ -17,7 +19,7 @@ def parse(raw_invoice: str, user: User,
           default_expense: Account, default_account: Account):
     invoice = json.loads(raw_invoice, parse_float=Decimal, parse_int=Decimal)
 
-    timestamp = datetime.fromtimestamp(invoice['dateTime'])
+    timestamp = datetime.fromtimestamp(invoice['dateTime'], tz)
     date = timestamp.date()
     total_sum = invoice['totalSum'] / divisor
 
