@@ -103,8 +103,8 @@ class InvoiceCreateOrEditView(LoginRequiredMixin, TemplateView):
     def post(self, request: HttpRequest, pk: int=None, *args, **kwargs):
         logger.debug('Trying to create or update invoice with pk {}'.format(pk))
         if request.POST.get('invoice-timestamp'):
-            timestamp = parse(request.POST['invoice-timestamp'])\
-                .replace(tzinfo=settings.DEFAULT_TZ)
+            timestamp = settings.DEFAULT_TZ\
+                .localize(parse(request.POST['invoice-timestamp']))
             invoice, created = Invoice.objects.update_or_create(
                 pk=int(pk) if pk else None,
                 defaults={
