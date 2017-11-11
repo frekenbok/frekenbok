@@ -55,6 +55,40 @@
     </div>
   </section>
   <section class="panel">
+    <div class="x_title">
+      <h2>{% trans 'Previous month' %}
+        <small>({% trans 'since' %} {{ prev_month_start|date:'Y-m-d' }} {% trans 'till' %} {{ prev_month_end|date:'Y-m-d' }})</small>
+      </h2>
+      <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>{% for sheaf in previous_month %}
+          <tr>
+            <td width="10%">{{ sheaf.currency }}</td><td>{{ sheaf.amount | intcomma }}</td>
+          </tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="x_title">
+      <h2>{% trans 'This month' %}
+        <small>({% trans 'since' %} {{ start_of_month|date:'Y-m-d' }})</small>
+      </h2>
+      <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>{% for sheaf in this_month %}
+          <tr>
+            <td width="10%">{{ sheaf.currency }}</td><td>{{ sheaf.amount | intcomma }}</td>
+          </tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="panel">
     <div class="x_title"><h2>{% trans 'Total quantity' %}</h2><div class="clearfix"></div></div>
     <div class="panel-body">
       <table class="table">
