@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from decimal import Decimal
 
@@ -8,6 +9,8 @@ from django.db import transaction
 from moneyed import RUB, Money
 
 from accountant.models import Invoice, Transaction, Account
+
+logger = logging.getLogger(__name__)
 
 divisor = Decimal(100)
 currency = RUB
@@ -37,6 +40,7 @@ def parse(raw_invoice: str, user: User,
         invoice=result
     )
 
+    sum_of_items = Decimal(0)
     for item in invoice['items']:
         comment = item['name']
         maybe_transaction = Transaction.objects.filter(
@@ -50,22 +54,23 @@ def parse(raw_invoice: str, user: User,
             account = default_expense
             unit = None
 
+        item_price = item['sum'] / divisor
         Transaction.objects.create(
             date=date,
             account=account,
-            amount=item['sum'] / divisor,
+            amount=item_price,
             currency=currency,
             quantity=item['quantity'],
             unit=unit,
             invoice=result,
             comment=comment
         )
+        sum_of_items += item_price
 
-    sum_of_items = sum(i.amount for i in result.transactions.all())
-    if sum_of_items != Decimal(0):
-        raise ValueError(
-            'Invoice is broken, total sum {} is not equal to sum of items {}'
-            .format(total_sum, sum_of_items)
+    if sum_of_items != total_sum:
+        logger.warning(
+            '{} (id {}) is broken, total sum {} is not equal to sum of items {}'
+            .format(result, result.id, total_sum, sum_of_items)
         )
 
     return result

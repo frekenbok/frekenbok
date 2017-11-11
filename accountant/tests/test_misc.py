@@ -1,9 +1,11 @@
 import json
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from os.path import abspath, dirname, join
 from unittest import TestCase
+from testfixtures import LogCapture
 
+from pytz import timezone
 from django.contrib.auth.models import User
 from moneyed import RUB
 
@@ -54,7 +56,8 @@ class FnsInvoiceParserTestCase(TestCase):
         with open(
                 join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
             self.incoming = f.read()
-        self.invoice = parse(self.incoming, self.user, self.expense, self.account)
+        self.invoice = parse(self.incoming, self.user, self.expense,
+                             self.account)
 
     def tearDown(self):
         del self.incoming
@@ -64,12 +67,22 @@ class FnsInvoiceParserTestCase(TestCase):
         actual_sum = sum(i.amount for i in self.invoice.transactions.all())
         self.assertEqual(actual_sum, Decimal('0.00000'))
 
-    def test_failed_total_sum(self):
+    def test_bad_total_sum(self):
         adjusted_incoming = json.loads(self.incoming)
         adjusted_incoming['items'].pop()
 
-        with self.assertRaises(ValueError):
-            parse(json.dumps(adjusted_incoming), self.user, self.expense, self.account)
+        with LogCapture() as l:
+            result = parse(json.dumps(adjusted_incoming),
+                           self.user, self.expense, self.account)
+
+            l.check(
+                ('accountant.misc.fns_parser',
+                 'WARNING',
+                 ('{} (id {}) is broken, total sum 618.89 is not equal'
+                  ' to sum of items 493.99').format(
+                     result, result.id
+                 ))
+            )
 
     def test_is_verified(self):
         self.assertTrue(self.invoice.is_verified)
@@ -131,3 +144,14 @@ class FnsInvoiceParserTestCase(TestCase):
             len(self.invoice.transactions.filter(unit='l').all()),
             1
         )
+
+    def test_invoice_timestamp(self):
+        self.assertEqual(
+            self.invoice.timestamp,
+            timezone('Europe/Moscow').localize(datetime(2017, 10, 15, 22, 38))
+        )
+
+    def test_transactions_date(self):
+        expected_date = date(2017, 10, 15)
+        for transaction in self.invoice.transactions.all():
+            self.assertEqual(transaction.date, expected_date)
