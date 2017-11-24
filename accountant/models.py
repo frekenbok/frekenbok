@@ -253,10 +253,11 @@ class Invoice(models.Model):
         :return: QuerySet with amounts and currencies. Empty QuerySet can
          be thought as sign of verified invoice.
         """
-        return Transaction.objects.filter(invoice=self)\
+        return self.transactions\
             .values('currency')\
             .annotate(amount=Round(Sum('amount')))\
-            .exclude(amount=Decimal('0'))
+            .exclude(amount=Decimal('0'))\
+            .order_by()
 
     @property
     def is_verified(self):
