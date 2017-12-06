@@ -9,7 +9,7 @@ from pytz import timezone
 from django.contrib.auth.models import User
 from moneyed import RUB
 
-from accountant.misc.fns_parser import parse
+from accountant.misc.fns_parser import parse, is_valid_invoice
 from accountant.models import Account, Transaction
 
 
@@ -157,3 +157,6 @@ class FnsInvoiceParserTestCase(TestCase):
         expected_date = date(2017, 10, 15)
         for transaction in self.invoice.transactions.all():
             self.assertEqual(transaction.date, expected_date)
+
+    def test_is_valid_invoice(self):
+        self.assertTrue(is_valid_invoice(self.incoming))
