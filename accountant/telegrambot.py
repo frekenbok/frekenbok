@@ -44,6 +44,8 @@ def json_handler(bot: Bot, user: User, document: Document, update: Update):
             Account.objects.get(pk=default_expense),
             Account.objects.get(pk=default_account)
         )
+        document.invoice = result
+        document.save()
         bot.send_message(
             update.message.chat_id,
             "Invoice parsed successfully. {} items, total sum {}"
