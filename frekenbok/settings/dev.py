@@ -75,3 +75,15 @@ SMS_PARSERS = {
         'datetime_tz': pytz.timezone('Europe/Moscow')
     }
 }
+
+
+DJANGO_TELEGRAMBOT = {
+    'MODE': 'POLLING',
+    'BOTS': [
+        {
+            'TOKEN': '502375923:AAESVmMXrQ5uo7531TxXNQCFd6Rt96DgmoA',
+            'ALLOWED_UPDATES': ['message'],
+            'POLL_INTERVAL': 1
+        }
+    ]
+}

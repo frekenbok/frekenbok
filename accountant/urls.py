@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 from accountant.views.misc import sms, recalculate_request, document_upload, \
     document_delete
@@ -25,5 +25,6 @@ urlpatterns = [
     url(r'^recalculate/', recalculate_request, name='recalculate'),
     url(r'^document/upload', document_upload, name='document_upload'),
     url(r'^document/(?P<pk>[0-9]+)/delete', document_delete, name='document_delete'),
-    url(r'^statement_import/', StatementImportView.as_view(), name='statement_import')
+    url(r'^statement_import/', StatementImportView.as_view(), name='statement_import'),
+    url(r'^bot', include('django_telegrambot.urls')),
 ]

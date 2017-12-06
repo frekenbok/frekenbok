@@ -14,6 +14,8 @@ from accountant.models import Account, Transaction
 
 
 class FnsInvoiceParserTestCase(TestCase):
+    invoice_path = join(dirname(abspath(__file__)), 'test_fns_invoice.json')
+
     @classmethod
     def setUpClass(cls):
         cls.user = User.objects.create_user(
@@ -53,14 +55,14 @@ class FnsInvoiceParserTestCase(TestCase):
         )
 
     def setUp(self):
-        with open(
-                join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
+        with open(self.invoice_path) as f:
             self.incoming = f.read()
         self.invoice = parse(self.incoming, self.user, self.expense,
                              self.account)
 
     def tearDown(self):
         del self.incoming
+        self.invoice.delete()
         del self.invoice
 
     def test_total_sum(self):

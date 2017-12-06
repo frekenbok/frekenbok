@@ -27,7 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'dbbackup',
     'treebeard',
+    'django_telegrambot',
     'accountant',
+    'frekenbot'
 ]
 
 MIDDLEWARE_CLASSES = [
