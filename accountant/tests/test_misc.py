@@ -9,11 +9,13 @@ from pytz import timezone
 from django.contrib.auth.models import User
 from moneyed import RUB
 
-from accountant.misc.fns_parser import parse
+from accountant.misc.fns_parser import parse, is_valid_invoice
 from accountant.models import Account, Transaction
 
 
 class FnsInvoiceParserTestCase(TestCase):
+    invoice_path = join(dirname(abspath(__file__)), 'test_fns_invoice.json')
+
     @classmethod
     def setUpClass(cls):
         cls.user = User.objects.create_user(
@@ -53,14 +55,14 @@ class FnsInvoiceParserTestCase(TestCase):
         )
 
     def setUp(self):
-        with open(
-                join(dirname(abspath(__file__)), 'test_fns_invoice.json')) as f:
+        with open(self.invoice_path) as f:
             self.incoming = f.read()
         self.invoice = parse(self.incoming, self.user, self.expense,
                              self.account)
 
     def tearDown(self):
         del self.incoming
+        self.invoice.delete()
         del self.invoice
 
     def test_total_sum(self):
@@ -155,3 +157,6 @@ class FnsInvoiceParserTestCase(TestCase):
         expected_date = date(2017, 10, 15)
         for transaction in self.invoice.transactions.all():
             self.assertEqual(transaction.date, expected_date)
+
+    def test_is_valid_invoice(self):
+        self.assertTrue(is_valid_invoice(self.incoming))

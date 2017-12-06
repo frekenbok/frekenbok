@@ -17,6 +17,15 @@ currency = RUB
 tz = pytz.timezone('Europe/Moscow')
 
 
+def is_valid_invoice(raw_invoice: str):
+    invoice = json.loads(raw_invoice, parse_float=Decimal, parse_int=Decimal)
+    return isinstance(invoice.get('items'), list) and \
+        isinstance(invoice.get('totalSum'), Decimal) and \
+        invoice.get('fiscalDocumentNumber') and \
+        invoice.get('fiscalDriveNumber') and \
+        invoice.get('fiscalSign')
+
+
 @transaction.atomic
 def parse(raw_invoice: str, user: User,
           default_expense: Account, default_account: Account):

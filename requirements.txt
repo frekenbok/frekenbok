@@ -1,6 +1,8 @@
-django
+telegram
+django < 2.0
 django-dbbackup
 django_money
+django-telegrambot
 django-treebeard
 pytz
 python-dateutil
