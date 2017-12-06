@@ -1,5 +1,5 @@
 telegram
-django==1
+django < 2.0
 django-dbbackup
 django_money
 django-telegrambot
